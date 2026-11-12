@@ -1,0 +1,55 @@
+name: 'MergeDelta scan'
+description: 'Measure what a pull request changes against its merge-base (performance today; more quality areas next) and write one scan artifact for MergeDelta publish.'
+author: 'mergedelta'
+
+inputs:
+  base-url:
+    description: 'Production URL to measure as the baseline. Required in pr mode (checked at run time); not used in deploy mode.'
+    required: false
+  pr-url:
+    description: "The PR's preview deploy URL (Netlify or Vercel). Required in pr mode (checked at run time); not used in deploy mode."
+    required: false
+  config:
+    description: 'Path to perf.config.json inside the repository.'
+    required: false
+    default: 'perf.config.json'
+  github-token:
+    description: 'Token used to read and post the PR comment.'
+    required: false
+    default: ${{ github.token }}
+  build-timeout:
+    description: 'Minutes allowed for each install and build in strict local-build mode (perf.config.json "localBuild"), 1-20. Default 10.'
+    required: false
+    default: '10'
+  mode:
+    description: '"scan" (unprivileged: measure like pr mode and write the ScanArtifact for the publish workflow — no comment, no upload, no credentials), "pr" (DEPRECATED, 0b-4: privileged in-job posting; kept until projects move to the two-workflow setup) or "deploy" (record a production deploy to the deploy-ingest endpoint; no Lighthouse, no comment).'
+    required: false
+    default: 'pr'
+  deploy-url:
+    description: 'The production URL that was deployed. Required (with api-url and api-key) in deploy mode.'
+    required: false
+    default: ''
+  report-dir:
+    description: 'Optional folder (inside the workspace) to save every Lighthouse report, trace and the posted comment.'
+    required: false
+    default: ''
+  api-url:
+    description: 'Optional https URL of the backend endpoint: pr-ingest in pr mode (…/functions/v1/pr-ingest), deploy-ingest in deploy mode (…/functions/v1/deploy-ingest). The result/deploy is uploaded when api-url and api-key are both set.'
+    required: false
+    default: ''
+  api-key:
+    description: 'Optional project API key (pd_…); pass it from a repo secret such as secrets.PERF_API_KEY. Never set in scan mode (the scan job must hold no credentials, 0b-4 §4.1).'
+    required: false
+    default: ''
+  output:
+    description: 'Scan mode only: where to write the ScanArtifact (default shipguard-artifact.json). The scan workflow uploads exactly this file.'
+    required: false
+    default: 'shipguard-artifact.json'
+
+outputs:
+  passed:
+    description: 'Whether the performance check passed.'
+
+runs:
+  using: node24
+  main: dist/index.js

@@ -1,0 +1,33 @@
+name: 'MergeDelta publish'
+description: 'The privileged half of the two-workflow setup (0b-4): validates the scan artifact as untrusted input, verifies identity against GitHub, exchanges an OIDC token, diffs against the baseline, posts the MergeDelta comment and check. Runs on workflow_run; never runs PR code.'
+author: 'mergedelta'
+
+inputs:
+  github-token:
+    description: 'The workflow token (github.token): reads the run artifact, PRs, files and the compare API; posts the comment and the check run when poster is "actions".'
+    required: false
+    default: ${{ github.token }}
+  mergedelta-api:
+    description: 'The MergeDelta backend base URL (…/functions/v1). Empty = the hosted MergeDelta backend.'
+    required: false
+    default: ''
+  shipguard-api:
+    description: 'Deprecated: the pre-rename name of mergedelta-api. Still read when mergedelta-api is not set.'
+    required: false
+    default: ''
+  ingest-key:
+    description: 'Optional per-project ingest key (pd_…), the fallback when OIDC is unavailable. Prefer leaving it unset: OIDC needs no stored secret.'
+    required: false
+    default: ''
+  poster:
+    description: 'Who posts the comment and check (spec 1b-1 amendment A1): "actions" = this job with github-token (today''s behaviour, default); "app" = the ShipGuard App via the backend''s /publish-api/post — the job then makes no GitHub write calls. Not a fallback: with "app" a posting failure fails the job (D5).'
+    required: false
+    default: 'actions'
+
+outputs:
+  outcome:
+    description: 'published | unverified | rejected | skipped | scan-failed.'
+
+runs:
+  using: node24
+  main: dist/index.js
