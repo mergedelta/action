@@ -11,10 +11,6 @@ inputs:
     description: 'The MergeDelta backend base URL (…/functions/v1). Empty = the hosted MergeDelta backend.'
     required: false
     default: ''
-  shipguard-api:
-    description: 'Deprecated: the pre-rename name of mergedelta-api. Still read when mergedelta-api is not set.'
-    required: false
-    default: ''
   ingest-key:
     description: 'Optional per-project ingest key (pd_…), the fallback when OIDC is unavailable. Prefer leaving it unset: OIDC needs no stored secret.'
     required: false

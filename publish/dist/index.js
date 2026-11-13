@@ -25204,7 +25204,7 @@ function decideCommentAction(existing, newBody, botLogins) {
 
 // src/trust.ts
 var EXPECTED_SCAN_WORKFLOW = ".github/workflows/mergedelta-scan.yml";
-var ACCEPTED_SCAN_WORKFLOWS = [EXPECTED_SCAN_WORKFLOW, ".github/workflows/shipguard-scan.yml"];
+var ACCEPTED_SCAN_WORKFLOWS = [EXPECTED_SCAN_WORKFLOW];
 var MAX_ARTIFACT_BYTES = 5 * 1024 * 1024;
 var PROTECTED_PATHS = [".github/workflows/", ".github/actions/", ".mergedelta.yml", ".mergedelta/", "mergedelta.config.json", ".shipguard.yml", ".shipguard/", "shipguard.config.json", "perf.config.json"];
 var SHA = /^[0-9a-f]{40}$/;
@@ -25250,7 +25250,7 @@ function decideTrust(ev, gh, claim) {
 // src/publish.ts
 var ARTIFACT_NAME = "shipguard-artifact";
 var MAX_ARTIFACT_BYTES2 = 5 * 1024 * 1024;
-var BOT_LOGINS = ["github-actions[bot]", "mergedelta[bot]", "shipguard[bot]"];
+var BOT_LOGINS = ["github-actions[bot]", "mergedelta[bot]"];
 var PostFailedError = class extends Error {
   constructor(message) {
     super(message);
@@ -25392,7 +25392,44 @@ async function runPublish(ev, deps) {
     conclusion: outcome.conclusion,
     unverified,
     unverifiedReason,
-    engines: results.map((r) => ({ engine: r.engine, status: r.status })),
+    // batch 1-4 Item 1 (0b-5 amendment): each engine entry carries everything the
+    // report viewer and the read API need — state/reasons from the engine outcome,
+    // the comparison mode, the baseline info, the classified findings, inconclusive
+    // metrics, budgets, and (performance) the LCP breakdown / preview injections /
+    // strict fallback reason. publish-api truncates `findings` to the 500-per-engine
+    // cap with a `dropped` count (FINDINGS_STORED_PER_ENGINE).
+    engines: results.map((r) => {
+      const o = outcome.engines.find((e) => e.engine === r.engine);
+      return {
+        engine: r.engine,
+        status: r.status,
+        state: o.state,
+        reasons: o.reasons,
+        mayBlock: r.mayBlock,
+        blockOn: r.blockOn,
+        comparison: r.baseline.mode,
+        baseline: {
+          mode: r.baseline.mode,
+          validity: r.baseline.validity,
+          baseSha: r.baseline.baseSha,
+          mergeBaseSha: r.baseline.mergeBaseSha,
+          label: r.baseline.label,
+          stale: r.baseline.stale,
+          deploymentUnverified: r.baseline.deploymentUnverified
+        },
+        findings: r.findings.map((c) => ({
+          classification: c.classification,
+          baseSeverity: c.baseSeverity ?? null,
+          suppressionId: c.suppressionId ?? null,
+          finding: c.finding
+        })),
+        inconclusive: r.inconclusive,
+        budgets: r.budgets,
+        ...r.lcpBreakdown !== void 0 ? { lcpBreakdown: r.lcpBreakdown } : {},
+        ...r.previewInjections !== void 0 ? { previewInjections: r.previewInjections } : {},
+        ...r.localBuildFallback !== void 0 ? { localBuildFallback: r.localBuildFallback } : {}
+      };
+    }),
     comment,
     mergeBaseSha: artifact_.run.mergeBaseSha,
     perfMeasurements: artifact_.engines.find((e) => e.engine === "performance")?.perf?.measurements ?? []
@@ -25679,7 +25716,7 @@ function pageUrlOf(part) {
 }
 
 // src/main.ts
-var API_BASE = core.getInput("mergedelta-api") || core.getInput("shipguard-api") || "https://ietochxecbljqodazkik.supabase.co/functions/v1";
+var API_BASE = core.getInput("mergedelta-api") || "https://ietochxecbljqodazkik.supabase.co/functions/v1";
 var INGEST_KEY = core.getInput("ingest-key");
 var POSTER = core.getInput("poster") === "app" ? "app" : "actions";
 var LESSON_BASE = "https://webperformancelearn.com/lessons";
