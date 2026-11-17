@@ -26380,6 +26380,9 @@ function cr4(regressions, base, head) {
   if (confirmed === null || confirmed.metric === null) return [];
   const metric = confirmed.metric;
   const delta = regressionDelta(confirmed) ?? 0;
+  const explained = LAB_METRIC_ORDER.filter((m) => ["LCP", "FCP", "SI"].includes(m)).map((m) => regressions.find((r) => r.metric === m)).filter((r) => r !== void 0).map((r) => ({ metric: r.metric, delta: regressionDelta(r) ?? 0 }));
+  const regressionPhrase = explained.length <= 1 ? `the ${metric} regression (${deltaText(metric, delta)})` : `the ${explained.map((e) => `${e.metric} (${deltaText(e.metric, e.delta)})`).join(" and ")} regressions`;
+  const regressionEvidence = explained.length <= 1 ? [{ kind: "metric", label: `${metric} regression`, value: deltaText(metric, delta) }] : explained.map((e) => ({ kind: "metric", label: `${e.metric} regression`, value: deltaText(e.metric, e.delta) }));
   const identities = /* @__PURE__ */ new Set([
     ...head.flatMap((s) => s.renderBlocking.map((r) => r.identity)),
     ...base.flatMap((s) => s.renderBlocking.map((r) => r.identity))
@@ -26410,12 +26413,12 @@ function cr4(regressions, base, head) {
       metric,
       kind: "cause",
       title: newOnHead ? `A new render-blocking script was added: ${identity}` : `A render-blocking script grew: ${identity}`,
-      explanation: newOnHead ? `This script loads synchronously in the document, so the browser waits for it before it can paint. It was not render-blocking on the base branch and ${contributes(likely)} the ${metric} regression (${deltaText(metric, delta)}): it blocks rendering for a median of ${ms(wasted.head)} on this PR.` : `This script is render-blocking on both sides, but on this PR it downloads ${kb(size.head)} instead of ${kb(size.base)}, so first paint waits longer. It ${contributes(likely)} the ${metric} regression (${deltaText(metric, delta)}).`,
+      explanation: newOnHead ? `This script loads synchronously in the document, so the browser waits for it before it can paint. It was not render-blocking on the base branch and ${contributes(likely)} ${regressionPhrase}: it blocks rendering for a median of ${ms(wasted.head)} on this PR.` : `This script is render-blocking on both sides, but on this PR it downloads ${kb(size.head)} instead of ${kb(size.base)}, so first paint waits longer. It ${contributes(likely)} ${regressionPhrase}.`,
       evidence: [
         { kind: "script", label: "Script", url: headUrl },
         { kind: "metric", label: "Render-blocking time", value: beforeAfter(ms(wasted.base), ms(wasted.head)) },
         { kind: "metric", label: "Transfer size", value: beforeAfter(kb(size.base), kb(size.head)) },
-        { kind: "metric", label: `${metric} regression`, value: deltaText(metric, delta) }
+        ...regressionEvidence
       ],
       fix: "Load the script with defer or async, or move it to the end of <body>. If it must run before first paint, inline the small critical part.",
       lessons: ["crp", "ttfb-fcp"]

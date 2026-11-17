@@ -25244,7 +25244,9 @@ function causeFallbackLines(r) {
     if (f.ruleId !== "lab-regression" && !merged) continue;
     if (f.confidence !== "likely") continue;
     const explained = r.findings.some(
-      (o) => o.finding.kind === "cause" && o.finding.metric === f.metric && o.finding.pageUrl === f.pageUrl
+      // MD-154: a cause also explains every metric it carries a "<metric> regression"
+      // evidence line for (CR-4 explains FCP, SI and LCP at once)
+      (o) => o.finding.kind === "cause" && o.finding.pageUrl === f.pageUrl && (o.finding.metric === f.metric || o.finding.evidence.some((e) => e.label === `${f.metric} regression`))
     );
     if (explained) continue;
     out.set(f.id, `No specific cause found in the lab evidence. To look yourself, compare ${audits} in a Chrome DevTools Performance recording of this page on both branches.`);
