@@ -27536,9 +27536,17 @@ function fingerprintFinding(engine, fields) {
 }
 function pagePath(raw) {
   try {
-    return new URL(normaliseUrl(raw)).pathname;
+    return new URL(normaliseUrl(raw)).pathname + routeFragmentOf(raw);
   } catch {
     return normaliseUrl(raw);
+  }
+}
+function routeFragmentOf(raw) {
+  try {
+    const hash = new URL(raw).hash;
+    return /^#!?\//.test(hash) ? hash : "";
+  } catch {
+    return "";
   }
 }
 function normaliseUrl(raw) {
@@ -27559,7 +27567,7 @@ function normaliseUrl(raw) {
 function pageKey(raw) {
   try {
     const u = new URL(normaliseUrl(raw));
-    return `${u.pathname}${u.search}`;
+    return `${u.pathname}${u.search}${routeFragmentOf(raw)}`;
   } catch {
     return normaliseUrl(raw);
   }

@@ -24505,7 +24505,8 @@ function pagePathOf(url) {
   if (url === null || url === void 0) return "";
   try {
     const u = new URL(url);
-    return `${u.pathname}${u.search}`;
+    const route = /^#!?\//.test(u.hash) ? u.hash : "";
+    return `${u.pathname}${u.search}${route}`;
   } catch {
     return url;
   }
@@ -24958,6 +24959,14 @@ var ENGINE_LABEL_OF = {
 };
 
 // ../core/src/fingerprint.ts
+function routeFragmentOf(raw) {
+  try {
+    const hash = new URL(raw).hash;
+    return /^#!?\//.test(hash) ? hash : "";
+  } catch {
+    return "";
+  }
+}
 function normaliseUrl(raw) {
   try {
     const u = new URL(raw);
@@ -24976,7 +24985,7 @@ function normaliseUrl(raw) {
 function pageKey(raw) {
   try {
     const u = new URL(normaliseUrl(raw));
-    return `${u.pathname}${u.search}`;
+    return `${u.pathname}${u.search}${routeFragmentOf(raw)}`;
   } catch {
     return normaliseUrl(raw);
   }
@@ -25967,7 +25976,7 @@ async function runPublish(ev, deps) {
   if (poster === "app" && deps.backend.postComment === void 0) {
     throw new Error('poster "app" needs a postComment backend (misconfigured action).');
   }
-  const claimedPr = ev.run.event === "pull_request" ? (await deps.github.eventPullRequests()).find((p) => p.head.sha === headSha)?.number ?? null : null;
+  let claimedPr = ev.run.event === "pull_request" ? (await deps.github.eventPullRequests()).find((p) => p.head.sha === headSha)?.number ?? null : null;
   const artifacts = await deps.github.listArtifacts(runId);
   const artifact = artifacts.find((a) => a.name === ARTIFACT_NAME);
   if (artifact === void 0) return rejectedRun(ev, deps, claimedPr, "no artifact uploaded");
@@ -25988,6 +25997,10 @@ async function runPublish(ev, deps) {
   const validated = validateArtifact(raw);
   if (!validated.ok) return rejectedRun(ev, deps, claimedPr, `artifact invalid: ${validated.errors[0]?.path ?? ""} ${validated.errors[0]?.message ?? ""}`);
   const artifact_ = validated.artifact;
+  if (claimedPr === null && ev.run.event === "pull_request") {
+    const n = artifact_.run.prNumber;
+    if (typeof n === "number" && Number.isInteger(n) && n > 0) claimedPr = n;
+  }
   const identityErrs = checkArtifactIdentity(artifact_, {
     repository: ev.repository.full_name,
     prNumber: claimedPr,
