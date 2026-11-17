@@ -25855,7 +25855,7 @@ function parseConfig(text) {
   if ("blocking" in c && c.blocking !== null && c.blocking !== void 0) {
     const v = c.blocking;
     if (typeof v !== "object" || Array.isArray(v)) {
-      errors.push({ path: "/blocking", message: "blocking must be an object of metric \u2192 { minIncrease }." });
+      errors.push({ path: "/blocking", message: 'blocking must be an object of metric \u2192 { minIncrease }, e.g. "blocking": { "TBT": { "minIncrease": 3000 } }.' });
     } else {
       const bl = v;
       const parsed = {};
@@ -25867,7 +25867,7 @@ function parseConfig(text) {
         const metric = key;
         const entry = bl[key];
         if (typeof entry !== "object" || entry === null || Array.isArray(entry)) {
-          errors.push({ path: `/blocking/${key}`, message: 'blocking entries must be objects with "minIncrease".' });
+          errors.push({ path: `/blocking/${key}`, message: `blocking entries must be objects with "minIncrease", e.g. "${key}": { "minIncrease": ${key === "CLS" ? "0.1" : "3000"} }${typeof entry === "number" ? ` (not "${key}": ${entry})` : ""}.` });
           continue;
         }
         const e = entry;
@@ -25927,7 +25927,7 @@ async function runPublish(ev, deps) {
   const claimedPr = ev.run.event === "pull_request" ? (await deps.github.eventPullRequests()).find((p) => p.head.sha === headSha)?.number ?? null : null;
   const artifacts = await deps.github.listArtifacts(runId);
   const artifact = artifacts.find((a) => a.name === ARTIFACT_NAME);
-  if (artifact === void 0) return scanDidNotComplete(ev, deps, "no artifact uploaded", claimedPr);
+  if (artifact === void 0) return rejectedRun(ev, deps, claimedPr, "no artifact uploaded");
   if (!(artifact.size_in_bytes > 0 && artifact.size_in_bytes <= MAX_ARTIFACT_BYTES2)) {
     return rejectedRun(ev, deps, claimedPr, "artifact size out of bounds before download");
   }
@@ -26205,7 +26205,23 @@ async function runPublish(ev, deps) {
   };
 }
 async function rejectedRun(ev, deps, claimedPr, reason) {
+  if ((deps.poster ?? "actions") === "app") {
+    const token = await exchangeFromEvent(ev, deps, claimedPr);
+    if (token !== null) return scanDidNotComplete(ev, deps, reason, claimedPr, token);
+  }
   return neutralCheckOnly(ev, deps, claimedPr, reason);
+}
+async function exchangeFromEvent(ev, deps, claimedPr) {
+  const oidc = await deps.backend.getOidcToken().catch(() => null);
+  const exchange = await deps.backend.exchangeToken({
+    ...oidc !== null ? { oidcToken: oidc } : { ingestKey: deps.getIngestKey() ?? "" },
+    kind: ev.run.event === "pull_request" ? "pr" : "baseline",
+    headSha: ev.run.head_sha,
+    scanRunId: ev.run.id,
+    scanRunAttempt: ev.run.run_attempt,
+    prNumber: ev.run.event === "pull_request" ? claimedPr : null
+  }).catch(() => null);
+  return exchange === null ? null : exchange.token;
 }
 async function scanDidNotComplete(ev, deps, reason, claimedPr, token) {
   if (token !== void 0) {

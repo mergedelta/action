@@ -25009,7 +25009,7 @@ function parseConfig(text) {
   if ("blocking" in c && c.blocking !== null && c.blocking !== void 0) {
     const v = c.blocking;
     if (typeof v !== "object" || Array.isArray(v)) {
-      errors.push({ path: "/blocking", message: "blocking must be an object of metric \u2192 { minIncrease }." });
+      errors.push({ path: "/blocking", message: 'blocking must be an object of metric \u2192 { minIncrease }, e.g. "blocking": { "TBT": { "minIncrease": 3000 } }.' });
     } else {
       const bl = v;
       const parsed = {};
@@ -25021,7 +25021,7 @@ function parseConfig(text) {
         const metric = key;
         const entry = bl[key];
         if (typeof entry !== "object" || entry === null || Array.isArray(entry)) {
-          errors.push({ path: `/blocking/${key}`, message: 'blocking entries must be objects with "minIncrease".' });
+          errors.push({ path: `/blocking/${key}`, message: `blocking entries must be objects with "minIncrease", e.g. "${key}": { "minIncrease": ${key === "CLS" ? "0.1" : "3000"} }${typeof entry === "number" ? ` (not "${key}": ${entry})` : ""}.` });
           continue;
         }
         const e = entry;
