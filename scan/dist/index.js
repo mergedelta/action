@@ -1633,14 +1633,14 @@ var require_HeaderParser = __commonJS({
       }
       const lines = this.buffer.split(RE_CRLF);
       const len = lines.length;
-      let m, h;
+      let m, h4;
       for (var i = 0; i < len; ++i) {
         if (lines[i].length === 0) {
           continue;
         }
         if (lines[i][0] === "	" || lines[i][0] === " ") {
-          if (h) {
-            this.header[h][this.header[h].length - 1] += lines[i];
+          if (h4) {
+            this.header[h4][this.header[h4].length - 1] += lines[i];
             continue;
           }
         }
@@ -1649,9 +1649,9 @@ var require_HeaderParser = __commonJS({
           return;
         }
         m = RE_HDR.exec(lines[i]);
-        h = m[1].toLowerCase();
-        this.header[h] = this.header[h] || [];
-        this.header[h].push(m[2] || "");
+        h4 = m[1].toLowerCase();
+        this.header[h4] = this.header[h4] || [];
+        this.header[h4].push(m[2] || "");
         if (++this.npairs === this.maxHeaderPairs) {
           break;
         }
@@ -1717,8 +1717,8 @@ var require_Dicer = __commonJS({
           process.nextTick(function() {
             self.emit("error", new Error("Unexpected end of multipart data"));
             if (self._part && !self._ignoreData) {
-              const type = self._isPreamble ? "Preamble" : "Part";
-              self._part.emit("error", new Error(type + " terminated early due to unexpected end of multipart data"));
+              const type2 = self._isPreamble ? "Preamble" : "Part";
+              self._part.emit("error", new Error(type2 + " terminated early due to unexpected end of multipart data"));
               self._part.push(null);
               process.nextTick(function() {
                 self._realFinish = true;
@@ -2509,7 +2509,7 @@ var require_parseParams = __commonJS({
     var STATE_VALUE = 1;
     var STATE_CHARSET = 2;
     var STATE_LANG = 3;
-    function parseParams(str) {
+    function parseParams(str2) {
       const res = [];
       let state = STATE_KEY;
       let charset = "";
@@ -2517,9 +2517,9 @@ var require_parseParams = __commonJS({
       let escaping = false;
       let p = 0;
       let tmp = "";
-      const len = str.length;
+      const len = str2.length;
       for (var i = 0; i < len; ++i) {
-        const char = str[i];
+        const char = str2[i];
         if (char === "\\" && inquote) {
           if (escaping) {
             escaping = false;
@@ -2612,7 +2612,7 @@ var require_parseParams = __commonJS({
 var require_basename = __commonJS({
   "node_modules/@fastify/busboy/lib/utils/basename.js"(exports2, module2) {
     "use strict";
-    module2.exports = function basename(path) {
+    module2.exports = function basename2(path) {
       if (typeof path !== "string") {
         return "";
       }
@@ -2639,7 +2639,7 @@ var require_multipart = __commonJS({
     var Dicer = require_Dicer();
     var parseParams = require_parseParams();
     var decodeText = require_decodeText();
-    var basename = require_basename();
+    var basename2 = require_basename();
     var getLimit = require_getLimit();
     var RE_BOUNDARY = /^boundary$/i;
     var RE_FIELD = /^form-data$/i;
@@ -2756,7 +2756,7 @@ var require_multipart = __commonJS({
               } else if (RE_FILENAME.test(parsed[i][0])) {
                 filename = parsed[i][1];
                 if (!preservePath) {
-                  filename = basename(filename);
+                  filename = basename2(filename);
                 }
               }
             }
@@ -3048,29 +3048,29 @@ var require_Decoder = __commonJS({
     function Decoder() {
       this.buffer = void 0;
     }
-    Decoder.prototype.write = function(str) {
-      str = str.replace(RE_PLUS, " ");
+    Decoder.prototype.write = function(str2) {
+      str2 = str2.replace(RE_PLUS, " ");
       let res = "";
       let i = 0;
       let p = 0;
-      const len = str.length;
+      const len = str2.length;
       for (; i < len; ++i) {
         if (this.buffer !== void 0) {
-          if (!HEX[str.charCodeAt(i)]) {
+          if (!HEX[str2.charCodeAt(i)]) {
             res += "%" + this.buffer;
             this.buffer = void 0;
             --i;
           } else {
-            this.buffer += str[i];
+            this.buffer += str2[i];
             ++p;
             if (this.buffer.length === 2) {
               res += String.fromCharCode(parseInt(this.buffer, 16));
               this.buffer = void 0;
             }
           }
-        } else if (str[i] === "%") {
+        } else if (str2[i] === "%") {
           if (i > p) {
-            res += str.substring(p, i);
+            res += str2.substring(p, i);
             p = i;
           }
           this.buffer = "";
@@ -3078,7 +3078,7 @@ var require_Decoder = __commonJS({
         }
       }
       if (p < len && this.buffer === void 0) {
-        res += str.substring(p);
+        res += str2.substring(p);
       }
       return res;
     };
@@ -4252,7 +4252,7 @@ var require_symbols2 = __commonJS({
 var require_webidl = __commonJS({
   "node_modules/undici/lib/fetch/webidl.js"(exports2, module2) {
     "use strict";
-    var { types } = require("util");
+    var { types: types2 } = require("util");
     var { hasOwn, toUSVString } = require_util2();
     var webidl = {};
     webidl.converters = {};
@@ -4391,7 +4391,7 @@ var require_webidl = __commonJS({
           });
         }
         const method = V?.[Symbol.iterator]?.();
-        const seq = [];
+        const seq2 = [];
         if (method === void 0 || typeof method.next !== "function") {
           throw webidl.errors.exception({
             header: "Sequence",
@@ -4403,9 +4403,9 @@ var require_webidl = __commonJS({
           if (done) {
             break;
           }
-          seq.push(converter(value));
+          seq2.push(converter(value));
         }
-        return seq;
+        return seq2;
       };
     };
     webidl.recordConverter = function(keyConverter, valueConverter) {
@@ -4417,7 +4417,7 @@ var require_webidl = __commonJS({
           });
         }
         const result = {};
-        if (!types.isProxy(O)) {
+        if (!types2.isProxy(O)) {
           const keys2 = Object.keys(O);
           for (const key of keys2) {
             const typedKey = keyConverter(key);
@@ -4451,11 +4451,11 @@ var require_webidl = __commonJS({
     };
     webidl.dictionaryConverter = function(converters) {
       return (dictionary) => {
-        const type = webidl.util.Type(dictionary);
+        const type2 = webidl.util.Type(dictionary);
         const dict = {};
-        if (type === "Null" || type === "Undefined") {
+        if (type2 === "Null" || type2 === "Undefined") {
           return dict;
-        } else if (type !== "Object") {
+        } else if (type2 !== "Object") {
           throw webidl.errors.exception({
             header: "Dictionary",
             message: `Expected ${dictionary} to be one of: Null, Undefined, Object.`
@@ -4543,14 +4543,14 @@ var require_webidl = __commonJS({
       return x;
     };
     webidl.converters.ArrayBuffer = function(V, opts = {}) {
-      if (webidl.util.Type(V) !== "Object" || !types.isAnyArrayBuffer(V)) {
+      if (webidl.util.Type(V) !== "Object" || !types2.isAnyArrayBuffer(V)) {
         throw webidl.errors.conversionFailed({
           prefix: `${V}`,
           argument: `${V}`,
           types: ["ArrayBuffer"]
         });
       }
-      if (opts.allowShared === false && types.isSharedArrayBuffer(V)) {
+      if (opts.allowShared === false && types2.isSharedArrayBuffer(V)) {
         throw webidl.errors.exception({
           header: "ArrayBuffer",
           message: "SharedArrayBuffer is not allowed."
@@ -4559,14 +4559,14 @@ var require_webidl = __commonJS({
       return V;
     };
     webidl.converters.TypedArray = function(V, T, opts = {}) {
-      if (webidl.util.Type(V) !== "Object" || !types.isTypedArray(V) || V.constructor.name !== T.name) {
+      if (webidl.util.Type(V) !== "Object" || !types2.isTypedArray(V) || V.constructor.name !== T.name) {
         throw webidl.errors.conversionFailed({
           prefix: `${T.name}`,
           argument: `${V}`,
           types: [T.name]
         });
       }
-      if (opts.allowShared === false && types.isSharedArrayBuffer(V.buffer)) {
+      if (opts.allowShared === false && types2.isSharedArrayBuffer(V.buffer)) {
         throw webidl.errors.exception({
           header: "ArrayBuffer",
           message: "SharedArrayBuffer is not allowed."
@@ -4575,13 +4575,13 @@ var require_webidl = __commonJS({
       return V;
     };
     webidl.converters.DataView = function(V, opts = {}) {
-      if (webidl.util.Type(V) !== "Object" || !types.isDataView(V)) {
+      if (webidl.util.Type(V) !== "Object" || !types2.isDataView(V)) {
         throw webidl.errors.exception({
           header: "DataView",
           message: "Object is not a DataView."
         });
       }
-      if (opts.allowShared === false && types.isSharedArrayBuffer(V.buffer)) {
+      if (opts.allowShared === false && types2.isSharedArrayBuffer(V.buffer)) {
         throw webidl.errors.exception({
           header: "ArrayBuffer",
           message: "SharedArrayBuffer is not allowed."
@@ -4590,13 +4590,13 @@ var require_webidl = __commonJS({
       return V;
     };
     webidl.converters.BufferSource = function(V, opts = {}) {
-      if (types.isAnyArrayBuffer(V)) {
+      if (types2.isAnyArrayBuffer(V)) {
         return webidl.converters.ArrayBuffer(V, opts);
       }
-      if (types.isTypedArray(V)) {
+      if (types2.isTypedArray(V)) {
         return webidl.converters.TypedArray(V, V.constructor);
       }
-      if (types.isDataView(V)) {
+      if (types2.isDataView(V)) {
         return webidl.converters.DataView(V, opts);
       }
       throw new TypeError(`Could not convert ${V} to a BufferSource.`);
@@ -4714,12 +4714,12 @@ var require_dataURL = __commonJS({
     function parseMIMEType(input) {
       input = removeHTTPWhitespace(input, true, true);
       const position = { position: 0 };
-      const type = collectASequenceOfCodePointsFast(
+      const type2 = collectASequenceOfCodePointsFast(
         "/",
         input,
         position
       );
-      if (type.length === 0 || !HTTP_TOKEN_CODEPOINTS.test(type)) {
+      if (type2.length === 0 || !HTTP_TOKEN_CODEPOINTS.test(type2)) {
         return "failure";
       }
       if (position.position > input.length) {
@@ -4735,7 +4735,7 @@ var require_dataURL = __commonJS({
       if (subtype.length === 0 || !HTTP_TOKEN_CODEPOINTS.test(subtype)) {
         return "failure";
       }
-      const typeLowercase = type.toLowerCase();
+      const typeLowercase = type2.toLowerCase();
       const subtypeLowercase = subtype.toLowerCase();
       const mimeType = {
         type: typeLowercase,
@@ -4804,10 +4804,10 @@ var require_dataURL = __commonJS({
       if (/[^+/0-9A-Za-z]/.test(data)) {
         return "failure";
       }
-      const binary = atob2(data);
-      const bytes = new Uint8Array(binary.length);
-      for (let byte = 0; byte < binary.length; byte++) {
-        bytes[byte] = binary.charCodeAt(byte);
+      const binary2 = atob2(data);
+      const bytes = new Uint8Array(binary2.length);
+      for (let byte = 0; byte < binary2.length; byte++) {
+        bytes[byte] = binary2.charCodeAt(byte);
       }
       return bytes;
     }
@@ -4864,30 +4864,30 @@ var require_dataURL = __commonJS({
     function isHTTPWhiteSpace(char) {
       return char === "\r" || char === "\n" || char === "	" || char === " ";
     }
-    function removeHTTPWhitespace(str, leading = true, trailing = true) {
+    function removeHTTPWhitespace(str2, leading = true, trailing = true) {
       let lead = 0;
-      let trail = str.length - 1;
+      let trail = str2.length - 1;
       if (leading) {
-        for (; lead < str.length && isHTTPWhiteSpace(str[lead]); lead++) ;
+        for (; lead < str2.length && isHTTPWhiteSpace(str2[lead]); lead++) ;
       }
       if (trailing) {
-        for (; trail > 0 && isHTTPWhiteSpace(str[trail]); trail--) ;
+        for (; trail > 0 && isHTTPWhiteSpace(str2[trail]); trail--) ;
       }
-      return str.slice(lead, trail + 1);
+      return str2.slice(lead, trail + 1);
     }
     function isASCIIWhitespace(char) {
       return char === "\r" || char === "\n" || char === "	" || char === "\f" || char === " ";
     }
-    function removeASCIIWhitespace(str, leading = true, trailing = true) {
+    function removeASCIIWhitespace(str2, leading = true, trailing = true) {
       let lead = 0;
-      let trail = str.length - 1;
+      let trail = str2.length - 1;
       if (leading) {
-        for (; lead < str.length && isASCIIWhitespace(str[lead]); lead++) ;
+        for (; lead < str2.length && isASCIIWhitespace(str2[lead]); lead++) ;
       }
       if (trailing) {
-        for (; trail > 0 && isASCIIWhitespace(str[trail]); trail--) ;
+        for (; trail > 0 && isASCIIWhitespace(str2[trail]); trail--) ;
       }
-      return str.slice(lead, trail + 1);
+      return str2.slice(lead, trail + 1);
     }
     module2.exports = {
       dataURLProcessor,
@@ -4907,7 +4907,7 @@ var require_file = __commonJS({
   "node_modules/undici/lib/fetch/file.js"(exports2, module2) {
     "use strict";
     var { Blob: Blob2, File: NativeFile } = require("buffer");
-    var { types } = require("util");
+    var { types: types2 } = require("util");
     var { kState } = require_symbols2();
     var { isBlobLike } = require_util2();
     var { webidl } = require_webidl();
@@ -5016,7 +5016,7 @@ var require_file = __commonJS({
         if (isBlobLike(V)) {
           return webidl.converters.Blob(V, { strict: false });
         }
-        if (ArrayBuffer.isView(V) || types.isAnyArrayBuffer(V)) {
+        if (ArrayBuffer.isView(V) || types2.isAnyArrayBuffer(V)) {
           return webidl.converters.BufferSource(V, opts);
         }
       }
@@ -5060,7 +5060,7 @@ var require_file = __commonJS({
             s = convertLineEndingsNative(s);
           }
           bytes.push(encoder.encode(s));
-        } else if (types.isAnyArrayBuffer(element) || types.isTypedArray(element)) {
+        } else if (types2.isAnyArrayBuffer(element) || types2.isTypedArray(element)) {
           if (!element.buffer) {
             bytes.push(new Uint8Array(element));
           } else {
@@ -5306,13 +5306,13 @@ var require_body = __commonJS({
       let action = null;
       let source = null;
       let length = null;
-      let type = null;
+      let type2 = null;
       if (typeof object === "string") {
         source = object;
-        type = "text/plain;charset=UTF-8";
+        type2 = "text/plain;charset=UTF-8";
       } else if (object instanceof URLSearchParams) {
         source = object.toString();
-        type = "application/x-www-form-urlencoded;charset=UTF-8";
+        type2 = "application/x-www-form-urlencoded;charset=UTF-8";
       } else if (isArrayBuffer(object)) {
         source = new Uint8Array(object.slice());
       } else if (ArrayBuffer.isView(object)) {
@@ -5321,7 +5321,7 @@ var require_body = __commonJS({
         const boundary = `----formdata-undici-0${`${random(1e11)}`.padStart(11, "0")}`;
         const prefix = `--${boundary}\r
 Content-Disposition: form-data`;
-        const escape = (str) => str.replace(/\n/g, "%0A").replace(/\r/g, "%0D").replace(/"/g, "%22");
+        const escape = (str2) => str2.replace(/\n/g, "%0A").replace(/\r/g, "%0D").replace(/"/g, "%22");
         const normalizeLinefeeds = (value) => value.replace(/\r?\n|\r/g, "\r\n");
         const blobParts = [];
         const rn = new Uint8Array([13, 10]);
@@ -5364,12 +5364,12 @@ Content-Type: ${value.type || "application/octet-stream"}\r
             }
           }
         };
-        type = "multipart/form-data; boundary=" + boundary;
+        type2 = "multipart/form-data; boundary=" + boundary;
       } else if (isBlobLike(object)) {
         source = object;
         length = object.size;
         if (object.type) {
-          type = object.type;
+          type2 = object.type;
         }
       } else if (typeof object[Symbol.asyncIterator] === "function") {
         if (keepalive) {
@@ -5411,7 +5411,7 @@ Content-Type: ${value.type || "application/octet-stream"}\r
         });
       }
       const body = { stream, source, length };
-      return [body, type];
+      return [body, type2];
     }
     function safelyExtractBody(object, keepalive = false) {
       if (!ReadableStream) {
@@ -7204,8 +7204,8 @@ var require_client = __commonJS({
       this[kSocket][kError] = err;
       onError(this[kClient], err);
     }
-    function onHttp2FrameError(type, code, id) {
-      const err = new InformationalError(`HTTP/2: "frameError" received - type ${type}, code ${code}`);
+    function onHttp2FrameError(type2, code, id) {
+      const err = new InformationalError(`HTTP/2: "frameError" received - type ${type2}, code ${code}`);
       if (id === 0) {
         this[kSocket][kError] = err;
         onError(this[kClient], err);
@@ -7330,8 +7330,8 @@ var require_client = __commonJS({
         this.connection = "";
         this.maxResponseSize = client[kMaxResponseSize];
       }
-      setTimeout(value, type) {
-        this.timeoutType = type;
+      setTimeout(value, type2) {
+        this.timeoutType = type2;
         if (value !== this.timeoutValue) {
           timers.clearTimeout(this.timeout);
           if (value) {
@@ -8206,8 +8206,8 @@ upgrade: ${upgrade}\r
           util.destroy(stream, err);
         }
       });
-      stream.once("frameError", (type, code) => {
-        const err = new InformationalError(`HTTP/2: "frameError" received - type ${type}, code ${code}`);
+      stream.once("frameError", (type2, code) => {
+        const err = new InformationalError(`HTTP/2: "frameError" received - type ${type2}, code ${code}`);
         errorRequest(client, request, err);
         if (client[kHTTP2Session] && !client[kHTTP2Session].destroyed && !this.closed && !this.destroyed) {
           h2State.streams -= 1;
@@ -9354,14 +9354,14 @@ var require_readable = __commonJS({
     function isUnusable(self) {
       return util.isDisturbed(self) || isLocked(self);
     }
-    async function consume(stream, type) {
+    async function consume(stream, type2) {
       if (isUnusable(stream)) {
         throw new TypeError("unusable");
       }
       assert(!stream[kConsume]);
       return new Promise((resolve, reject) => {
         stream[kConsume] = {
-          type,
+          type: type2,
           stream,
           resolve,
           reject,
@@ -9398,13 +9398,13 @@ var require_readable = __commonJS({
       }
     }
     function consumeEnd(consume2) {
-      const { type, body, resolve, stream, length } = consume2;
+      const { type: type2, body, resolve, stream, length } = consume2;
       try {
-        if (type === "text") {
+        if (type2 === "text") {
           resolve(toUSVString(Buffer.concat(body)));
-        } else if (type === "json") {
+        } else if (type2 === "json") {
           resolve(JSON.parse(Buffer.concat(body)));
-        } else if (type === "arrayBuffer") {
+        } else if (type2 === "arrayBuffer") {
           const dst = new Uint8Array(length);
           let pos = 0;
           for (const buf of body) {
@@ -9412,7 +9412,7 @@ var require_readable = __commonJS({
             pos += buf.byteLength;
           }
           resolve(dst.buffer);
-        } else if (type === "blob") {
+        } else if (type2 === "blob") {
           if (!Blob2) {
             Blob2 = require("buffer").Blob;
           }
@@ -10746,7 +10746,7 @@ var require_mock_interceptor = __commonJS({
 var require_mock_client = __commonJS({
   "node_modules/undici/lib/mock/mock-client.js"(exports2, module2) {
     "use strict";
-    var { promisify } = require("util");
+    var { promisify: promisify2 } = require("util");
     var Client = require_client();
     var { buildMockDispatch } = require_mock_utils();
     var {
@@ -10786,7 +10786,7 @@ var require_mock_client = __commonJS({
         return new MockInterceptor(opts, this[kDispatches]);
       }
       async [kClose]() {
-        await promisify(this[kOriginalClose])();
+        await promisify2(this[kOriginalClose])();
         this[kConnected] = 0;
         this[kMockAgent][Symbols.kClients].delete(this[kOrigin]);
       }
@@ -10799,7 +10799,7 @@ var require_mock_client = __commonJS({
 var require_mock_pool = __commonJS({
   "node_modules/undici/lib/mock/mock-pool.js"(exports2, module2) {
     "use strict";
-    var { promisify } = require("util");
+    var { promisify: promisify2 } = require("util");
     var Pool = require_pool();
     var { buildMockDispatch } = require_mock_utils();
     var {
@@ -10839,7 +10839,7 @@ var require_mock_pool = __commonJS({
         return new MockInterceptor(opts, this[kDispatches]);
       }
       async [kClose]() {
-        await promisify(this[kOriginalClose])();
+        await promisify2(this[kOriginalClose])();
         this[kConnected] = 0;
         this[kMockAgent][Symbols.kClients].delete(this[kOrigin]);
       }
@@ -11959,7 +11959,7 @@ var require_response = __commonJS({
     var { URLSerializer } = require_dataURL();
     var { kHeadersList, kConstruct } = require_symbols();
     var assert = require("assert");
-    var { types } = require("util");
+    var { types: types2 } = require("util");
     var ReadableStream = globalThis.ReadableStream || require("stream/web").ReadableStream;
     var textEncoder = new TextEncoder("utf-8");
     var Response = class _Response {
@@ -12032,8 +12032,8 @@ var require_response = __commonJS({
         this[kHeaders][kRealm] = this[kRealm];
         let bodyWithType = null;
         if (body != null) {
-          const [extractedBody, type] = extractBody(body);
-          bodyWithType = { body: extractedBody, type };
+          const [extractedBody, type2] = extractBody(body);
+          bodyWithType = { body: extractedBody, type: type2 };
         }
         initializeResponse(this, init, bodyWithType);
       }
@@ -12180,18 +12180,18 @@ var require_response = __commonJS({
         }
       });
     }
-    function filterResponse(response, type) {
-      if (type === "basic") {
+    function filterResponse(response, type2) {
+      if (type2 === "basic") {
         return makeFilteredResponse(response, {
           type: "basic",
           headersList: response.headersList
         });
-      } else if (type === "cors") {
+      } else if (type2 === "cors") {
         return makeFilteredResponse(response, {
           type: "cors",
           headersList: response.headersList
         });
-      } else if (type === "opaque") {
+      } else if (type2 === "opaque") {
         return makeFilteredResponse(response, {
           type: "opaque",
           urlList: Object.freeze([]),
@@ -12199,7 +12199,7 @@ var require_response = __commonJS({
           statusText: "",
           body: null
         });
-      } else if (type === "opaqueredirect") {
+      } else if (type2 === "opaqueredirect") {
         return makeFilteredResponse(response, {
           type: "opaqueredirect",
           status: 0,
@@ -12262,7 +12262,7 @@ var require_response = __commonJS({
       if (isBlobLike(V)) {
         return webidl.converters.Blob(V, { strict: false });
       }
-      if (types.isArrayBuffer(V) || types.isTypedArray(V) || types.isDataView(V)) {
+      if (types2.isArrayBuffer(V) || types2.isTypedArray(V) || types2.isDataView(V)) {
         return webidl.converters.BufferSource(V);
       }
       if (util.isFormDataLike(V)) {
@@ -13360,12 +13360,12 @@ var require_fetch = __commonJS({
           const bodyWithType = safelyExtractBody(blobURLEntryObject);
           const body = bodyWithType[0];
           const length = isomorphicEncode(`${body.length}`);
-          const type = bodyWithType[1] ?? "";
+          const type2 = bodyWithType[1] ?? "";
           const response = makeResponse({
             statusText: "OK",
             headersList: [
               ["content-length", { name: "Content-Length", value: length }],
-              ["content-type", { name: "Content-Type", value: type }]
+              ["content-type", { name: "Content-Type", value: type2 }]
             ]
           });
           response.body = body;
@@ -14006,10 +14006,10 @@ var require_progressevent = __commonJS({
     var { webidl } = require_webidl();
     var kState = Symbol("ProgressEvent state");
     var ProgressEvent = class _ProgressEvent extends Event {
-      constructor(type, eventInitDict = {}) {
-        type = webidl.converters.DOMString(type);
+      constructor(type2, eventInitDict = {}) {
+        type2 = webidl.converters.DOMString(type2);
         eventInitDict = webidl.converters.ProgressEventInit(eventInitDict ?? {});
-        super(type, eventInitDict);
+        super(type2, eventInitDict);
         this[kState] = {
           lengthComputable: eventInitDict.lengthComputable,
           loaded: eventInitDict.loaded,
@@ -14368,7 +14368,7 @@ var require_util4 = __commonJS({
     var { getEncoding } = require_encoding();
     var { DOMException: DOMException2 } = require_constants2();
     var { serializeAMimeType, parseMIMEType } = require_dataURL();
-    var { types } = require("util");
+    var { types: types2 } = require("util");
     var { StringDecoder } = require("string_decoder");
     var { btoa } = require("buffer");
     var staticPropertyDescriptors = {
@@ -14376,7 +14376,7 @@ var require_util4 = __commonJS({
       writable: false,
       configurable: false
     };
-    function readOperation(fr, blob, type, encodingName) {
+    function readOperation(fr, blob, type2, encodingName) {
       if (fr[kState] === "loading") {
         throw new DOMException2("Invalid state", "InvalidStateError");
       }
@@ -14398,7 +14398,7 @@ var require_util4 = __commonJS({
               });
             }
             isFirstChunk = false;
-            if (!done && types.isUint8Array(value)) {
+            if (!done && types2.isUint8Array(value)) {
               bytes.push(value);
               if ((fr[kLastProgressEventFired] === void 0 || Date.now() - fr[kLastProgressEventFired] >= 50) && !fr[kAborted]) {
                 fr[kLastProgressEventFired] = Date.now();
@@ -14411,7 +14411,7 @@ var require_util4 = __commonJS({
               queueMicrotask(() => {
                 fr[kState] = "done";
                 try {
-                  const result = packageData(bytes, type, blob.type, encodingName);
+                  const result = packageData(bytes, type2, blob.type, encodingName);
                   if (fr[kAborted]) {
                     return;
                   }
@@ -14451,8 +14451,8 @@ var require_util4 = __commonJS({
       });
       reader.dispatchEvent(event);
     }
-    function packageData(bytes, type, mimeType, encodingName) {
-      switch (type) {
+    function packageData(bytes, type2, mimeType, encodingName) {
+      switch (type2) {
         case "DataURL": {
           let dataURL = "data:";
           const parsed = parseMIMEType(mimeType || "application/octet-stream");
@@ -14473,9 +14473,9 @@ var require_util4 = __commonJS({
             encoding = getEncoding(encodingName);
           }
           if (encoding === "failure" && mimeType) {
-            const type2 = parseMIMEType(mimeType);
-            if (type2 !== "failure") {
-              encoding = getEncoding(type2.parameters.get("charset"));
+            const type3 = parseMIMEType(mimeType);
+            if (type3 !== "failure") {
+              encoding = getEncoding(type3.parameters.get("charset"));
             }
           }
           if (encoding === "failure") {
@@ -15645,7 +15645,7 @@ var require_parse = __commonJS({
     var { isCTLExcludingHtab } = require_util6();
     var { collectASequenceOfCodePointsFast } = require_dataURL();
     var assert = require("assert");
-    function parseSetCookie(header) {
+    function parseSetCookie2(header) {
       if (isCTLExcludingHtab(header)) {
         return null;
       }
@@ -15771,7 +15771,7 @@ var require_parse = __commonJS({
       return parseUnparsedAttributes(unparsedAttributes, cookieAttributeList);
     }
     module2.exports = {
-      parseSetCookie,
+      parseSetCookie: parseSetCookie2,
       parseUnparsedAttributes
     };
   }
@@ -15781,7 +15781,7 @@ var require_parse = __commonJS({
 var require_cookies = __commonJS({
   "node_modules/undici/lib/cookies/index.js"(exports2, module2) {
     "use strict";
-    var { parseSetCookie } = require_parse();
+    var { parseSetCookie: parseSetCookie2 } = require_parse();
     var { stringify } = require_util6();
     var { webidl } = require_webidl();
     var { Headers } = require_headers();
@@ -15818,14 +15818,14 @@ var require_cookies = __commonJS({
       if (!cookies) {
         return [];
       }
-      return cookies.map((pair) => parseSetCookie(pair));
+      return cookies.map((pair) => parseSetCookie2(pair));
     }
     function setCookie(headers, cookie) {
       webidl.argumentLengthCheck(arguments, 2, { header: "setCookie" });
       webidl.brandCheck(headers, Headers, { strict: false });
       cookie = webidl.converters.Cookie(cookie);
-      const str = stringify(cookie);
-      if (str) {
+      const str2 = stringify(cookie);
+      if (str2) {
         headers.append("Set-Cookie", stringify(cookie));
       }
     }
@@ -15975,11 +15975,11 @@ var require_events = __commonJS({
     var { MessagePort } = require("worker_threads");
     var MessageEvent = class _MessageEvent extends Event {
       #eventInit;
-      constructor(type, eventInitDict = {}) {
+      constructor(type2, eventInitDict = {}) {
         webidl.argumentLengthCheck(arguments, 1, { header: "MessageEvent constructor" });
-        type = webidl.converters.DOMString(type);
+        type2 = webidl.converters.DOMString(type2);
         eventInitDict = webidl.converters.MessageEventInit(eventInitDict);
-        super(type, eventInitDict);
+        super(type2, eventInitDict);
         this.#eventInit = eventInitDict;
       }
       get data() {
@@ -16005,10 +16005,10 @@ var require_events = __commonJS({
         }
         return this.#eventInit.ports;
       }
-      initMessageEvent(type, bubbles = false, cancelable = false, data = null, origin = "", lastEventId = "", source = null, ports = []) {
+      initMessageEvent(type2, bubbles = false, cancelable = false, data = null, origin = "", lastEventId = "", source = null, ports = []) {
         webidl.brandCheck(this, _MessageEvent);
         webidl.argumentLengthCheck(arguments, 1, { header: "MessageEvent.initMessageEvent" });
-        return new _MessageEvent(type, {
+        return new _MessageEvent(type2, {
           bubbles,
           cancelable,
           data,
@@ -16021,11 +16021,11 @@ var require_events = __commonJS({
     };
     var CloseEvent = class _CloseEvent extends Event {
       #eventInit;
-      constructor(type, eventInitDict = {}) {
+      constructor(type2, eventInitDict = {}) {
         webidl.argumentLengthCheck(arguments, 1, { header: "CloseEvent constructor" });
-        type = webidl.converters.DOMString(type);
+        type2 = webidl.converters.DOMString(type2);
         eventInitDict = webidl.converters.CloseEventInit(eventInitDict);
-        super(type, eventInitDict);
+        super(type2, eventInitDict);
         this.#eventInit = eventInitDict;
       }
       get wasClean() {
@@ -16043,10 +16043,10 @@ var require_events = __commonJS({
     };
     var ErrorEvent = class _ErrorEvent extends Event {
       #eventInit;
-      constructor(type, eventInitDict) {
+      constructor(type2, eventInitDict) {
         webidl.argumentLengthCheck(arguments, 1, { header: "ErrorEvent constructor" });
-        super(type, eventInitDict);
-        type = webidl.converters.DOMString(type);
+        super(type2, eventInitDict);
+        type2 = webidl.converters.DOMString(type2);
         eventInitDict = webidl.converters.ErrorEventInit(eventInitDict ?? {});
         this.#eventInit = eventInitDict;
       }
@@ -16229,19 +16229,19 @@ var require_util7 = __commonJS({
       const event = new eventConstructor(e, eventInitDict);
       target.dispatchEvent(event);
     }
-    function websocketMessageReceived(ws, type, data) {
+    function websocketMessageReceived(ws, type2, data) {
       if (ws[kReadyState] !== states.OPEN) {
         return;
       }
       let dataForEvent;
-      if (type === opcodes.TEXT) {
+      if (type2 === opcodes.TEXT) {
         try {
           dataForEvent = new TextDecoder("utf-8", { fatal: true }).decode(data);
         } catch {
           failWebsocketConnection(ws, "Received invalid UTF-8 in text frame.");
           return;
         }
-      } else if (type === opcodes.BINARY) {
+      } else if (type2 === opcodes.BINARY) {
         if (ws[kBinaryType] === "blob") {
           dataForEvent = new Blob([data]);
         } else {
@@ -16764,7 +16764,7 @@ var require_websocket = __commonJS({
     var { ByteParser } = require_receiver();
     var { kEnumerableProperty, isBlobLike } = require_util();
     var { getGlobalDispatcher } = require_global2();
-    var { types } = require("util");
+    var { types: types2 } = require("util");
     var experimentalWarned = false;
     var WebSocket = class _WebSocket extends EventTarget {
       #events = {
@@ -16911,7 +16911,7 @@ var require_websocket = __commonJS({
           socket.write(buffer, () => {
             this.#bufferedAmount -= value.byteLength;
           });
-        } else if (types.isArrayBuffer(data)) {
+        } else if (types2.isArrayBuffer(data)) {
           const value = Buffer.from(data);
           const frame = new WebsocketFrameSend(value);
           const buffer = frame.createFrame(opcodes.BINARY);
@@ -17028,12 +17028,12 @@ var require_websocket = __commonJS({
         webidl.brandCheck(this, _WebSocket);
         return this[kBinaryType];
       }
-      set binaryType(type) {
+      set binaryType(type2) {
         webidl.brandCheck(this, _WebSocket);
-        if (type !== "blob" && type !== "arraybuffer") {
+        if (type2 !== "blob" && type2 !== "arraybuffer") {
           this[kBinaryType] = "blob";
         } else {
-          this[kBinaryType] = type;
+          this[kBinaryType] = type2;
         }
       }
       /**
@@ -17133,7 +17133,7 @@ var require_websocket = __commonJS({
         if (isBlobLike(V)) {
           return webidl.converters.Blob(V, { strict: false });
         }
-        if (ArrayBuffer.isView(V) || types.isAnyArrayBuffer(V)) {
+        if (ArrayBuffer.isView(V) || types2.isAnyArrayBuffer(V)) {
           return webidl.converters.BufferSource(V);
         }
       }
@@ -17761,12 +17761,12 @@ var require_lib = __commonJS({
         }
         return lowercaseKeys(headers || {});
       }
-      _getExistingOrDefaultHeader(additionalHeaders, header, _default) {
+      _getExistingOrDefaultHeader(additionalHeaders, header, _default2) {
         let clientHeader;
         if (this.requestOptions && this.requestOptions.headers) {
           clientHeader = lowercaseKeys(this.requestOptions.headers)[header];
         }
-        return additionalHeaders[header] || clientHeader || _default;
+        return additionalHeaders[header] || clientHeader || _default2;
       }
       _getAgent(parsedUrl) {
         let agent;
@@ -19015,8 +19015,8 @@ var require_toolrunner = __commonJS({
         }
         return this.args;
       }
-      _endsWith(str, end) {
-        return str.endsWith(end);
+      _endsWith(str2, end) {
+        return str2.endsWith(end);
       }
       _isCmdFile() {
         const upperToolPath = this.toolPath.toUpperCase();
@@ -20206,7 +20206,7 @@ var require_dist_node2 = __commonJS({
       }
       return obj;
     }
-    function merge(defaults, route, options) {
+    function merge2(defaults, route, options) {
       if (typeof route === "string") {
         let [method, url] = route.split(" ");
         options = Object.assign(url ? { method, url } : { url: method }, options);
@@ -20260,16 +20260,16 @@ var require_dist_node2 = __commonJS({
       }
       return result;
     }
-    function encodeReserved(str) {
-      return str.split(/(%[0-9A-Fa-f]{2})/g).map(function(part) {
+    function encodeReserved(str2) {
+      return str2.split(/(%[0-9A-Fa-f]{2})/g).map(function(part) {
         if (!/%[0-9A-Fa-f]/.test(part)) {
           part = encodeURI(part).replace(/%5B/g, "[").replace(/%5D/g, "]");
         }
         return part;
       }).join("");
     }
-    function encodeUnreserved(str) {
-      return encodeURIComponent(str).replace(/[!'()*]/g, function(c) {
+    function encodeUnreserved(str2) {
+      return encodeURIComponent(str2).replace(/[!'()*]/g, function(c) {
         return "%" + c.charCodeAt(0).toString(16).toUpperCase();
       });
     }
@@ -20454,15 +20454,15 @@ var require_dist_node2 = __commonJS({
       );
     }
     function endpointWithDefaults(defaults, route, options) {
-      return parse(merge(defaults, route, options));
+      return parse(merge2(defaults, route, options));
     }
     function withDefaults(oldDefaults, newDefaults) {
-      const DEFAULTS2 = merge(oldDefaults, newDefaults);
+      const DEFAULTS2 = merge2(oldDefaults, newDefaults);
       const endpoint2 = endpointWithDefaults.bind(null, DEFAULTS2);
       return Object.assign(endpoint2, {
         DEFAULTS: DEFAULTS2,
         defaults: withDefaults.bind(null, DEFAULTS2),
-        merge: merge.bind(null, DEFAULTS2),
+        merge: merge2.bind(null, DEFAULTS2),
         parse
       });
     }
@@ -24663,24 +24663,161 @@ var require_cjs = __commonJS({
   }
 });
 
+// ../engine-links/node_modules/yocto-queue/index.js
+var require_yocto_queue = __commonJS({
+  "../engine-links/node_modules/yocto-queue/index.js"(exports2, module2) {
+    var Node = class {
+      /// value;
+      /// next;
+      constructor(value) {
+        this.value = value;
+        this.next = void 0;
+      }
+    };
+    var Queue = class {
+      // TODO: Use private class fields when targeting Node.js 12.
+      // #_head;
+      // #_tail;
+      // #_size;
+      constructor() {
+        this.clear();
+      }
+      enqueue(value) {
+        const node = new Node(value);
+        if (this._head) {
+          this._tail.next = node;
+          this._tail = node;
+        } else {
+          this._head = node;
+          this._tail = node;
+        }
+        this._size++;
+      }
+      dequeue() {
+        const current = this._head;
+        if (!current) {
+          return;
+        }
+        this._head = this._head.next;
+        this._size--;
+        return current.value;
+      }
+      clear() {
+        this._head = void 0;
+        this._tail = void 0;
+        this._size = 0;
+      }
+      get size() {
+        return this._size;
+      }
+      *[Symbol.iterator]() {
+        let current = this._head;
+        while (current) {
+          yield current.value;
+          current = current.next;
+        }
+      }
+    };
+    module2.exports = Queue;
+  }
+});
+
+// ../engine-links/node_modules/p-limit/index.js
+var require_p_limit = __commonJS({
+  "../engine-links/node_modules/p-limit/index.js"(exports2, module2) {
+    "use strict";
+    var Queue = require_yocto_queue();
+    var pLimit2 = (concurrency) => {
+      if (!((Number.isInteger(concurrency) || concurrency === Infinity) && concurrency > 0)) {
+        throw new TypeError("Expected `concurrency` to be a number from 1 and up");
+      }
+      const queue = new Queue();
+      let activeCount = 0;
+      const next = () => {
+        activeCount--;
+        if (queue.size > 0) {
+          queue.dequeue()();
+        }
+      };
+      const run = async (fn, resolve, ...args) => {
+        activeCount++;
+        const result = (async () => fn(...args))();
+        resolve(result);
+        try {
+          await result;
+        } catch {
+        }
+        next();
+      };
+      const enqueue = (fn, resolve, ...args) => {
+        queue.enqueue(run.bind(null, fn, resolve, ...args));
+        (async () => {
+          await Promise.resolve();
+          if (activeCount < concurrency && queue.size > 0) {
+            queue.dequeue()();
+          }
+        })();
+      };
+      const generator = (fn, ...args) => new Promise((resolve) => {
+        enqueue(fn, resolve, ...args);
+      });
+      Object.defineProperties(generator, {
+        activeCount: {
+          get: () => activeCount
+        },
+        pendingCount: {
+          get: () => queue.size
+        },
+        clearQueue: {
+          value: () => {
+            queue.clear();
+          }
+        }
+      });
+      return generator;
+    };
+    module2.exports = pLimit2;
+  }
+});
+
 // src/main.ts
-var core = __toESM(require_core());
+var core2 = __toESM(require_core());
 var github = __toESM(require_github());
 var import_promises = require("node:fs/promises");
 var import_promises2 = require("node:fs/promises");
+var import_node_path4 = require("node:path");
+
+// src/engines/runtime.ts
+var import_node_module = require("node:module");
 var import_node_path = require("node:path");
+var import_node_url = require("node:url");
+var import_meta = {};
+function bundleDir() {
+  if (typeof __dirname === "string" && __dirname !== "") return __dirname;
+  const metaUrl = import_meta.url;
+  return metaUrl ? (0, import_node_path.dirname)((0, import_node_url.fileURLToPath)(metaUrl)) : process.cwd();
+}
+function loadPlaywrightCore(dir = bundleDir()) {
+  const req = (0, import_node_module.createRequire)((0, import_node_path.join)(dir, "index.js"));
+  return req("./vendor/playwright-core");
+}
+
+// src/main.ts
 var import_node_child_process = require("node:child_process");
 var import_node_os = require("node:os");
-var import_node_path2 = require("node:path");
+var import_node_path5 = require("node:path");
 
 // ../../src/config/parseConfig.ts
 var MAX_PAGES = 20;
 var DEFAULT_LESSONS = "https://webperformancelearn.com/lessons";
-var KNOWN_KEYS = ["version", "pages", "runs", "formFactor", "budgetFile", "failOn", "comment", "lessonBaseUrl", "localBuild"];
+var KNOWN_KEYS = ["version", "pages", "runs", "formFactor", "budgetFile", "failOn", "comment", "lessonBaseUrl", "localBuild", "engines", "blocking"];
+var ENGINE_IDS = ["a11y", "seo", "security", "links", "bundle", "i18n"];
+var BLOCKING_METRIC_IDS = ["TBT", "CLS"];
+var BLOCKING_METRIC_CAPS = { TBT: 1e4, CLS: 1 };
 function parseConfig(text) {
-  let json;
+  let json2;
   try {
-    json = JSON.parse(text);
+    json2 = JSON.parse(text);
   } catch (e) {
     return {
       config: null,
@@ -24688,10 +24825,10 @@ function parseConfig(text) {
     };
   }
   const errors = [];
-  if (typeof json !== "object" || json === null || Array.isArray(json)) {
+  if (typeof json2 !== "object" || json2 === null || Array.isArray(json2)) {
     return { config: null, errors: [{ path: "", message: "The config must be a JSON object." }] };
   }
-  const c = json;
+  const c = json2;
   if (c.version !== 1) errors.push({ path: "/version", message: "version must be 1." });
   const pages = [];
   if (!Array.isArray(c.pages) || c.pages.length < 1 || c.pages.length > MAX_PAGES) {
@@ -24830,6 +24967,77 @@ function parseConfig(text) {
       }
     }
   }
+  const engines = { enabled: {}, totalBudgetMinutes: 12 };
+  if ("engines" in c && c.engines !== null && c.engines !== void 0) {
+    const v = c.engines;
+    if (typeof v !== "object" || Array.isArray(v)) {
+      errors.push({ path: "/engines", message: "engines must be an object with per-engine { enabled } and totalBudgetMinutes." });
+    } else {
+      const en = v;
+      for (const key of Object.keys(en)) {
+        if (key === "totalBudgetMinutes") continue;
+        if (!ENGINE_IDS.includes(key)) {
+          errors.push({ path: `/engines/${key}`, message: `Unknown engine "${key}".` });
+          continue;
+        }
+        const val = en[key];
+        if (typeof val !== "object" || val === null || Array.isArray(val)) {
+          errors.push({ path: `/engines/${key}`, message: 'must be an object with "enabled".' });
+        } else {
+          const entry = val;
+          for (const k of Object.keys(entry)) {
+            if (k !== "enabled") errors.push({ path: `/engines/${key}/${k}`, message: `Unknown key "${k}" (only "enabled"; blocking is decided by maturity, never by repo config).` });
+          }
+          if (entry.enabled !== void 0 && typeof entry.enabled !== "boolean") {
+            errors.push({ path: `/engines/${key}/enabled`, message: "enabled must be a boolean." });
+          } else if (entry.enabled !== void 0) {
+            engines.enabled[key] = entry.enabled;
+          }
+        }
+      }
+      const budget = en.totalBudgetMinutes;
+      if (budget !== void 0) {
+        if (typeof budget !== "number" || !Number.isInteger(budget) || budget < 3 || budget > 30) {
+          errors.push({ path: "/engines/totalBudgetMinutes", message: "totalBudgetMinutes must be a whole number from 3 to 30." });
+        } else {
+          engines.totalBudgetMinutes = budget;
+        }
+      }
+    }
+  }
+  let blocking = null;
+  if ("blocking" in c && c.blocking !== null && c.blocking !== void 0) {
+    const v = c.blocking;
+    if (typeof v !== "object" || Array.isArray(v)) {
+      errors.push({ path: "/blocking", message: "blocking must be an object of metric \u2192 { minIncrease }." });
+    } else {
+      const bl = v;
+      const parsed = {};
+      for (const key of Object.keys(bl)) {
+        if (!BLOCKING_METRIC_IDS.includes(key)) {
+          errors.push({ path: `/blocking/${key}`, message: `${key} is not approved to block (calibration 1-5); only TBT and CLS may be configured` });
+          continue;
+        }
+        const metric = key;
+        const entry = bl[key];
+        if (typeof entry !== "object" || entry === null || Array.isArray(entry)) {
+          errors.push({ path: `/blocking/${key}`, message: 'blocking entries must be objects with "minIncrease".' });
+          continue;
+        }
+        const e = entry;
+        for (const k of Object.keys(e)) {
+          if (k !== "minIncrease") errors.push({ path: `/blocking/${key}/${k}`, message: `Unknown key "${k}".` });
+        }
+        const mi = e.minIncrease;
+        if (typeof mi !== "number" || !Number.isFinite(mi) || mi < 0 || mi > BLOCKING_METRIC_CAPS[metric]) {
+          errors.push({ path: `/blocking/${key}/minIncrease`, message: `minIncrease must be a finite number from 0 to ${BLOCKING_METRIC_CAPS[metric]}${metric === "TBT" ? " (ms)" : ""}.` });
+        } else {
+          parsed[metric] = mi;
+        }
+      }
+      if (errors.length === 0) blocking = parsed;
+    }
+  }
   for (const key of Object.keys(c)) {
     if (!KNOWN_KEYS.includes(key)) errors.push({ path: `/${key}`, message: `Unknown key "${key}".` });
   }
@@ -24844,7 +25052,9 @@ function parseConfig(text) {
       failOn: failOn ?? "budget",
       comment: comment ?? "always",
       lessonBaseUrl: lessonBaseUrl ?? DEFAULT_LESSONS,
-      localBuild
+      localBuild,
+      engines,
+      blocking
     },
     errors: []
   };
@@ -24870,9 +25080,9 @@ function isCount(v) {
   return typeof v === "number" && Number.isInteger(v) && v >= 0;
 }
 function parseBudgetFile(text) {
-  let json;
+  let json2;
   try {
-    json = JSON.parse(text);
+    json2 = JSON.parse(text);
   } catch (e) {
     return {
       budget: null,
@@ -24880,10 +25090,10 @@ function parseBudgetFile(text) {
     };
   }
   const errors = [];
-  if (typeof json !== "object" || json === null || Array.isArray(json)) {
+  if (typeof json2 !== "object" || json2 === null || Array.isArray(json2)) {
     return { budget: null, errors: [{ path: "", message: "The budget file must be a JSON object." }] };
   }
-  const c = json;
+  const c = json2;
   if (c.version !== 1) errors.push({ path: "/version", message: "version must be 1." });
   let generatedFrom = { windowDays: 0, latestDate: "" };
   if ("generatedFrom" in c && c.generatedFrom !== void 0 && c.generatedFrom !== null) {
@@ -24991,8 +25201,8 @@ var label = (it) => {
   const v = it.url || it.source && it.source.url || it.node && (it.node.selector || it.node.snippet) || it.entity && (it.entity.text || it.entity) || it.label || it.groupLabel || it.statistic || "";
   return typeof v === "string" ? v.slice(0, 160) : "";
 };
-function unwrapLhr(json) {
-  const j = json;
+function unwrapLhr(json2) {
+  const j = json2;
   let lhr = j;
   let field = null;
   let origin = null;
@@ -25039,8 +25249,8 @@ function unwrapLhr(json) {
   }
   return { lhr, field, origin };
 }
-function parseLighthouse(json) {
-  const { lhr, field, origin } = unwrapLhr(json);
+function parseLighthouse(json2) {
+  const { lhr, field, origin } = unwrapLhr(json2);
   const perf = lhr.categories && lhr.categories.performance;
   const refs = perf && Array.isArray(perf.auditRefs) ? perf.auditRefs : null;
   const inPerf = refs ? new Set(refs.map((r) => r.id)) : null;
@@ -25237,17 +25447,17 @@ function decodeHtmlEntities(s) {
     }
   });
 }
-function attr(snippet, name) {
+function attr(snippet2, name) {
   const m = new RegExp(
     `\\s${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s"'>]+))`,
     "i"
-  ).exec(snippet);
+  ).exec(snippet2);
   if (m === null) return void 0;
   const raw = m[1] ?? m[2] ?? m[3];
   return raw === void 0 ? void 0 : decodeHtmlEntities(raw);
 }
-function runSummaryFromParsed(json, report) {
-  const { lhr } = unwrapLhr(json);
+function runSummaryFromParsed(json2, report) {
+  const { lhr } = unwrapLhr(json2);
   const audits = lhr.audits;
   const metricAuditIds = [
     ["LCP", "largest-contentful-paint"],
@@ -25265,17 +25475,17 @@ function runSummaryFromParsed(json, report) {
   let lcpElement = null;
   const node = findLcpNode(audits);
   if (node && typeof node.selector === "string" && node.selector) {
-    const snippet = typeof node.snippet === "string" ? node.snippet : "";
-    const tag = /^<\s*([a-zA-Z][a-zA-Z0-9-]*)/.exec(snippet);
+    const snippet2 = typeof node.snippet === "string" ? node.snippet : "";
+    const tag = /^<\s*([a-zA-Z][a-zA-Z0-9-]*)/.exec(snippet2);
     const nodeName = tag ? tag[1].toUpperCase() : "";
-    const type = nodeName === "IMG" ? "image" : nodeName === "VIDEO" ? "video" : "text";
-    const loadingRaw = attr(snippet, "loading");
+    const type2 = nodeName === "IMG" ? "image" : nodeName === "VIDEO" ? "video" : "text";
+    const loadingRaw = attr(snippet2, "loading");
     const loading = loadingRaw !== void 0 && ["lazy", "eager"].includes(loadingRaw.toLowerCase()) ? loadingRaw.toLowerCase() : null;
-    const fpRaw = attr(snippet, "fetchpriority");
+    const fpRaw = attr(snippet2, "fetchpriority");
     const fetchpriority = fpRaw !== void 0 && ["high", "low", "auto"].includes(fpRaw.toLowerCase()) ? fpRaw.toLowerCase() : null;
     let url = null;
-    if (type !== "text") {
-      const src = attr(snippet, "src");
+    if (type2 !== "text") {
+      const src = attr(snippet2, "src");
       if (src) {
         let absolute = null;
         try {
@@ -25290,7 +25500,7 @@ function runSummaryFromParsed(json, report) {
         }
       }
     }
-    lcpElement = { selector: node.selector, nodeName, type, url, loading, fetchpriority };
+    lcpElement = { selector: node.selector, nodeName, type: type2, url, loading, fetchpriority };
   }
   return {
     url: report.url,
@@ -25351,18 +25561,18 @@ function values(runs, m) {
   return runs.filter((r) => r.valid).map((r) => r.metrics[m]).filter((v) => typeof v === "number");
 }
 function decideMetric(metric, base, head, minRuns = MIN_RUNS) {
-  const b = values(base, metric), h = values(head, metric);
-  const runs = { base: b.length, head: h.length };
-  if (b.length < minRuns || h.length < minRuns) {
+  const b = values(base, metric), h4 = values(head, metric);
+  const runs = { base: b.length, head: h4.length };
+  if (b.length < minRuns || h4.length < minRuns) {
     return { metric, verdict: "inconclusive", reason: "too-few-runs", baseMedian: null, headMedian: null, threshold: null, headRunsWorse: 0, runs, spread: null };
   }
-  const bm = median(b), hm = median(h), t = threshold(metric, bm);
-  const k = h.filter((x) => x - bm > t).length;
-  const spread = { base: Math.max(...b) - Math.min(...b), head: Math.max(...h) - Math.min(...h) };
-  const common = { metric, baseMedian: bm, headMedian: hm, threshold: t, headRunsWorse: k, runs, spread };
-  if (k === h.length) return { ...common, verdict: "regression", reason: "all-runs-worse" };
-  if (k <= Math.floor(h.length / 3)) return { ...common, verdict: "pass", reason: k === 0 ? "within-threshold" : "outlier-tolerated" };
-  return { ...common, verdict: "inconclusive", reason: "runs-disagree" };
+  const bm = median(b), hm = median(h4), t = threshold(metric, bm);
+  const k = h4.filter((x) => x - bm > t).length;
+  const spread = { base: Math.max(...b) - Math.min(...b), head: Math.max(...h4) - Math.min(...h4) };
+  const common2 = { metric, baseMedian: bm, headMedian: hm, threshold: t, headRunsWorse: k, runs, spread };
+  if (k === h4.length) return { ...common2, verdict: "regression", reason: "all-runs-worse" };
+  if (k <= Math.floor(h4.length / 3)) return { ...common2, verdict: "pass", reason: k === 0 ? "within-threshold" : "outlier-tolerated" };
+  return { ...common2, verdict: "inconclusive", reason: "runs-disagree" };
 }
 
 // ../../src/pipeline/collectRuns.ts
@@ -26145,8 +26355,8 @@ function CAT(n2) {
   if (/^(ParseHTML|ResourceReceivedData|ResourceFinish)/.test(n2)) return "loading";
   return null;
 }
-function parseTrace(json, options) {
-  const events = Array.isArray(json) ? json : json && Array.isArray(json.traceEvents) ? json.traceEvents : null;
+function parseTrace(json2, options) {
+  const events = Array.isArray(json2) ? json2 : json2 && Array.isArray(json2.traceEvents) ? json2.traceEvents : null;
   if (!events) {
     throw new Error(
       "This file is not a Chrome trace: expected a JSON array of events or an object with traceEvents."
@@ -26783,12 +26993,12 @@ function siteOf(url) {
   } catch {
     return null;
   }
-  const h = u.hostname;
-  if (!h) return null;
-  if (/^\d+(\.\d+){3}$/.test(h)) return h;
-  if (h.startsWith("[")) return h;
-  if (!h.includes(".")) return h;
-  return (0, import_tldts.getDomain)(h, { allowPrivateDomains: true }) ?? h;
+  const h4 = u.hostname;
+  if (!h4) return null;
+  if (/^\d+(\.\d+){3}$/.test(h4)) return h4;
+  if (h4.startsWith("[")) return h4;
+  if (!h4.includes(".")) return h4;
+  return (0, import_tldts.getDomain)(h4, { allowPrivateDomains: true }) ?? h4;
 }
 function vendorCosts(s, pageUrl) {
   const first = siteOf(pageUrl);
@@ -26837,11 +27047,11 @@ function normalizeRunResult(value) {
   }
   return { lhr: value, trace: null };
 }
-function pairWithTraces(pairs, collected) {
+function pairWithTraces(pairs2, collected) {
   const failed = new Set(collected.failed.map((f) => f.index));
   const out = [];
   let i = 0;
-  pairs.forEach((p, index) => {
+  pairs2.forEach((p, index) => {
     if (!failed.has(index)) out.push({ run: collected.runs[i++], trace: p.trace });
   });
   return out;
@@ -26850,8 +27060,8 @@ function lcpOf(run) {
   const v = run.metrics.LCP;
   return typeof v === "number" && Number.isFinite(v) && v >= 0 ? v : null;
 }
-function medianRunByLcp(pairs) {
-  const withLcp = pairs.filter((p) => lcpOf(p.run) !== null);
+function medianRunByLcp(pairs2) {
+  const withLcp = pairs2.filter((p) => lcpOf(p.run) !== null);
   if (withLcp.length === 0) return null;
   const sorted = withLcp.slice().sort((a, b) => lcpOf(a.run) - lcpOf(b.run));
   return sorted[Math.floor((sorted.length - 1) / 2)];
@@ -26943,20 +27153,41 @@ function normaliseUrl(raw) {
     return raw.toLowerCase().trim();
   }
 }
+function pageKey(raw) {
+  try {
+    const u = new URL(normaliseUrl(raw));
+    return `${u.pathname}${u.search}`;
+  } catch {
+    return normaliseUrl(raw);
+  }
+}
+function linkTargetKey(target, pageUrl) {
+  try {
+    const t = new URL(normaliseUrl(target));
+    const p = new URL(normaliseUrl(pageUrl));
+    if (t.origin === p.origin) return `${t.pathname}${t.search}`;
+  } catch {
+  }
+  return normaliseUrl(target);
+}
+function fragmentOf(raw) {
+  const i = raw.indexOf("#");
+  return i >= 0 && i < raw.length - 1 ? raw.slice(i) : "";
+}
 function buildStableKey(engine, f) {
   switch (engine) {
     case "links":
-      return [f.checkId ?? "", normaliseUrl(f.pageUrl ?? ""), normaliseUrl(f.url ?? "")].join("|");
+      return [f.checkId ?? "", pageKey(f.pageUrl ?? ""), linkTargetKey(f.url ?? "", f.pageUrl ?? "") + (f.checkId === "broken-anchor" ? fragmentOf(f.url ?? "") : "")].join("|");
     case "seo":
-      return [f.checkId ?? "", normaliseUrl(f.pageUrl ?? ""), (f.element ?? "").slice(0, 80)].join("|");
+      return [f.checkId ?? "", pageKey(f.pageUrl ?? ""), (f.element ?? "").slice(0, 80)].join("|");
     case "bundle":
       return [f.checkId ?? "", f.chunkName ?? "global", f.packageName ?? ""].join("|");
     case "i18n":
       return [f.checkId ?? "", f.locale ?? "", f.translationKey ?? ""].join("|");
     case "security":
-      return [f.checkId ?? "", normaliseUrl(f.pageUrl ?? ""), f.headerName ?? f.cveId ?? ""].join("|");
+      return [f.checkId ?? "", pageKey(f.pageUrl ?? ""), f.headerName ?? f.cveId ?? ""].join("|");
     case "a11y":
-      return [f.ruleId ?? "", normaliseUrl(f.pageUrl ?? ""), (f.primarySelector ?? "").slice(0, 120)].join("|");
+      return [f.ruleId ?? "", pageKey(f.pageUrl ?? ""), (f.primarySelector ?? "").slice(0, 120)].join("|");
     case "performance":
       return [f.ruleId ?? "", pagePath(f.pageUrl ?? ""), f.subject ?? ""].join("|");
     default:
@@ -27122,8 +27353,8 @@ async function startStaticServer(opts) {
   const path = await import("node:path");
   const root = path.resolve(opts.root);
   const server = http.createServer((req, res) => {
-    const send = (status, body, type) => {
-      res.writeHead(status, { "Content-Type": type, "Content-Length": typeof body === "string" ? Buffer.byteLength(body) : body.length });
+    const send = (status, body, type2) => {
+      res.writeHead(status, { "Content-Type": type2, "Content-Length": typeof body === "string" ? Buffer.byteLength(body) : body.length });
       res.end(req.method === "HEAD" ? void 0 : body);
     };
     let pathname;
@@ -27163,7 +27394,7 @@ async function startStaticServer(opts) {
 }
 function contentTypeOf(name) {
   const ext = name.slice(name.lastIndexOf(".") + 1).toLowerCase();
-  const map = {
+  const map2 = {
     html: "text/html; charset=utf-8",
     htm: "text/html; charset=utf-8",
     js: "application/javascript",
@@ -27189,7 +27420,7692 @@ function contentTypeOf(name) {
     pdf: "application/pdf",
     wasm: "application/wasm"
   };
-  return map[ext] ?? "application/octet-stream";
+  return map2[ext] ?? "application/octet-stream";
+}
+
+// ../core/src/redact.ts
+function cleanReason(raw, max = 300) {
+  const firstPart = raw.split(/\n\s*Call log:/)[0] ?? raw;
+  const cleaned = firstPart.replace(/\u001b\[[0-9;]*[A-Za-z]/g, "").replace(/[\u0000-\u001f\u007f]+/g, " ").replace(/\s+/g, " ").trim();
+  return (cleaned === "" ? "The engine failed without a message." : cleaned).slice(0, max);
+}
+var TEXT_PATTERNS = [
+  // GitHub tokens: classic prefixes and fine-grained PATs (40+ alphanumeric_-)
+  ["github-token", /\b(?:ghp|gho|ghu|ghr|ghs|ghv)_[A-Za-z0-9]{16,}\b/g],
+  ["github-token", /\bgithub_pat_[A-Za-z0-9_]{22,}\b/g],
+  // AWS access key ids (AKIA/ASIA + 16 upper alnum)
+  ["aws-key", /\b(?:AKIA|ASIA)[0-9A-Z]{16}\b/g],
+  // Stripe secret / restricted keys
+  ["stripe-key", /\b(?:sk|rk)_live_[A-Za-z0-9]{16,}\b/g],
+  // Slack tokens
+  ["slack-token", /\bxox[abprs]-[A-Za-z0-9-]{10,}\b/g],
+  // JWTs: three base64url segments, the first starting eyJ (decoded starts with '{"')
+  ["jwt", /\beyJ[A-Za-z0-9_-]{6,}\.[A-Za-z0-9_-]{6,}\.[A-Za-z0-9_-]{6,}\b/g],
+  // PEM private key blocks (BEGIN ... PRIVATE KEY ... END, DOTALL)
+  ["private-key", /-----BEGIN [A-Z0-9 ]*PRIVATE KEY-----[\s\S]*?-----END [A-Z0-9 ]*PRIVATE KEY-----/g],
+  // generic query/assignment secrets: password=…, secret=…, token=… (word boundary before)
+  ["secret", /\b(password|passwd|secret|token|apikey|api_key|access_key)\s*[=:]\s*([^\s&'"]{8,})/gi],
+  // URL userinfo: https://user:pass@host — the whole userinfo is the secret
+  ["userinfo", /\bhttps?:\/\/[A-Za-z0-9._~%-]+:[^\s@/]+@/g]
+];
+var NOT_SECRETS = [
+  // 40-hex git SHA (could match nothing above, kept as an explicit guard for query values)
+  /^[0-9a-f]{40}$/,
+  // CSS hash in a URL query, e.g. ?v=a1b2c3d4 (short hex)
+  /^[0-9a-f]{6,12}$/,
+  // UUIDs
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+];
+function looksLikeHash(value) {
+  const v = value.trim();
+  return NOT_SECRETS.some((re) => re.test(v));
+}
+function redactText(input) {
+  if (typeof input !== "string" || input === "") return input;
+  let out = input;
+  for (const [kind, re] of TEXT_PATTERNS) {
+    if (kind === "secret") {
+      out = out.replace(re, (m, key, value) => looksLikeHash(value) ? m : `${key}=[redacted:secret]`);
+    } else {
+      out = out.replace(re, `[redacted:${kind}]`);
+    }
+  }
+  return out;
+}
+function redactCookieEvidence(e) {
+  const label2 = `${e.label} ${e.value ?? ""} ${e.selector ?? ""}`.toLowerCase();
+  const raw = typeof e.value === "string" ? e.value : "";
+  const isCookie = /\bcookie\b/.test(label2) || /^[^=;\s]{1,100}=[^;]*(?:;\s*[^=;\s]{1,100}=[^;]*)*$/.test(raw) && raw.includes(";");
+  if (!isCookie) return e;
+  const parts = raw.split(";").map((p) => p.trim()).filter((p) => p !== "");
+  const kept = parts.map((p) => {
+    const eq = p.indexOf("=");
+    if (eq === -1) return p;
+    const name = p.slice(0, eq).trim();
+    const value = p.slice(eq + 1).trim();
+    const flagLike = /^(path|domain|max-age|expires|samesite|version|priority|partitioned)$/i.test(name);
+    const valueIsPolicy = /^(strict|lax|none|\d+|[a-z0-9._-]{0,100}\.[a-z]{2,10}(\/[a-z0-9._-]{0,50})?)$/i.test(value);
+    return flagLike || valueIsPolicy ? p : `${name}=[redacted:cookie]`;
+  });
+  return { ...e, value: kept.join("; ") };
+}
+function redactHeaderEvidence(e) {
+  const label2 = `${e.label}`.toLowerCase();
+  if (!/\bheader\b/.test(label2)) return e;
+  if (typeof e.value !== "string") return e;
+  return { ...e, value: redactText(e.value).slice(0, 300) };
+}
+function redactEvidence(e) {
+  const next = redactHeaderEvidence(redactCookieEvidence(e));
+  const value = typeof next.value === "string" ? redactText(next.value) : next.value;
+  const selector = next.selector !== void 0 ? redactText(next.selector) : void 0;
+  const url = next.url !== void 0 ? redactText(next.url) : void 0;
+  const label2 = redactText(next.label);
+  return { ...next, label: label2, ...value !== next.value ? { value } : {}, ...selector !== void 0 ? { selector } : {}, ...url !== void 0 ? { url } : {} };
+}
+function redactFinding(f) {
+  return {
+    ...f,
+    title: redactText(f.title),
+    explanation: redactText(f.explanation),
+    ...f.fix !== void 0 ? { fix: redactText(f.fix) } : {},
+    evidence: f.evidence.map(redactEvidence)
+  };
+}
+function redactFindings(fs) {
+  return fs.map(redactFinding);
+}
+
+// src/engines/settle.ts
+var CLOSE_LIMIT_MS = 5e3;
+async function settleWithin(p, ms = CLOSE_LIMIT_MS) {
+  let timer;
+  await Promise.race([
+    p.then(() => void 0, () => void 0),
+    new Promise((r) => {
+      timer = setTimeout(r, ms);
+    })
+  ]);
+  clearTimeout(timer);
+}
+
+// src/engines/contract.ts
+var DEFAULT_TOTAL_BUDGET_MINUTES = 12;
+var NotBuiltError = class extends Error {
+  constructor(engine) {
+    super(`The ${engine} engine is not built yet (batch 2-x will implement it).`);
+    this.name = "NotBuiltError";
+  }
+};
+
+// src/engines/orchestrate.ts
+var HTML_CAP = 2 * 1024 * 1024;
+var NAV_TIMEOUT_MS = 3e4;
+var DEFAULT_VIEWPORT = { width: 1280, height: 720 };
+function safeLog(deps) {
+  return (msg) => deps.log(redactText(cleanReason(msg, 400)));
+}
+async function responseMeta(nav, page) {
+  const r = nav ?? null;
+  const call = async (v) => typeof v === "function" ? await v.call(r) : v;
+  const status = r === null ? null : await call(r.status) ?? null;
+  const raw = r === null ? {} : await call(r.allHeaders) ?? await call(r.headers) ?? {};
+  const headers = {};
+  for (const [k, v] of Object.entries(raw)) headers[k.toLowerCase()] = String(v);
+  let finalUrl = null;
+  try {
+    finalUrl = typeof page.url === "function" ? page.url() : null;
+  } catch {
+    finalUrl = null;
+  }
+  return { status: typeof status === "number" ? status : null, headers, finalUrl: finalUrl && /^https?:/.test(finalUrl) ? finalUrl : null };
+}
+async function loadRoutes(browser, routes, deps) {
+  const context2 = await browser.newContext({
+    userAgent: "MergeDelta/1.0",
+    // 1-6a hardening, minus the egress proxy (the sites are the PR's own builds or its own
+    // production/preview; the scan job is unprivileged either way):
+    serviceWorkers: "block",
+    bypassCSP: true,
+    // axe injection would be blocked by a CSP otherwise
+    viewport: { ...DEFAULT_VIEWPORT }
+  });
+  if (typeof context2.route === "function") {
+    const injected = PREVIEW_INJECTIONS.map((i) => i.path);
+    await context2.route((u) => injected.some((path) => u.pathname.startsWith(path)), (r) => r.abort());
+  }
+  const loaded = [];
+  const failed = [];
+  const cleanup = async () => {
+    for (const p of loaded) await settleWithin(p.page.close());
+    await settleWithin(context2.close());
+  };
+  try {
+    for (const route of routes) {
+      const page = await context2.newPage();
+      try {
+        const nav = await page.goto(route, { waitUntil: "load", timeout: NAV_TIMEOUT_MS });
+        const meta = await responseMeta(nav, page);
+        const html = await page.content();
+        loaded.push({
+          url: route,
+          finalUrl: meta.finalUrl ?? route,
+          status: meta.status,
+          headers: meta.headers,
+          html: html.length > HTML_CAP ? html.slice(0, HTML_CAP) : html,
+          page
+        });
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e);
+        deps.log(redactText(cleanReason(`route ${route} failed to load: ${msg}`)));
+        failed.push({ url: route, success: false, failureReason: "navigation" });
+        await settleWithin(page.close());
+      }
+    }
+  } catch (e) {
+    deps.log(redactText(cleanReason(`context failed: ${e instanceof Error ? e.message : String(e)}`)));
+  }
+  return { loaded, failed, cleanup };
+}
+function preCheck(def, config) {
+  if (config.enabled[def.id] === false) return { skipReason: "disabled" };
+  if (def.notBuilt === true) return { skipReason: "not-built" };
+  return null;
+}
+async function runEnginesOnSide(entries, side, pages, failedPages, deps, budgetUntil, config, environment) {
+  const results = /* @__PURE__ */ new Map();
+  const log = safeLog(deps);
+  const ordered = [...entries].sort((a, b) => Number(a.definition.mutatesPage) - Number(b.definition.mutatesPage));
+  for (const entry of ordered) {
+    const def = entry.definition;
+    const pre = preCheck(def, config);
+    if (pre !== null) {
+      results.set(def.id, pre);
+      continue;
+    }
+    if (def.input === "build-output" && side.buildOutputDir === null) {
+      results.set(def.id, { skipReason: "needs-local-build" });
+      continue;
+    }
+    if (def.input === "repository" && side.repoDir === null) {
+      results.set(def.id, { failure: { reason: "input-unavailable" } });
+      continue;
+    }
+    if (deps.now() > budgetUntil) {
+      log(`engines: budget exhausted before ${def.id}`);
+      results.set(def.id, { failure: { reason: "budget-exhausted" } });
+      continue;
+    }
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), Math.min(def.timeoutMs, 6e5));
+    const deadline2 = new Promise((_, reject) => {
+      ctl.signal.addEventListener("abort", () => {
+        const e = new Error("engine deadline");
+        e.name = "AbortError";
+        reject(e);
+      });
+    });
+    try {
+      const ctx = { side, pages, failedPages, signal: ctl.signal, log };
+      const r = await Promise.race([def.scan(ctx), deadline2]);
+      results.set(def.id, { pages: r.pages, findings: redactFindings(r.findings) });
+    } catch (e) {
+      if (e instanceof NotBuiltError) {
+        results.set(def.id, { skipReason: "not-built" });
+        continue;
+      }
+      const aborted = e instanceof Error && (e.name === "AbortError" || ctl.signal.aborted);
+      const reason = aborted ? "timeout" : "crash";
+      log(`engine ${def.id} failed (${reason}) on ${side.side}: ${e instanceof Error ? e.message : String(e)}`);
+      results.set(def.id, { failure: { reason } });
+    } finally {
+      clearTimeout(timer);
+    }
+    if (def.mutatesPage) {
+      for (const p of pages) {
+        try {
+          await p.page.setViewportSize({ ...DEFAULT_VIEWPORT });
+        } catch {
+        }
+      }
+    }
+  }
+  return results;
+}
+async function runEngines(registry, sides, config, deps, routePaths) {
+  const log = safeLog(deps);
+  const join5 = (origin, path) => normaliseUrl(`${origin.replace(/\/$/, "")}${path.startsWith("/") ? path : `/${path}`}`);
+  const headRoutes = routePaths.map((p) => join5(sides.head.origin ?? "", p));
+  const baseRoutes = routePaths.map((p) => join5(sides.base.origin ?? "", p));
+  const normalisedRoutes = headRoutes;
+  const budgetMs = (config.totalBudgetMinutes || DEFAULT_TOTAL_BUDGET_MINUTES) * 6e4;
+  const budgetUntil = deps.now() + budgetMs;
+  let headBrowser = null;
+  let baseBrowser = null;
+  const pageEngineIds = registry.filter((e) => e.definition.input === "pages").map((e) => e.definition.id);
+  let headPages = [];
+  let headFailed = [];
+  let basePages = [];
+  let baseFailed = [];
+  let headCleanup = null;
+  let baseCleanup = null;
+  let environment = null;
+  let browserUnavailable = false;
+  if (pageEngineIds.length > 0 || registry.some((e) => e.definition.input === "pages")) {
+    try {
+      headBrowser = await deps.launchBrowser({ userAgent: "MergeDelta/1.0" });
+    } catch (e) {
+      log(`engines: no browser on the head side: ${e instanceof Error ? e.message : String(e)}`);
+      browserUnavailable = true;
+    }
+    if (headBrowser !== null) {
+      try {
+        environment = { browser: { name: "chrome", version: await headBrowser.version() }, runnerImage: deps.runnerImage() };
+        const r = await loadRoutes(headBrowser, headRoutes, deps);
+        headPages = r.loaded;
+        headFailed = r.failed;
+        headCleanup = r.cleanup;
+      } catch (e) {
+        await settleWithin(headBrowser.close());
+        throw e;
+      }
+    }
+  }
+  if (!browserUnavailable) {
+    try {
+      baseBrowser = await deps.launchBrowser({ userAgent: "MergeDelta/1.0" });
+    } catch (e) {
+      log(`engines: no browser on the base side: ${e instanceof Error ? e.message : String(e)}`);
+      browserUnavailable = true;
+    }
+    if (baseBrowser !== null) {
+      try {
+        const baseEnv = { browser: { name: "chrome", version: await baseBrowser.version() }, runnerImage: deps.runnerImage() };
+        if (environment !== null && environment.browser.version !== baseEnv.browser.version) {
+          log(`engines: browser-mismatch (head ${environment.browser.version}, base ${baseEnv.browser.version})`);
+          await (headCleanup?.() ?? Promise.resolve());
+          if (headBrowser !== null) await settleWithin(headBrowser.close());
+          await settleWithin(baseBrowser.close());
+          return {
+            parts: registry.map((e) => {
+              const pre = preCheck(e.definition, config);
+              return pre !== null ? { kind: "skipped", skipReason: pre.skipReason, environment } : { kind: "scan-failed", failure: { reason: "browser-mismatch" }, environment };
+            }),
+            environment
+          };
+        }
+        const r = await loadRoutes(baseBrowser, baseRoutes, deps);
+        basePages = r.loaded;
+        baseFailed = r.failed;
+        baseCleanup = r.cleanup;
+      } catch (e) {
+        await settleWithin(baseBrowser.close());
+        throw e;
+      }
+    }
+  }
+  let headResults;
+  let baseResults;
+  const runnable = browserUnavailable ? registry.filter((e) => e.definition.input !== "pages") : registry;
+  try {
+    headResults = await runEnginesOnSide(runnable, { ...sides.head, comparison: sides.mode }, headPages, headFailed, deps, budgetUntil, config, environment);
+    baseResults = await runEnginesOnSide(runnable, { ...sides.base, comparison: sides.mode }, basePages, baseFailed, deps, budgetUntil, config, environment);
+    if (browserUnavailable) {
+      for (const e of registry) {
+        if (e.definition.input !== "pages") continue;
+        const r = preCheck(e.definition, config) ?? { failure: { reason: "browser-unavailable" } };
+        headResults.set(e.definition.id, r);
+        baseResults.set(e.definition.id, r);
+      }
+    }
+  } finally {
+    await (headCleanup?.() ?? Promise.resolve());
+    await (baseCleanup?.() ?? Promise.resolve());
+    if (headBrowser !== null) await settleWithin(headBrowser.close());
+    if (baseBrowser !== null) await settleWithin(baseBrowser.close());
+  }
+  const parts = registry.map((entry) => {
+    const def = entry.definition;
+    const head = headResults.get(def.id);
+    const base = baseResults.get(def.id);
+    if (head === void 0 || base === void 0) {
+      return { kind: "scan-failed", failure: { reason: "crash" }, environment };
+    }
+    if ("skipReason" in head) return { kind: "skipped", skipReason: head.skipReason, environment };
+    if ("failure" in head) return { kind: "scan-failed", failure: head.failure, environment };
+    if ("failure" in base) return { kind: "scan-failed", failure: base.failure, environment };
+    const baseResult = "skipReason" in base ? null : base;
+    return {
+      kind: "completed",
+      headPages: head.pages,
+      headFindings: head.findings,
+      ...baseResult !== null && (baseResult.pages.length > 0 || baseResult.findings.length > 0 || sides.mode === "in-job-merge-base") ? { base: { mode: sides.mode, sha: sides.base.sha, deploymentVerified: sides.deploymentVerified, pages: baseResult.pages, findings: baseResult.findings } } : {},
+      environment: environment ?? { browser: { name: "chrome", version: "unknown" }, runnerImage: null }
+    };
+  });
+  return { parts, environment };
+}
+
+// ../engine-a11y/src/runner/runAxe.ts
+var import_node_url2 = require("node:url");
+var import_node_fs = require("node:fs");
+var import_meta2 = {};
+async function runAxeOnPage(page, url, viewport, opts = {}) {
+  const { timeout = 3e4, disabledRules = [], runOnly } = opts;
+  await page.setViewportSize({ width: viewport, height: 768 });
+  if (opts.skipNavigation !== true) {
+    await page.goto(url, { waitUntil: "networkidle", timeout });
+  }
+  const axePath = opts.axePath ?? await resolveAxePath();
+  await page.addScriptTag({ path: axePath });
+  await injectIntoSameOriginFrames(page, axePath);
+  const axeOptions = {
+    ...runOnly !== void 0 && runOnly.length > 0 ? { runOnly: { type: "tag", values: [...runOnly] } } : {},
+    rules: Object.fromEntries(disabledRules.map((id) => [id, { enabled: false }]))
+  };
+  const startMs = Date.now();
+  const axeRunner = (options) => {
+    const w = globalThis;
+    const doc = w.document;
+    const STABLE_ATTRS = ["name", "type", "role", "href", "src", "for", "aria-label", "alt", "title", "placeholder", "data-testid", "action", "value"];
+    const stableId = (id) => id !== "" && !/\d{3,}|[:«»]/.test(id) && id.length <= 60;
+    const stableClasses = (el) => [...el.classList ?? []].filter((c) => /^[A-Za-z][\w-]*$/.test(c) && !/\d/.test(c)).sort().slice(0, 2);
+    const clip = (v) => v.replace(/\s+/g, " ").trim().slice(0, 60);
+    const describe = (el, self) => {
+      const tag = String(el.localName ?? el.nodeName ?? "").toLowerCase();
+      const id = typeof el.id === "string" ? el.id : "";
+      if (stableId(id)) return { text: `${tag}#${id}`, anchored: true };
+      const role = el.getAttribute?.("role");
+      if (!self) return { text: typeof role === "string" && role !== "" ? `${tag}[role="${clip(role)}"]` : tag, anchored: false };
+      let attrs = "";
+      for (const a of STABLE_ATTRS) {
+        const v = el.getAttribute?.(a);
+        if (typeof v === "string" && v !== "") attrs += `[${a}="${clip(v)}"]`;
+      }
+      if (attrs !== "") return { text: tag + attrs, anchored: false };
+      const t = clip(String(el.textContent ?? ""));
+      if (t !== "") return { text: `${tag}{${t.slice(0, 30)}}`, anchored: false };
+      return { text: tag + stableClasses(el).map((c) => `.${c}`).join(""), anchored: false };
+    };
+    const resolveTarget = (target) => {
+      const parts = Array.isArray(target) ? target : [target];
+      let root = doc;
+      let el = null;
+      for (const part of parts) {
+        const sel = Array.isArray(part) ? part[part.length - 1] : part;
+        if (typeof sel !== "string") return null;
+        el = root?.querySelector?.(sel) ?? null;
+        if (el === null) return null;
+        root = el.shadowRoot ?? (/^i?frame$/i.test(String(el.localName)) ? el.contentDocument : null) ?? el;
+      }
+      return el;
+    };
+    const keyOf = (el) => {
+      const steps = [];
+      const me = describe(el, true);
+      steps.push(me.text);
+      let cur = el.parentElement ?? el.getRootNode?.()?.host ?? null;
+      let depth = 0;
+      while (!me.anchored && cur !== null && cur !== void 0 && depth < 3) {
+        const d = describe(cur, false);
+        if (d.text !== "body" && d.text !== "html") steps.unshift(d.text);
+        if (d.anchored) break;
+        cur = cur.parentElement ?? cur.getRootNode?.()?.host ?? null;
+        depth++;
+      }
+      return steps.join(" > ");
+    };
+    return new Promise((resolve, reject) => {
+      w.axe.run(
+        doc,
+        options,
+        (err, results2) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          for (const v of results2.violations) {
+            for (const n2 of v.nodes) {
+              try {
+                const el = resolveTarget(n2.target);
+                if (el !== null) n2.stableKey = keyOf(el);
+              } catch {
+              }
+            }
+          }
+          resolve(results2);
+        }
+      );
+    });
+  };
+  const results = await page.evaluate(axeRunner, axeOptions);
+  const runDuration = Date.now() - startMs;
+  return {
+    url,
+    viewport,
+    violations: results.violations,
+    passes: results.passes,
+    incomplete: results.incomplete,
+    inapplicable: results.inapplicable,
+    runDuration
+  };
+}
+async function injectIntoSameOriginFrames(page, axePath) {
+  const hasFrames = await page.evaluate((() => globalThis.document.querySelector("iframe, frame") !== null)).catch(() => false);
+  if (hasFrames !== true) return;
+  let source;
+  try {
+    source = (0, import_node_fs.readFileSync)(axePath, "utf-8");
+  } catch {
+    return;
+  }
+  const inject = (src) => {
+    let n2 = 0;
+    const walk = (doc) => {
+      for (const f of doc.querySelectorAll("iframe, frame")) {
+        let d = null;
+        try {
+          d = f.contentDocument;
+        } catch {
+          d = null;
+        }
+        if (d === null || d === void 0) continue;
+        if (!f.contentWindow.axe) {
+          const s = d.createElement("script");
+          s.textContent = src;
+          (d.head ?? d.documentElement).appendChild(s);
+          n2++;
+        }
+        walk(d);
+      }
+    };
+    walk(globalThis.document);
+    return n2;
+  };
+  await page.evaluate(inject, source).catch(() => 0);
+}
+async function resolveAxePath() {
+  const { createRequire: createRequire2 } = await import("module");
+  const metaUrl = import_meta2.url;
+  const base = typeof metaUrl === "string" && metaUrl.startsWith("file:") ? metaUrl : (0, import_node_url2.pathToFileURL)(process.argv[1] ?? process.cwd()).href;
+  const req = createRequire2(base);
+  try {
+    return req.resolve("axe-core/axe.min.js");
+  } catch {
+    return req.resolve("axe-core/axe.js");
+  }
+}
+
+// ../engine-a11y/src/rules.ts
+var A11Y_RUN_ONLY_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
+var POSSIBLE_CONFIDENCE_RULES = /* @__PURE__ */ new Set([
+  "color-contrast",
+  "color-contrast-enhanced",
+  "link-in-text-block"
+]);
+var DEFAULT_CONFIDENCE = "likely";
+function confidenceFor(ruleId) {
+  return POSSIBLE_CONFIDENCE_RULES.has(ruleId) ? "possible" : DEFAULT_CONFIDENCE;
+}
+var MERGE_DELTA_FIX = {
+  "image-alt": `Add an alt attribute describing the image's purpose, or alt="" if it is purely decorative.`,
+  "button-name": "Give the button accessible text: inner text, an aria-label, or a visually-hidden label.",
+  "link-name": "Give the link accessible text (inner text, aria-label, or an image alt inside it).",
+  "label": 'Associate a <label for="\u2026"> (or aria-label) with the input so its purpose is announced.',
+  "heading-order": "Use heading levels in order (h1 \u2192 h2 \u2192 h3) without skipping, so the outline stays navigable.",
+  "html-has-lang": `Add lang="en" (the page's language) to the <html> element.`,
+  "html-lang-valid": "Use a valid BCP-47 language code in the <html lang> attribute.",
+  "document-title": "Give the page a <title> that describes its content.",
+  "frame-title": "Give the iframe a title attribute describing its content.",
+  "color-contrast": "Raise the text/background contrast to at least 4.5:1 (3:1 for large text).",
+  "aria-required-attr": 'Add the ARIA attributes the role requires (e.g. aria-checked for role="checkbox").',
+  "aria-valid-attr": "Fix the misspelled ARIA attribute name.",
+  "aria-valid-attr-value": "Give the ARIA attribute one of its valid values.",
+  "aria-hidden-focus": "Remove aria-hidden from the focusable element, or make it unfocusable.",
+  "aria-input-field-name": "Give the ARIA input field an accessible name (aria-label or <label>).",
+  "aria-toggle-field-name": "Give the ARIA toggle (checkbox/switch) an accessible name.",
+  "bypass": "Add a skip link to the main content, or use landmark regions with headings.",
+  "duplicate-id": "Make the id unique \u2014 duplicate ids break label/ARIA references.",
+  "duplicate-id-active": "Make the id unique \u2014 duplicate ids break label/ARIA references.",
+  "duplicate-id-aria": "Make the id unique \u2014 duplicate ids break ARIA references.",
+  "list": "Use proper list markup (<ul>/<ol> with <li>) for list content.",
+  "definition-list": "Use <dl>/<dt>/<dd> for description lists.",
+  "listitem": "Place <li> elements inside a <ul> or <ol>.",
+  "meta-viewport": "Avoid user-scalable=no and maximum-scale in the viewport meta tag.",
+  "region": 'Wrap the content in a landmark region (header/nav/main/footer) or add role="region".',
+  "page-has-heading-one": "Give the page a top-level <h1> that names it.",
+  "landmark-one-main": "Wrap the primary content in a <main> element.",
+  "page-has-heading-one-idempotent": "Give the page a top-level <h1> that names it.",
+  "tabindex": "Remove the positive tabindex; let DOM order define focus order.",
+  "skip-link": "Make the skip link visible on focus and point it at the main content."
+};
+function fixFor(ruleId, axeHelp) {
+  return MERGE_DELTA_FIX[ruleId] ?? axeHelp;
+}
+var PINNED_RULES = [
+  "color-contrast",
+  "image-alt",
+  "button-name",
+  "link-name",
+  "label",
+  "heading-order",
+  "html-has-lang",
+  "html-lang-valid",
+  "document-title",
+  "frame-title",
+  "aria-required-attr",
+  "aria-valid-attr",
+  "aria-valid-attr-value",
+  "aria-hidden-body",
+  "aria-hidden-focus",
+  "aria-input-field-name",
+  "aria-toggle-field-name",
+  "bypass",
+  "duplicate-id-active",
+  "duplicate-id-aria",
+  "focus-trap",
+  "keyboard",
+  "skip-link",
+  "tabindex",
+  "duplicate-id"
+];
+var RULE_CONFIDENCE = {};
+for (const r of PINNED_RULES) RULE_CONFIDENCE[r] = confidenceFor(r);
+
+// ../engine-a11y/src/findings/mapViolations.ts
+var TAG_TO_CRITERION = {
+  wcag111: "1.1.1 Non-text Content",
+  wcag121: "1.2.1 Audio-only and Video-only",
+  wcag122: "1.2.2 Captions (Prerecorded)",
+  wcag123: "1.2.3 Audio Description or Media Alternative",
+  wcag124: "1.2.4 Captions (Live)",
+  wcag125: "1.2.5 Audio Description (Prerecorded)",
+  wcag131: "1.3.1 Info and Relationships",
+  wcag132: "1.3.2 Meaningful Sequence",
+  wcag133: "1.3.3 Sensory Characteristics",
+  wcag134: "1.3.4 Orientation",
+  wcag135: "1.3.5 Identify Input Purpose",
+  wcag141: "1.4.1 Use of Color",
+  wcag142: "1.4.2 Audio Control",
+  wcag143: "1.4.3 Contrast (Minimum)",
+  wcag144: "1.4.4 Resize Text",
+  wcag145: "1.4.5 Images of Text",
+  wcag1410: "1.4.10 Reflow",
+  wcag1411: "1.4.11 Non-text Contrast",
+  wcag1412: "1.4.12 Text Spacing",
+  wcag1413: "1.4.13 Content on Hover or Focus",
+  wcag212: "2.1.2 No Keyboard Trap",
+  wcag214: "2.1.4 Character Key Shortcuts",
+  wcag211: "2.1.1 Keyboard",
+  wcag221: "2.2.1 Timing Adjustable",
+  wcag222: "2.2.2 Pause, Stop, Hide",
+  wcag231: "2.3.1 Three Flashes or Below Threshold",
+  wcag241: "2.4.1 Bypass Blocks",
+  wcag242: "2.4.2 Page Titled",
+  wcag243: "2.4.3 Focus Order",
+  wcag244: "2.4.4 Link Purpose (In Context)",
+  wcag245: "2.4.5 Multiple Ways",
+  wcag246: "2.4.6 Headings and Labels",
+  wcag247: "2.4.7 Focus Visible",
+  wcag2411: "2.4.11 Focus Appearance",
+  wcag251: "2.5.1 Pointer Gestures",
+  wcag252: "2.5.2 Pointer Cancellation",
+  wcag253: "2.5.3 Label in Name",
+  wcag254: "2.5.4 Motion Actuation",
+  wcag311: "3.1.1 Language of Page",
+  wcag312: "3.1.2 Language of Parts",
+  wcag321: "3.2.1 On Focus",
+  wcag322: "3.2.2 On Input",
+  wcag323: "3.2.3 Consistent Navigation",
+  wcag324: "3.2.4 Consistent Identification",
+  wcag326: "3.2.6 Consistent Help",
+  wcag331: "3.3.1 Error Identification",
+  wcag332: "3.3.2 Labels or Instructions",
+  wcag333: "3.3.3 Error Suggestion",
+  wcag334: "3.3.4 Error Prevention (Legal, Financial, Data)",
+  wcag337: "3.3.7 Redundant Entry",
+  wcag338: "3.3.8 Accessible Authentication (Minimum)",
+  wcag411: "4.1.1 Parsing",
+  wcag412: "4.1.2 Name, Role, Value",
+  wcag413: "4.1.3 Status Messages"
+};
+var RULE_EFFORT = {
+  "color-contrast": "medium",
+  "image-alt": "low",
+  "button-name": "low",
+  "link-name": "low",
+  "label": "low",
+  "heading-order": "low",
+  "html-has-lang": "low",
+  "html-lang-valid": "low",
+  "document-title": "low",
+  "frame-title": "low",
+  "aria-required-attr": "low",
+  "aria-valid-attr": "low",
+  "aria-valid-attr-value": "low",
+  "aria-hidden-body": "low",
+  "aria-hidden-focus": "medium",
+  "aria-input-field-name": "low",
+  "aria-toggle-field-name": "low",
+  "bypass": "medium",
+  "duplicate-id-active": "low",
+  "duplicate-id-aria": "low",
+  "focus-trap": "high",
+  "keyboard": "high",
+  "skip-link": "medium",
+  "tabindex": "medium"
+};
+function effortFor(ruleId) {
+  return RULE_EFFORT[ruleId] ?? "medium";
+}
+function wcagVersionFor(tags) {
+  if (tags.some((t) => t.startsWith("wcag22"))) return "2.2";
+  if (tags.some((t) => t.startsWith("wcag21"))) return "2.1";
+  if (tags.some((t) => t.startsWith("wcag2"))) return "2.0";
+  return void 0;
+}
+function wcagCriterionFor(tags) {
+  for (const tag of tags) {
+    const criterion = TAG_TO_CRITERION[tag];
+    if (criterion) return criterion;
+  }
+  return void 0;
+}
+function wcagLabelFor(violation) {
+  const criterion = wcagCriterionFor(violation.tags);
+  if (!criterion) return void 0;
+  const version = wcagVersionFor(violation.tags) ?? "2.1";
+  return `WCAG ${version} \xB7 ${criterion}`;
+}
+function selectorText(part) {
+  return Array.isArray(part) ? part.map(selectorText).join(" >>> ") : String(part);
+}
+function primarySelectorOf(violation) {
+  const first = violation.nodes[0];
+  if (!first) return "";
+  const candidates = (Array.isArray(first.target) ? first.target : [first.target]).map(selectorText);
+  const withoutNth = candidates.find((c) => !c.includes(":nth-child") && !c.includes(":nth-of-type"));
+  return withoutNth ?? candidates[0] ?? "";
+}
+function wcagLevelFor(tags) {
+  if (tags.includes("wcag2a") || tags.includes("wcag21a") || tags.includes("wcag22a")) return "A";
+  if (tags.includes("wcag2aa") || tags.includes("wcag21aa") || tags.includes("wcag22aa")) return "AA";
+  if (tags.includes("wcag2aaa") || tags.includes("wcag21aaa") || tags.includes("wcag22aaa")) return "AAA";
+  return void 0;
+}
+function impactToKind(impact) {
+  return impact === "critical" || impact === "serious" ? "cause" : "symptom";
+}
+function buildFix(violation) {
+  const firstNode = violation.nodes[0];
+  const summary2 = firstNode?.failureSummary ?? "";
+  const lines = summary2.split("\n").map((l) => l.trim()).filter((l) => l.length > 0 && !l.startsWith("Fix any") && !l.startsWith("Fix all"));
+  if (lines.length > 0) {
+    return lines[0];
+  }
+  return violation.help;
+}
+function mapViolation(violation, pageUrl, viewport) {
+  const impact = violation.impact ?? "minor";
+  const selectors = violation.nodes.map((n2) => {
+    const target = (Array.isArray(n2.target) ? n2.target : [n2.target]).map(selectorText);
+    const withoutNth = target.find((c) => !c.includes(":nth-child") && !c.includes(":nth-of-type"));
+    return withoutNth ?? target.join(" > ");
+  });
+  return {
+    ruleId: violation.id,
+    message: violation.description,
+    // Item 3: MergeDelta's own guidance first; axe's help text is the fallback
+    fix: fixFor(violation.id, buildFix(violation)),
+    impact,
+    kind: impactToKind(impact),
+    wcagCriterion: wcagCriterionFor(violation.tags),
+    wcagLabel: wcagLabelFor(violation),
+    wcagLevel: wcagLevelFor(violation.tags),
+    pageUrl,
+    viewport,
+    affectedCount: violation.nodes.length,
+    affectedSelectors: selectors,
+    primarySelector: primarySelectorOf(violation),
+    // Item 3: capped HTML snippet + axe's first failureSummary line, per node
+    snippets: violation.nodes.slice(0, 5).map((n2) => (n2.html ?? "").slice(0, 300)),
+    failureSummary: violation.nodes[0]?.failureSummary?.split("\n").find((l) => l.trim().length > 0),
+    helpUrl: violation.helpUrl,
+    effort: effortFor(violation.id)
+  };
+}
+var MAX_ELEMENTS_PER_RULE = 50;
+function mapViolationPerElement(violation, pageUrl, viewport) {
+  const seen = /* @__PURE__ */ new Map();
+  const out = [];
+  const nodes = violation.nodes;
+  for (const n2 of nodes.slice(0, MAX_ELEMENTS_PER_RULE)) {
+    const one = mapViolation({ ...violation, nodes: [n2] }, pageUrl, viewport);
+    const raw = (n2.stableKey ?? one.primarySelector ?? "").slice(0, 110);
+    const k = seen.get(raw) ?? 0;
+    seen.set(raw, k + 1);
+    out.push({ ...one, primarySelector: k === 0 ? raw : `${raw}~${k + 1}` });
+  }
+  if (nodes.length > MAX_ELEMENTS_PER_RULE) {
+    const rest = nodes.slice(MAX_ELEMENTS_PER_RULE);
+    const over = mapViolation({ ...violation, nodes: rest }, pageUrl, viewport);
+    out.push({
+      ...over,
+      primarySelector: `(more than ${MAX_ELEMENTS_PER_RULE} elements)`,
+      message: `${violation.description} (${rest.length} more elements on this page)`
+    });
+  }
+  return out;
+}
+function mapViolationsPerElement(result) {
+  return result.violations.flatMap((v) => mapViolationPerElement(v, result.url, result.viewport));
+}
+
+// ../engine-a11y/src/adapter.ts
+var A11Y_ENGINE = "a11y";
+var IMPACT_RANK = { critical: 0, serious: 1, moderate: 2, minor: 3 };
+function mergeKey(n2) {
+  return `${n2.ruleId}::${n2.pageUrl}::${n2.primarySelector ?? n2.affectedSelectors[0] ?? ""}`;
+}
+function evidenceFor(n2, viewports) {
+  const ev = [];
+  for (const sel of n2.affectedSelectors.slice(0, 5)) {
+    ev.push({ kind: "element", label: "Selector", selector: sel });
+  }
+  ev.push({ kind: "text", label: "Affected elements", value: n2.affectedCount, unit: "count" });
+  if (n2.wcagLabel) {
+    ev.push({ kind: "text", label: "WCAG criterion", value: n2.wcagLabel });
+  } else if (n2.wcagCriterion) {
+    ev.push({ kind: "text", label: "WCAG criterion", value: n2.wcagCriterion });
+  }
+  const snippet2 = n2.snippets?.[0];
+  if (snippet2 && snippet2.length > 0) ev.push({ kind: "text", label: "HTML", value: snippet2 });
+  if (n2.failureSummary) ev.push({ kind: "text", label: "axe summary", value: n2.failureSummary });
+  if (viewports.length > 0) {
+    ev.push({ kind: "text", label: "Viewports", value: [...new Set(viewports)].sort((a, b) => a - b).join(", ") });
+  }
+  if (ev.length === 0) ev.push({ kind: "text", label: "Rule", value: n2.ruleId });
+  return ev;
+}
+function toFinding(n2, ctx) {
+  const evidence = evidenceFor(n2, [n2.viewport]);
+  if (evidence.length === 0) return null;
+  const subject = (n2.primarySelector ?? n2.affectedSelectors[0] ?? "").slice(0, 120);
+  const pageUrl = n2.pageUrl || ctx.pageUrl || null;
+  const fingerprint = fingerprintFinding(A11Y_ENGINE, {
+    ruleId: n2.ruleId,
+    pageUrl: pageUrl ?? void 0,
+    primarySelector: subject
+  });
+  const helpUrl = n2.helpUrl && n2.helpUrl.startsWith("https:") ? n2.helpUrl : void 0;
+  const explanation = n2.wcagCriterion ? `${n2.message} Violates WCAG ${n2.wcagLevel ?? ""} criterion ${n2.wcagCriterion}.` : n2.message;
+  return {
+    id: `${n2.ruleId}:${subject}`,
+    engine: A11Y_ENGINE,
+    ruleId: n2.ruleId,
+    fingerprint,
+    pageUrl: pageUrl === null ? null : normaliseUrl(pageUrl),
+    severity: mapSeverity(A11Y_ENGINE, n2.ruleId, n2.impact),
+    nativeSeverity: n2.impact,
+    confidence: confidenceFor(n2.ruleId),
+    kind: n2.kind,
+    metric: null,
+    title: n2.message,
+    explanation,
+    evidence,
+    ...n2.fix ? { fix: n2.fix } : {},
+    lessons: [],
+    ...helpUrl ? { helpUrl } : {},
+    effort: n2.effort,
+    ...n2.impactPct !== void 0 ? { impactPct: n2.impactPct } : {}
+  };
+}
+function toFindings(natives, ctx) {
+  const groups = /* @__PURE__ */ new Map();
+  for (const n2 of natives) {
+    const k = mergeKey(n2);
+    groups.set(k, [...groups.get(k) ?? [], n2]);
+  }
+  const out = [];
+  for (const group of groups.values()) {
+    const sorted = [...group].sort((a, b) => IMPACT_RANK[a.impact] - IMPACT_RANK[b.impact] || a.viewport - b.viewport);
+    const best = sorted[0];
+    const viewports = group.map((g) => g.viewport);
+    const f = toFinding(best, ctx);
+    if (!f) continue;
+    if (group.length > 1) {
+      const vs = [...new Set(viewports)].sort((a, b) => a - b);
+      const merged = [
+        ...f.evidence.filter((e) => e.label !== "Viewports"),
+        { kind: "text", label: "Viewports", value: `Seen at ${vs.map((v) => `${v} px`).join(" and ")}` }
+      ];
+      out.push({ ...f, evidence: merged });
+    } else {
+      const vs = [...new Set(viewports)].sort((a, b) => a - b);
+      const single = [
+        ...f.evidence.filter((e) => e.label !== "Viewports"),
+        { kind: "text", label: "Viewports", value: `${vs[0] ?? 0} px only` }
+      ];
+      out.push({ ...f, evidence: single });
+    }
+  }
+  return out;
+}
+
+// src/engines/a11y.ts
+var A11Y_ENGINE_VERSION = "0.2.0";
+var A11Y_VIEWPORTS = [1280, 375];
+function pageAdapterOf(p) {
+  return {
+    evaluate: (fn, arg) => p.evaluate(fn, arg),
+    addScriptTag: (opts) => p.addScriptTag(opts),
+    setViewportSize: (size) => p.setViewportSize(size),
+    // never called under skipNavigation; the contract forbids engines from navigating anyway
+    goto: async () => {
+      throw new Error("The a11y engine must not navigate the shared page (engine contract).");
+    },
+    close: async () => {
+      throw new Error("The a11y engine must not close the shared page (engine contract).");
+    }
+  };
+}
+async function scanLoadedPageNative(page, viewport, deps) {
+  const result = await runAxeOnPage(pageAdapterOf(page.page), page.url, viewport, {
+    skipNavigation: true,
+    axePath: deps.axePath,
+    runOnly: [...deps.runOnlyTags ?? A11Y_RUN_ONLY_TAGS]
+  });
+  return mapViolationsPerElement(result);
+}
+async function scanLoadedPage(page, deps) {
+  const viewports = deps.viewports ?? A11Y_VIEWPORTS;
+  const natives = [];
+  const viewportsRun = [];
+  for (const viewport of viewports) {
+    natives.push(...await scanLoadedPageNative(page, viewport, deps));
+    viewportsRun.push(viewport);
+  }
+  const findings = toFindings(natives, { engineVersion: A11Y_ENGINE_VERSION, pageUrl: page.url });
+  return { findings, viewportsRun };
+}
+function a11yEngine(deps) {
+  return {
+    id: "a11y",
+    version: A11Y_ENGINE_VERSION,
+    input: "pages",
+    timeoutMs: 18e4,
+    mutatesPage: true,
+    // injects axe and resizes the viewport (addendum A4)
+    async scan(ctx) {
+      const pages = [];
+      const findings = [];
+      for (const page of ctx.pages) {
+        if (ctx.signal.aborted) break;
+        let ok = true;
+        try {
+          const r = await scanLoadedPage(page, deps);
+          findings.push(...r.findings);
+        } catch (e) {
+          ctx.log(`a11y: ${page.url} failed: ${e instanceof Error ? e.message : String(e)}`);
+          ok = false;
+        }
+        pages.push({ url: page.url, success: ok, ...ok ? {} : { failureReason: "crash" } });
+      }
+      for (const failed of ctx.failedPages) pages.push({ ...failed });
+      return { pages, findings };
+    }
+  };
+}
+
+// ../engine-seo/src/checks/meta.ts
+var BASE = "https://developers.google.com/search/docs/fundamentals/seo-starter-guide";
+function checkMeta(page) {
+  const findings = [];
+  if (!page.title || page.title.trim().length === 0) {
+    findings.push({
+      checkId: "missing-title",
+      title: "Missing <title> tag",
+      description: "The page has no <title> tag. Google uses it as the main link text in search results.",
+      fix: "Add a unique, descriptive <title> tag (10\u201360 characters) to the <head>.",
+      impact: "critical",
+      kind: "cause",
+      pageUrl: page.url,
+      category: "meta",
+      effort: "low",
+      helpUrl: BASE,
+      recommendedValue: "Descriptive page title (10\u201360 chars)"
+    });
+  } else if (page.title.length > 60) {
+    findings.push({
+      checkId: "title-too-long",
+      title: "Title tag too long",
+      description: `Title is ${page.title.length} characters. Google truncates titles over ~60 chars in SERPs.`,
+      fix: "Shorten the title to under 60 characters while keeping the primary keyword.",
+      impact: "medium",
+      kind: "symptom",
+      pageUrl: page.url,
+      category: "meta",
+      effort: "low",
+      helpUrl: BASE,
+      currentValue: page.title,
+      recommendedValue: "Under 60 characters"
+    });
+  } else if (page.title.length < 10) {
+    findings.push({
+      checkId: "title-too-short",
+      title: "Title tag too short",
+      description: `Title is only ${page.title.length} characters. Too short titles miss keyword opportunities.`,
+      fix: "Expand the title to 10\u201360 characters with meaningful keywords.",
+      impact: "low",
+      kind: "symptom",
+      pageUrl: page.url,
+      category: "meta",
+      effort: "low",
+      helpUrl: BASE,
+      currentValue: page.title
+    });
+  }
+  if (!page.metaDescription || page.metaDescription.trim().length === 0) {
+    findings.push({
+      checkId: "missing-meta-description",
+      title: "Missing meta description",
+      description: "No meta description found. Google often uses it as the snippet in search results.",
+      fix: 'Add <meta name="description" content="..."> with 50\u2013160 characters.',
+      impact: "high",
+      kind: "cause",
+      pageUrl: page.url,
+      category: "meta",
+      effort: "low",
+      helpUrl: BASE
+    });
+  } else if (page.metaDescription.length > 160) {
+    findings.push({
+      checkId: "meta-description-too-long",
+      title: "Meta description too long",
+      description: `Meta description is ${page.metaDescription.length} characters; Google truncates at ~160.`,
+      fix: "Shorten the meta description to 50\u2013160 characters.",
+      impact: "low",
+      kind: "symptom",
+      pageUrl: page.url,
+      category: "meta",
+      effort: "low",
+      helpUrl: BASE,
+      currentValue: page.metaDescription
+    });
+  }
+  if (!page.canonical) {
+    findings.push({
+      checkId: "missing-canonical",
+      title: "Missing canonical URL",
+      description: 'No <link rel="canonical"> found. This can cause duplicate content issues.',
+      fix: 'Add <link rel="canonical" href="https://yourdomain.com/this-page"> to the <head>.',
+      impact: "medium",
+      kind: "cause",
+      pageUrl: page.url,
+      category: "meta",
+      effort: "low",
+      helpUrl: "https://developers.google.com/search/docs/crawling-indexing/canonicalization"
+    });
+  }
+  if (page.robots && /noindex/i.test(page.robots)) {
+    findings.push({
+      checkId: "robots-noindex",
+      title: "Page is set to noindex",
+      description: `robots meta is "${page.robots}". This page will not be indexed by Google.`,
+      fix: "Remove noindex from the robots meta tag unless intentionally blocking this page.",
+      impact: "critical",
+      kind: "cause",
+      pageUrl: page.url,
+      category: "meta",
+      effort: "low",
+      helpUrl: "https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag",
+      currentValue: page.robots
+    });
+  }
+  if (!page.ogTitle || !page.ogDescription || !page.ogImage) {
+    const missing = [
+      !page.ogTitle && "og:title",
+      !page.ogDescription && "og:description",
+      !page.ogImage && "og:image"
+    ].filter(Boolean).join(", ");
+    findings.push({
+      checkId: "missing-og-tags",
+      title: "Missing Open Graph tags",
+      description: `Missing: ${missing}. OG tags control how your page appears when shared on social media.`,
+      fix: `Add the missing Open Graph meta tags to <head>: ${missing}.`,
+      impact: "low",
+      kind: "cause",
+      pageUrl: page.url,
+      category: "social",
+      effort: "low",
+      helpUrl: "https://ogp.me",
+      currentValue: `Missing: ${missing}`
+    });
+  }
+  if (!page.twitterCard) {
+    findings.push({
+      checkId: "missing-twitter-card",
+      title: "Missing Twitter Card meta tag",
+      description: 'No <meta name="twitter:card"> found. Twitter will use a plain link instead of a rich card.',
+      fix: 'Add <meta name="twitter:card" content="summary_large_image"> to <head>.',
+      impact: "low",
+      kind: "symptom",
+      pageUrl: page.url,
+      category: "social",
+      effort: "low",
+      helpUrl: "https://developer.twitter.com/en/docs/twitter-for-websites/cards/overview/abouts-cards"
+    });
+  }
+  return findings;
+}
+
+// ../engine-seo/src/checks/headings.ts
+var BASE2 = "https://developers.google.com/search/docs/fundamentals/seo-starter-guide";
+function checkHeadings(page) {
+  const findings = [];
+  if (page.h1s.length === 0) {
+    findings.push({
+      checkId: "missing-h1",
+      title: "Missing H1 heading",
+      description: "No H1 found. The H1 is the primary on-page signal for page topic.",
+      fix: "Add exactly one <h1> that describes the page's main topic.",
+      impact: "high",
+      kind: "cause",
+      pageUrl: page.url,
+      category: "headings",
+      effort: "low",
+      helpUrl: BASE2
+    });
+  } else if (page.h1s.length > 1) {
+    findings.push({
+      checkId: "multiple-h1",
+      title: `Multiple H1 headings (${page.h1s.length} found)`,
+      description: "More than one H1 dilutes the page topic signal.",
+      fix: "Keep exactly one H1; convert extras to H2 or lower.",
+      impact: "medium",
+      kind: "symptom",
+      pageUrl: page.url,
+      category: "headings",
+      effort: "low",
+      helpUrl: BASE2,
+      currentValue: page.h1s.join(" | ")
+    });
+  }
+  let prevLevel = 0;
+  for (const h4 of page.headings) {
+    if (prevLevel > 0 && h4.level > prevLevel + 1) {
+      findings.push({
+        checkId: "heading-skip",
+        title: `Heading level skipped (H${prevLevel} \u2192 H${h4.level})`,
+        description: `Heading "${h4.text}" jumps from H${prevLevel} to H${h4.level}, breaking the outline.`,
+        fix: `Change this heading to H${prevLevel + 1} to maintain a logical hierarchy.`,
+        impact: "low",
+        kind: "symptom",
+        pageUrl: page.url,
+        category: "headings",
+        effort: "low",
+        helpUrl: BASE2,
+        currentValue: `h${prevLevel}\u2192h${h4.level}`,
+        // MD-125: the heading itself, so two skips of the same kind on a page are two findings
+        affectedElements: [`h${h4.level}: ${h4.text.slice(0, 60)}`]
+      });
+    }
+    prevLevel = h4.level;
+  }
+  return findings;
+}
+
+// ../engine-seo/src/checks/crossPageChecks.ts
+var normalize = (s) => s.trim().replace(/\s+/g, " ").toLowerCase();
+function findDuplicateTitles(pages) {
+  return findDuplicates(pages, (p) => p.title !== null && p.title.trim() !== "" ? normalize(p.title) : null, "duplicate-title");
+}
+function findDuplicateMetaDescriptions(pages) {
+  return findDuplicates(pages, (p) => p.metaDescription !== null && p.metaDescription.trim() !== "" ? normalize(p.metaDescription) : null, "duplicate-meta-description");
+}
+function findDuplicates(pages, keyOf, checkId) {
+  const groups = /* @__PURE__ */ new Map();
+  for (const p of pages) {
+    const key = keyOf(p);
+    if (key === null) continue;
+    groups.set(key, [...groups.get(key) ?? [], p.url]);
+  }
+  const out = [];
+  for (const urls of groups.values()) {
+    if (urls.length < 2) continue;
+    const sorted = [...urls].sort();
+    for (const url of sorted) {
+      out.push({ checkId, pageUrl: url, otherPages: sorted.filter((u) => u !== url) });
+    }
+  }
+  return out.sort((a, b) => a.pageUrl < b.pageUrl ? -1 : a.pageUrl > b.pageUrl ? 1 : a.checkId < b.checkId ? -1 : 1);
+}
+
+// ../engine-seo/src/scanner/parseRenderedHtml.ts
+function attrOf(tag, name) {
+  const re = new RegExp(`${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s"'>]+))`, "i");
+  const m = re.exec(tag);
+  const v = m?.[1] ?? m?.[2] ?? m?.[3];
+  return v === void 0 || v === "" ? null : v;
+}
+function decodeEntities(s) {
+  return s.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&apos;/g, "'").replace(/&amp;/g, "&");
+}
+function stripTags(s) {
+  return decodeEntities(s.replace(/<[^>]*>/g, " ")).replace(/\s+/g, " ").trim();
+}
+function stripInert(html) {
+  return html.replace(/<!--[\s\S]*?-->/g, " ").replace(/<template\b[\s\S]*?<\/template>/gi, " ").replace(/<noscript\b[\s\S]*?<\/noscript>/gi, " ").replace(/<svg\b[\s\S]*?<\/svg>/gi, " ");
+}
+var DOM_SNAPSHOT_EXPR = `(() => {
+  const meta = {};
+  for (const m of document.querySelectorAll('meta[name], meta[property]')) {
+    const k = (m.getAttribute('name') || m.getAttribute('property') || '').toLowerCase();
+    if (k && !(k in meta)) meta[k] = m.getAttribute('content');
+  }
+  const canonical = document.querySelector('link[rel~="canonical" i]');
+  const hreflang = [...document.querySelectorAll('link[rel~="alternate" i][hreflang]')].map((l) => ({ href: l.getAttribute('href') || '', hreflang: l.getAttribute('hreflang') || '' }));
+  const jsonLd = [...document.querySelectorAll('script[type="application/ld+json" i]')].map((s) => s.textContent || '');
+  const headings = [...document.querySelectorAll('h1, h2, h3, h4, h5, h6')].map((h) => ({ level: Number(h.tagName.slice(1)), text: (h.textContent || '').replace(/\\s+/g, ' ').trim() }));
+  return { title: document.title || null, meta, canonical: canonical ? canonical.getAttribute('href') : null, hreflang, jsonLd, headings };
+})()`;
+function fromDomSnapshot(d) {
+  const m = (k) => {
+    const v = d.meta[k];
+    return typeof v === "string" ? v : null;
+  };
+  const title = d.title !== null && d.title.trim() !== "" ? d.title.replace(/\s+/g, " ").trim() : null;
+  return {
+    head: {
+      title,
+      metaDescription: m("description"),
+      robots: m("robots"),
+      canonicalHref: d.canonical,
+      ogTitle: m("og:title"),
+      ogDescription: m("og:description"),
+      ogImage: m("og:image"),
+      twitterCard: m("twitter:card"),
+      hreflang: d.hreflang,
+      rawJsonLd: d.jsonLd
+    },
+    outline: { h1s: d.headings.filter((h4) => h4.level === 1).map((h4) => h4.text), headings: d.headings }
+  };
+}
+function parseHead(rawHtml) {
+  const html = stripInert(rawHtml);
+  const metaTags = html.match(/<meta\b[^>]*>/gi) ?? [];
+  const metaByName = (name) => {
+    for (const tag of metaTags) {
+      const isName = attrOf(tag, "name")?.toLowerCase() === name.toLowerCase();
+      const isProperty = attrOf(tag, "property")?.toLowerCase() === name.toLowerCase();
+      if (isName || isProperty) {
+        const c = attrOf(tag, "content");
+        return c === null ? null : decodeEntities(c);
+      }
+    }
+    return null;
+  };
+  const titleMatch = /<title\b[^>]*>([\s\S]*?)<\/title>/i.exec(html);
+  const canonicalTag = (html.match(/<link\b[^>]*>/gi) ?? []).find(
+    (t) => attrOf(t, "rel")?.toLowerCase() === "canonical"
+  );
+  const hreflangTags = (html.match(/<link\b[^>]*>/gi) ?? []).filter(
+    (t) => attrOf(t, "rel")?.toLowerCase() === "alternate" && attrOf(t, "hreflang") !== null
+  );
+  return {
+    title: titleMatch ? stripTags(titleMatch[1]) || null : null,
+    metaDescription: metaByName("description"),
+    robots: metaByName("robots"),
+    canonicalHref: canonicalTag ? attrOf(canonicalTag, "href") : null,
+    ogTitle: metaByName("og:title"),
+    ogDescription: metaByName("og:description"),
+    ogImage: metaByName("og:image"),
+    twitterCard: metaByName("twitter:card"),
+    hreflang: hreflangTags.map((t) => ({
+      href: attrOf(t, "href") ?? "",
+      hreflang: attrOf(t, "hreflang") ?? ""
+    })),
+    rawJsonLd: (html.match(
+      /<script\b[^>]*type\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi
+    ) ?? []).map((block) => {
+      const open = block.indexOf(">");
+      const close = block.toLowerCase().lastIndexOf("</script>");
+      return open === -1 || close === -1 ? "" : block.slice(open + 1, close);
+    })
+  };
+}
+function parseOutline(rawHtml) {
+  const html = stripInert(rawHtml);
+  const headings = [];
+  const re = /<h([1-6])\b[^>]*>([\s\S]*?)<\/h\1>/gi;
+  let m;
+  while ((m = re.exec(html)) !== null) {
+    headings.push({ level: Number(m[1]), text: stripTags(m[2]) });
+  }
+  return { h1s: headings.filter((h4) => h4.level === 1).map((h4) => h4.text), headings };
+}
+
+// ../engine-seo/src/scanner/scanLoadedPage.ts
+function pageDataFromLoaded(loaded) {
+  const fromDom = loaded.dom !== void 0 ? fromDomSnapshot(loaded.dom) : null;
+  const head = fromDom?.head ?? parseHead(loaded.html);
+  const outline = fromDom?.outline ?? parseOutline(loaded.html);
+  return {
+    url: loaded.url,
+    title: head.title,
+    metaDescription: head.metaDescription,
+    canonical: head.canonicalHref,
+    robots: head.robots,
+    h1s: outline.h1s,
+    headings: outline.headings,
+    images: [],
+    // images-missing-alt is OFF in the PR scan (a11y owns it)
+    internalLinks: [],
+    // broken-internal-link is OFF (the links engine owns it)
+    ogTitle: head.ogTitle,
+    ogDescription: head.ogDescription,
+    ogImage: head.ogImage,
+    twitterCard: head.twitterCard,
+    jsonLd: head.rawJsonLd,
+    // unparsed texts: invalid-structured-data must see parse failures
+    wordCount: 0,
+    // thin-content is OFF (heuristic, not a regression)
+    ttfbMs: 0,
+    // slow-ttfb is OFF (performance owns it)
+    hreflang: head.hreflang,
+    bodyText: "",
+    firstParagraph: null
+  };
+}
+function headerNoindex(headers) {
+  const v = headers["x-robots-tag"];
+  return typeof v === "string" && /\bnoindex\b/i.test(v);
+}
+var JSON_LD_HELP = "https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data";
+var CANONICAL_HELP = "https://developers.google.com/search/docs/crawling-indexing/canonicalization";
+var ROBOTS_HELP = "https://developers.google.com/search/docs/crawling-indexing/robots-meta-tag";
+function checkStructuredData(page) {
+  const findings = [];
+  if (page.jsonLd.length === 0) {
+    findings.push({
+      checkId: "missing-structured-data",
+      title: "No structured data (JSON-LD)",
+      description: "No JSON-LD schema found. Structured data enables rich results in Google Search.",
+      fix: "Add JSON-LD structured data relevant to your content type (Article, Product, FAQ, etc.).",
+      impact: "low",
+      kind: "cause",
+      pageUrl: page.url,
+      category: "content",
+      effort: "medium",
+      helpUrl: JSON_LD_HELP
+    });
+    return findings;
+  }
+  page.jsonLd.forEach((raw, i) => {
+    let parsed = void 0;
+    let parseError = false;
+    try {
+      parsed = JSON.parse(String(raw));
+    } catch {
+      parseError = true;
+    }
+    const hasType = parsed !== null && typeof parsed === "object" && (Array.isArray(parsed) ? parsed.some((n2) => n2 !== null && typeof n2 === "object" && "@type" in n2) : "@type" in parsed);
+    if (parseError || !hasType) {
+      findings.push({
+        checkId: "invalid-structured-data",
+        title: parseError ? `JSON-LD block #${i + 1} does not parse` : `JSON-LD block #${i + 1} has no @type`,
+        description: parseError ? `The JSON-LD block #${i + 1} is not valid JSON, so search engines ignore it.` : `The JSON-LD block #${i + 1} parses but carries no @type, so search engines cannot classify it.`,
+        fix: 'Fix the JSON-LD block so it is valid JSON with a @type (e.g. "WebSite" or "Article").',
+        impact: "medium",
+        kind: "symptom",
+        pageUrl: page.url,
+        category: "structured-data",
+        effort: "low",
+        helpUrl: JSON_LD_HELP,
+        currentValue: String(raw).slice(0, 120),
+        // MD-125: which block, so two broken JSON-LD blocks are two findings
+        affectedElements: [`json-ld block #${i + 1}`]
+      });
+    }
+  });
+  return findings;
+}
+function canonicalPath(url) {
+  try {
+    const p = new URL(normaliseUrl(url)).pathname.replace(/\/index\.html?$/i, "/");
+    return p.length > 1 ? p.replace(/\/+$/, "") : "/";
+  } catch {
+    return null;
+  }
+}
+function checkCanonicalTarget(page, baseUrl = page.url) {
+  if (page.canonical === null) return [];
+  let resolved;
+  try {
+    resolved = new URL(page.canonical, baseUrl).toString();
+  } catch {
+    return [];
+  }
+  const canonicalP = canonicalPath(resolved);
+  const ownP = canonicalPath(baseUrl);
+  if (canonicalP === null || ownP === null || canonicalP === ownP) return [];
+  return [{
+    checkId: "canonical-changed-target",
+    title: "Canonical points at a different path",
+    description: `The canonical link names "${canonicalP}" while this page is "${ownP}". Search engines may drop this page from the index in favour of the canonical target.`,
+    fix: "Point the canonical at this page's own URL, or at the single canonical variant of this content.",
+    impact: "medium",
+    kind: "cause",
+    pageUrl: page.url,
+    category: "meta",
+    effort: "low",
+    helpUrl: CANONICAL_HELP,
+    currentValue: page.canonical.slice(0, 300)
+  }];
+}
+function scanLoadedPage2(loaded, opts = {}) {
+  const page = pageDataFromLoaded(loaded);
+  const findings = [
+    ...checkMeta(page),
+    ...checkHeadings(page),
+    ...checkStructuredData(page),
+    ...checkCanonicalTarget(page, loaded.finalUrl ?? loaded.url)
+  ];
+  if (opts.headerRobots !== false && headerNoindex(loaded.headers)) {
+    findings.push({
+      checkId: "robots-noindex",
+      title: "Page is set to noindex (x-robots-tag)",
+      description: `The x-robots-tag response header is "${loaded.headers["x-robots-tag"]}". This page will not be indexed by Google.`,
+      fix: "Remove noindex from the x-robots-tag response header unless intentionally blocking this page.",
+      impact: "critical",
+      kind: "cause",
+      pageUrl: loaded.url,
+      category: "technical",
+      effort: "low",
+      helpUrl: ROBOTS_HELP,
+      currentValue: `source: header | x-robots-tag: ${loaded.headers["x-robots-tag"]}`.slice(0, 300)
+    });
+  }
+  return { page, findings };
+}
+function duplicateFindings(dups) {
+  const isTitle = (id) => id === "duplicate-title";
+  return dups.map((d) => ({
+    checkId: d.checkId,
+    title: isTitle(d.checkId) ? "Title is duplicated across pages" : "Meta description is duplicated across pages",
+    description: isTitle(d.checkId) ? `This title is also used by ${d.otherPages.length} other scanned page${d.otherPages.length === 1 ? "" : "s"}, so search engines see duplicate content.` : `This meta description is also used by ${d.otherPages.length} other scanned page${d.otherPages.length === 1 ? "" : "s"}, weakening each page's own snippet.`,
+    fix: isTitle(d.checkId) ? "Give this page a unique title that names its own content." : "Give this page a unique meta description that summarises its own content.",
+    impact: "medium",
+    kind: "symptom",
+    pageUrl: d.pageUrl,
+    category: "meta",
+    effort: "low",
+    helpUrl: "https://developers.google.com/search/docs/crawling-indexing/duplicate-content",
+    // evidence only: the sibling pages (paths, origin-free after core's pageKey); identity stays rule+page
+    currentValue: `also on: ${d.otherPages.map((u) => {
+      try {
+        return new URL(u).pathname;
+      } catch {
+        return u;
+      }
+    }).join(", ")}`.slice(0, 300)
+  }));
+}
+
+// ../engine-seo/src/rules.ts
+var PR_SCAN_RULES = {
+  "missing-title": "likely",
+  "title-too-long": "likely",
+  "title-too-short": "likely",
+  "missing-meta-description": "likely",
+  "meta-description-too-long": "likely",
+  "missing-h1": "likely",
+  "multiple-h1": "likely",
+  "heading-skip": "likely",
+  "missing-canonical": "likely",
+  "robots-noindex": "likely",
+  "missing-og-tags": "likely",
+  "missing-twitter-card": "likely",
+  "missing-structured-data": "possible",
+  "invalid-structured-data": "likely",
+  "canonical-changed-target": "possible",
+  "duplicate-title": "likely",
+  "duplicate-meta-description": "likely"
+};
+var RULE_CONFIDENCE2 = {
+  ...PR_SCAN_RULES,
+  "thin-content": "possible",
+  "images-missing-alt": "likely",
+  "slow-ttfb": "possible",
+  "keyword-missing-title": "likely",
+  "keyword-missing-h1": "likely",
+  "keyword-density-too-low": "possible",
+  "keyword-density-too-high": "possible",
+  "broken-internal-link": "likely"
+};
+function confidenceFor2(ruleId) {
+  return RULE_CONFIDENCE2[ruleId] ?? "possible";
+}
+
+// ../engine-seo/src/adapter.ts
+var SEO_ENGINE = "seo";
+function keywordFromTitle(title) {
+  const m = /^Keyword "([^"]+)"/.exec(title);
+  return m ? m[1].toLowerCase() : null;
+}
+function subjectFor(n2) {
+  if (n2.checkId === "keyword-missing-title" || n2.checkId === "keyword-missing-h1" || n2.checkId === "keyword-density-too-high" || n2.checkId === "keyword-density-too-low") {
+    const kw = keywordFromTitle(n2.title);
+    return kw !== null ? `keyword:${kw}` : "page";
+  }
+  if (n2.checkId === "heading-skip") {
+    const heading = n2.affectedElements?.[0];
+    return `heading:${n2.currentValue ?? ""}${heading !== void 0 ? `:${heading.slice(0, 50)}` : ""}`;
+  }
+  if (n2.checkId === "images-missing-alt" || n2.checkId === "broken-internal-link") {
+    return "page";
+  }
+  const first = n2.affectedElements?.[0];
+  return first !== void 0 && first.length > 0 ? first.slice(0, 80) : "page";
+}
+function evidenceFor2(n2) {
+  const ev = [];
+  if (n2.currentValue !== void 0) ev.push({ kind: "text", label: "Current", value: n2.currentValue });
+  if (n2.recommendedValue !== void 0) ev.push({ kind: "text", label: "Recommended", value: n2.recommendedValue });
+  for (const el of (n2.affectedElements ?? []).slice(0, 5)) {
+    ev.push({ kind: "element", label: "Element", selector: el });
+  }
+  if (ev.length === 0) {
+    ev.push({ kind: "text", label: "Page", value: n2.pageUrl });
+  }
+  return ev;
+}
+function toFinding2(n2, ctx) {
+  const evidence = evidenceFor2(n2);
+  if (evidence.length === 0) return null;
+  const pageUrl = n2.pageUrl || ctx.pageUrl || null;
+  const subject = subjectFor(n2);
+  const fingerprint = fingerprintFinding(SEO_ENGINE, {
+    checkId: n2.checkId,
+    pageUrl: pageUrl ?? void 0,
+    element: subject
+  });
+  const helpUrl = n2.helpUrl && n2.helpUrl.startsWith("https:") ? n2.helpUrl : void 0;
+  return {
+    id: `${n2.checkId}:${subject}`,
+    engine: SEO_ENGINE,
+    ruleId: n2.checkId,
+    fingerprint,
+    pageUrl: pageUrl === null ? null : normaliseUrl(pageUrl),
+    severity: mapSeverity(SEO_ENGINE, n2.checkId, n2.impact),
+    nativeSeverity: n2.impact,
+    confidence: confidenceFor2(n2.checkId),
+    kind: n2.kind,
+    metric: null,
+    title: n2.title,
+    explanation: n2.description,
+    evidence,
+    ...n2.fix ? { fix: n2.fix } : {},
+    lessons: [],
+    ...helpUrl ? { helpUrl } : {},
+    effort: n2.effort
+  };
+}
+function toFindings2(natives, ctx) {
+  const out = [];
+  const seen = /* @__PURE__ */ new Map();
+  for (const n2 of natives) {
+    let f = toFinding2(n2, ctx);
+    if (!f) continue;
+    const k = seen.get(f.fingerprint) ?? 0;
+    seen.set(f.fingerprint, k + 1);
+    if (k > 0) {
+      const el = `${subjectFor(n2)}~${k + 1}`;
+      f = { ...f, id: `${n2.checkId}:${el}`, fingerprint: fingerprintFinding(SEO_ENGINE, { checkId: n2.checkId, pageUrl: (n2.pageUrl || ctx.pageUrl) ?? void 0, element: el }) };
+    }
+    out.push(f);
+  }
+  return out;
+}
+
+// src/engines/seo.ts
+var SNAPSHOT_TIMEOUT_MS = 1e3;
+function withinMs(p, ms) {
+  let t;
+  return Promise.race([p, new Promise((_, rej) => {
+    t = setTimeout(() => rej(new Error("snapshot timeout")), ms);
+  })]).finally(() => clearTimeout(t));
+}
+function isSnapshot(d) {
+  return typeof d === "object" && d !== null && Array.isArray(d.headings) && typeof d.meta === "object";
+}
+var SEO_ENGINE_VERSION = "0.2.0";
+function seoEngine() {
+  return {
+    id: "seo",
+    version: SEO_ENGINE_VERSION,
+    input: "pages",
+    timeoutMs: 18e4,
+    mutatesPage: false,
+    async scan(ctx) {
+      const pages = [];
+      const findings = [];
+      const pageDatas = [];
+      for (const page of ctx.pages) {
+        if (ctx.signal.aborted) break;
+        try {
+          let dom;
+          try {
+            dom = await withinMs(page.page.evaluate(DOM_SNAPSHOT_EXPR), SNAPSHOT_TIMEOUT_MS);
+          } catch {
+            dom = void 0;
+          }
+          const r = scanLoadedPage2(
+            { url: page.url, finalUrl: page.finalUrl, status: page.status, headers: page.headers, html: page.html, ...isSnapshot(dom) ? { dom } : {} },
+            // MD-103: preview deploys send X-Robots-Tag: noindex; not like-for-like with production
+            { headerRobots: ctx.side.comparison !== "production-paired" }
+          );
+          pageDatas.push(r.page);
+          findings.push(...toFindings2(r.findings, { engineVersion: SEO_ENGINE_VERSION, pageUrl: page.url }));
+          pages.push({ url: page.url, success: true });
+        } catch (e) {
+          ctx.log(`seo: ${page.url} failed: ${e instanceof Error ? e.message : String(e)}`);
+          pages.push({ url: page.url, success: false, failureReason: "crash" });
+        }
+      }
+      if (!ctx.signal.aborted && pageDatas.length > 0) {
+        try {
+          const dups = [
+            ...duplicateFindings(findDuplicateTitles(pageDatas)),
+            ...duplicateFindings(findDuplicateMetaDescriptions(pageDatas))
+          ];
+          findings.push(...toFindings2(dups, { engineVersion: SEO_ENGINE_VERSION }));
+        } catch (e) {
+          ctx.log(`seo: cross-page duplicate check failed: ${e instanceof Error ? e.message : String(e)}`);
+        }
+      }
+      for (const failed of ctx.failedPages) pages.push({ ...failed });
+      return { pages, findings };
+    }
+  };
+}
+
+// ../engine-security/src/checks/headers.ts
+var cap = (v) => v.length > 300 ? `${v.slice(0, 300)}\u2026` : v;
+function h(headers, name) {
+  const lower = name.toLowerCase();
+  for (const [k, v] of Object.entries(headers)) {
+    if (k.toLowerCase() === lower) return v;
+  }
+  return void 0;
+}
+function checkHeaders(headers, pageUrl) {
+  const findings = [];
+  const HSTS_MIN_MAX_AGE = 31536e3;
+  const hsts = h(headers, "strict-transport-security");
+  if (!hsts) {
+    findings.push({
+      checkId: "missing-hsts",
+      title: "Missing Strict-Transport-Security header",
+      description: "The page does not send an HSTS header, leaving it vulnerable to protocol downgrade attacks.",
+      fix: "Add: Strict-Transport-Security: max-age=31536000; includeSubDomains; preload",
+      severity: "high",
+      kind: "cause",
+      pageUrl,
+      category: "headers",
+      owasp: "A02:2021 Cryptographic Failures",
+      cwe: "CWE-319",
+      effort: "low",
+      helpUrl: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security",
+      recommendedValue: "max-age=31536000; includeSubDomains; preload"
+    });
+  } else {
+    const maxAgeMatch = /max-age\s*=\s*"?(\d+)"?/i.exec(hsts);
+    if (!maxAgeMatch) {
+      findings.push({
+        checkId: "weak-hsts-no-max-age",
+        title: "HSTS header missing max-age",
+        description: `Strict-Transport-Security header found but lacks max-age: "${hsts}"`,
+        fix: "Set max-age to at least 31536000 (1 year).",
+        severity: "medium",
+        kind: "symptom",
+        pageUrl,
+        category: "headers",
+        owasp: "A02:2021 Cryptographic Failures",
+        cwe: "CWE-319",
+        effort: "low",
+        helpUrl: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security",
+        currentValue: hsts,
+        recommendedValue: "max-age=31536000; includeSubDomains; preload"
+      });
+    } else if (Number(maxAgeMatch[1]) < HSTS_MIN_MAX_AGE) {
+      findings.push({
+        checkId: "weak-hsts-max-age",
+        title: "HSTS max-age too short",
+        description: `Strict-Transport-Security max-age is ${maxAgeMatch[1]} seconds, below the recommended 31536000 (1 year). Short HSTS windows weaken protection against downgrade attacks, and HSTS preload lists require at least 1 year.`,
+        fix: "Set max-age to at least 31536000 (1 year): Strict-Transport-Security: max-age=31536000; includeSubDomains; preload",
+        severity: "medium",
+        kind: "symptom",
+        pageUrl,
+        category: "headers",
+        owasp: "A02:2021 Cryptographic Failures",
+        cwe: "CWE-319",
+        effort: "low",
+        helpUrl: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security",
+        currentValue: hsts,
+        recommendedValue: "max-age=31536000; includeSubDomains; preload"
+      });
+    }
+  }
+  const xcto = h(headers, "x-content-type-options");
+  if (!xcto) {
+    findings.push({
+      checkId: "missing-x-content-type-options",
+      title: "Missing X-Content-Type-Options header",
+      description: "Without this header, browsers may MIME-sniff responses, enabling content injection.",
+      fix: "Add: X-Content-Type-Options: nosniff",
+      severity: "medium",
+      kind: "cause",
+      pageUrl,
+      category: "headers",
+      owasp: "A05:2021 Security Misconfiguration",
+      cwe: "CWE-693",
+      effort: "low",
+      helpUrl: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options",
+      recommendedValue: "nosniff"
+    });
+  }
+  const xfo = h(headers, "x-frame-options");
+  const csp = h(headers, "content-security-policy") ?? "";
+  const hasFrameAncestors = csp.toLowerCase().includes("frame-ancestors");
+  if (!xfo && !hasFrameAncestors) {
+    findings.push({
+      checkId: "missing-clickjacking-protection",
+      title: "Missing clickjacking protection",
+      description: "No X-Frame-Options or CSP frame-ancestors directive found. Page can be embedded in iframes.",
+      fix: "Add: X-Frame-Options: DENY  (or use CSP frame-ancestors 'none')",
+      severity: "medium",
+      kind: "cause",
+      pageUrl,
+      category: "headers",
+      owasp: "A05:2021 Security Misconfiguration",
+      cwe: "CWE-1021",
+      effort: "low",
+      helpUrl: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options",
+      recommendedValue: "DENY"
+    });
+  }
+  const rp = h(headers, "referrer-policy");
+  if (!rp) {
+    findings.push({
+      checkId: "missing-referrer-policy",
+      title: "Missing Referrer-Policy header",
+      description: "Without a Referrer-Policy, the full URL may be leaked to third-party sites.",
+      fix: "Add: Referrer-Policy: strict-origin-when-cross-origin",
+      severity: "low",
+      kind: "cause",
+      pageUrl,
+      category: "headers",
+      owasp: "A05:2021 Security Misconfiguration",
+      effort: "low",
+      helpUrl: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Referrer-Policy",
+      recommendedValue: "strict-origin-when-cross-origin"
+    });
+  }
+  const pp = h(headers, "permissions-policy");
+  if (!pp) {
+    findings.push({
+      checkId: "missing-permissions-policy",
+      title: "Missing Permissions-Policy header",
+      description: "No Permissions-Policy set. Camera, microphone and geolocation may be accessible to third-party scripts.",
+      fix: "Add: Permissions-Policy: camera=(), microphone=(), geolocation=()",
+      severity: "low",
+      kind: "cause",
+      pageUrl,
+      category: "headers",
+      owasp: "A05:2021 Security Misconfiguration",
+      effort: "low",
+      helpUrl: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy",
+      recommendedValue: "camera=(), microphone=(), geolocation=()"
+    });
+  }
+  const xpb = h(headers, "x-powered-by");
+  if (xpb) {
+    findings.push({
+      checkId: "info-disclosure-x-powered-by",
+      title: "Server technology exposed via X-Powered-By",
+      description: `X-Powered-By reveals backend technology: "${cap(xpb)}". Attackers can target known CVEs.`,
+      fix: "Remove the X-Powered-By header. In Express.js: app.disable('x-powered-by')",
+      severity: "low",
+      kind: "symptom",
+      pageUrl,
+      category: "info-disclosure",
+      owasp: "A05:2021 Security Misconfiguration",
+      cwe: "CWE-200",
+      effort: "low",
+      helpUrl: "https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/01-Information_Gathering/08-Fingerprint_Web_Application_Framework",
+      currentValue: cap(xpb),
+      recommendedValue: "(remove header)"
+    });
+  }
+  const server = h(headers, "server");
+  if (server && /[\d.]+/.test(server)) {
+    findings.push({
+      checkId: "info-disclosure-server-version",
+      title: "Server version exposed in Server header",
+      description: `Server header includes version information: "${cap(server)}"`,
+      fix: "Configure your web server to omit the version from the Server header.",
+      severity: "low",
+      kind: "symptom",
+      pageUrl,
+      category: "info-disclosure",
+      owasp: "A05:2021 Security Misconfiguration",
+      cwe: "CWE-200",
+      effort: "low",
+      helpUrl: "https://owasp.org/www-project-web-security-testing-guide/",
+      currentValue: cap(server),
+      recommendedValue: "nginx (no version)"
+    });
+  }
+  return findings;
+}
+
+// ../engine-security/src/checks/csp.ts
+function h2(headers, name) {
+  for (const [k, v] of Object.entries(headers)) {
+    if (k.toLowerCase() === name.toLowerCase()) return v;
+  }
+  return void 0;
+}
+function parseCsp(cspHeader) {
+  const directives = /* @__PURE__ */ new Map();
+  for (const part of cspHeader.split(";")) {
+    const trimmed = part.trim();
+    if (!trimmed) continue;
+    const [name, ...values2] = trimmed.split(/\s+/);
+    if (name) directives.set(name.toLowerCase(), values2);
+  }
+  return directives;
+}
+function cspNeutralisers(scriptSrc) {
+  const lower = scriptSrc.map((v) => v.toLowerCase());
+  const nonceOrHash = lower.some((v) => /^'(nonce-|sha256-|sha384-|sha512-)/.test(v));
+  const strictDynamic = lower.includes("'strict-dynamic'");
+  return { inlineIgnored: nonceOrHash || strictDynamic, hostsIgnored: strictDynamic };
+}
+function checkCsp(headers, pageUrl, metaCsp) {
+  const findings = [];
+  const cspValue = h2(headers, "content-security-policy") ?? (metaCsp !== void 0 && metaCsp.trim() !== "" ? metaCsp : void 0);
+  if (!cspValue) {
+    findings.push({
+      checkId: "missing-csp",
+      title: "Missing Content-Security-Policy header",
+      description: "No CSP header found. Without it, XSS attacks have no browser-side mitigation.",
+      fix: "Add a Content-Security-Policy header. Start with: default-src 'self'; script-src 'self'; object-src 'none'",
+      severity: "high",
+      kind: "cause",
+      pageUrl,
+      category: "csp",
+      owasp: "A03:2021 Injection",
+      cwe: "CWE-79",
+      effort: "medium",
+      helpUrl: "https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP",
+      recommendedValue: "default-src 'self'; script-src 'self'; object-src 'none'; base-uri 'self'"
+    });
+    return findings;
+  }
+  const directives = parseCsp(cspValue);
+  const scriptSrc = directives.get("script-src") ?? directives.get("default-src") ?? [];
+  const neutral = cspNeutralisers(scriptSrc);
+  if (scriptSrc.includes("'unsafe-inline'") && !neutral.inlineIgnored) {
+    findings.push({
+      checkId: "csp-unsafe-inline",
+      title: "CSP allows 'unsafe-inline' in script-src",
+      description: "'unsafe-inline' in script-src allows inline JavaScript execution, defeating XSS protections.",
+      fix: "Remove 'unsafe-inline' from script-src. Use nonces or hashes instead: script-src 'nonce-{random}'",
+      severity: "high",
+      kind: "cause",
+      pageUrl,
+      category: "csp",
+      owasp: "A03:2021 Injection",
+      cwe: "CWE-79",
+      effort: "high",
+      helpUrl: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/script-src",
+      currentValue: cspValue,
+      recommendedValue: "script-src 'self' 'nonce-{random}'"
+    });
+  }
+  if (scriptSrc.includes("'unsafe-eval'")) {
+    findings.push({
+      checkId: "csp-unsafe-eval",
+      title: "CSP allows 'unsafe-eval' in script-src",
+      description: "'unsafe-eval' permits eval() and Function() constructor, used in many XSS attacks.",
+      fix: "Remove 'unsafe-eval' from script-src. Refactor code that uses eval().",
+      severity: "high",
+      kind: "cause",
+      pageUrl,
+      category: "csp",
+      owasp: "A03:2021 Injection",
+      cwe: "CWE-79",
+      effort: "high",
+      helpUrl: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/script-src",
+      currentValue: cspValue
+    });
+  }
+  if (scriptSrc.includes("*") && !neutral.hostsIgnored) {
+    findings.push({
+      checkId: "csp-wildcard-script-src",
+      title: "CSP uses wildcard * in script-src",
+      description: "A wildcard in script-src allows loading scripts from any origin, negating XSS protection.",
+      fix: "Replace * with explicit allowed origins in script-src.",
+      severity: "high",
+      kind: "cause",
+      pageUrl,
+      category: "csp",
+      owasp: "A03:2021 Injection",
+      cwe: "CWE-79",
+      effort: "medium",
+      helpUrl: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/script-src",
+      currentValue: cspValue
+    });
+  }
+  if (!directives.has("object-src")) {
+    findings.push({
+      checkId: "csp-missing-object-src",
+      title: "CSP missing object-src 'none'",
+      description: "Without object-src, Flash and other plugin content can be injected.",
+      fix: "Add object-src 'none' to your CSP.",
+      severity: "medium",
+      kind: "symptom",
+      pageUrl,
+      category: "csp",
+      owasp: "A03:2021 Injection",
+      effort: "low",
+      helpUrl: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/object-src",
+      recommendedValue: "object-src 'none'"
+    });
+  }
+  return findings;
+}
+
+// ../engine-security/src/checks/cookies.ts
+function parseSetCookie(setCookieHeader) {
+  const parts = setCookieHeader.split(";").map((p) => p.trim());
+  const nameValue = parts[0] ?? "";
+  const name = nameValue.split("=")[0]?.trim() ?? "unknown";
+  const flags = parts.slice(1).map((p) => p.toLowerCase());
+  const sameSitePart = flags.find((f) => f.startsWith("samesite="));
+  return {
+    name,
+    raw: setCookieHeader,
+    httpOnly: flags.includes("httponly"),
+    secure: flags.includes("secure"),
+    sameSite: sameSitePart?.split("=")[1]
+  };
+}
+function describeCookie(raw) {
+  const parts = raw.split(";").map((p) => p.trim());
+  const name = parts[0]?.split("=")[0]?.trim() ?? "unknown";
+  const attrs = parts.slice(1).map((p) => p.split("=")[0]?.trim()).filter(Boolean);
+  return attrs.length > 0 ? `${name} (flags: ${attrs.join("; ")})` : `${name} (no flags)`;
+}
+function checkCookies(setCookieHeaders, pageUrl, options = {}) {
+  const httpsOnly = options.httpsOnly ?? true;
+  const isHttps = /^https:\/\//i.test(pageUrl);
+  const findings = [];
+  for (const raw of setCookieHeaders) {
+    const cookie = parseSetCookie(raw);
+    const described = describeCookie(raw);
+    if (!cookie.httpOnly) {
+      findings.push({
+        checkId: "cookie-missing-httponly",
+        title: `Cookie "${cookie.name}" missing HttpOnly flag`,
+        description: `The cookie "${cookie.name}" can be read by JavaScript, enabling session theft via XSS.`,
+        fix: `Set the HttpOnly flag: Set-Cookie: ${cookie.name}=...; HttpOnly`,
+        severity: "high",
+        kind: "cause",
+        pageUrl,
+        category: "cookies",
+        owasp: "A02:2021 Cryptographic Failures",
+        cwe: "CWE-1004",
+        effort: "low",
+        helpUrl: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#httponly",
+        currentValue: described
+      });
+    }
+    if (httpsOnly && !cookie.secure && isHttps) {
+      findings.push({
+        checkId: "cookie-missing-secure",
+        title: `Cookie "${cookie.name}" missing Secure flag`,
+        description: `The cookie "${cookie.name}" is transmitted over HTTP, exposing it to network eavesdropping.`,
+        fix: `Add Secure flag: Set-Cookie: ${cookie.name}=...; Secure`,
+        severity: "medium",
+        kind: "cause",
+        pageUrl,
+        category: "cookies",
+        owasp: "A02:2021 Cryptographic Failures",
+        cwe: "CWE-614",
+        effort: "low",
+        helpUrl: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#secure",
+        currentValue: described
+      });
+    }
+    if (!cookie.sameSite) {
+      findings.push({
+        checkId: "cookie-missing-samesite",
+        title: `Cookie "${cookie.name}" missing SameSite attribute`,
+        description: `Without SameSite, the cookie is sent on cross-site requests, enabling CSRF attacks.`,
+        fix: `Add SameSite=Lax (or Strict): Set-Cookie: ${cookie.name}=...; SameSite=Lax`,
+        severity: "medium",
+        kind: "cause",
+        pageUrl,
+        category: "cookies",
+        owasp: "A01:2021 Broken Access Control",
+        cwe: "CWE-352",
+        effort: "low",
+        helpUrl: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie#samesitesamesite-value",
+        currentValue: described,
+        recommendedValue: `${described}; SameSite=Lax`
+      });
+    }
+  }
+  return findings;
+}
+
+// ../engine-security/src/checks/cors.ts
+function h3(headers, name) {
+  for (const [k, v] of Object.entries(headers)) {
+    if (k.toLowerCase() === name.toLowerCase()) return v;
+  }
+  return void 0;
+}
+function checkCors(headers, pageUrl) {
+  const findings = [];
+  const acao = h3(headers, "access-control-allow-origin");
+  if (!acao) return findings;
+  if (acao === "*") {
+    const acacc = h3(headers, "access-control-allow-credentials");
+    if (acacc?.toLowerCase() === "true") {
+      findings.push({
+        checkId: "cors-wildcard-with-credentials",
+        title: "CORS wildcard origin with credentials enabled",
+        description: "Access-Control-Allow-Origin: * combined with Access-Control-Allow-Credentials: true allows any site to make authenticated requests. Browsers block this, but it signals a misconfiguration.",
+        fix: "Replace * with an explicit allowed origin when credentials are needed.",
+        severity: "critical",
+        kind: "cause",
+        pageUrl,
+        category: "cors",
+        owasp: "A01:2021 Broken Access Control",
+        cwe: "CWE-942",
+        effort: "low",
+        helpUrl: "https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors/CORSNotSupportingCredentials",
+        currentValue: `Access-Control-Allow-Origin: * / Access-Control-Allow-Credentials: true`
+      });
+    } else {
+      findings.push({
+        checkId: "cors-wildcard-origin",
+        title: "CORS allows any origin (Access-Control-Allow-Origin: *)",
+        description: "Any website can read responses from this endpoint. Acceptable for public APIs but risky for authenticated endpoints.",
+        fix: "Restrict to specific origins if this endpoint handles sensitive data.",
+        severity: "medium",
+        kind: "symptom",
+        pageUrl,
+        category: "cors",
+        owasp: "A01:2021 Broken Access Control",
+        cwe: "CWE-942",
+        effort: "low",
+        helpUrl: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin",
+        currentValue: "Access-Control-Allow-Origin: *"
+      });
+    }
+  }
+  return findings;
+}
+
+// ../engine-security/src/checks/cve.ts
+var KNOWN_ADVISORIES = [
+  { library: "lodash", affectedBelow: "4.17.21", cve: "CVE-2021-23337", cvss: 7.2, severity: "high", fixVersion: "4.17.21" },
+  { library: "jquery", affectedBelow: "3.5.0", cve: "CVE-2020-11022", cvss: 6.1, severity: "medium", fixVersion: "3.5.0" },
+  { library: "moment", affectedBelow: "2.29.4", cve: "CVE-2022-24785", cvss: 7.5, severity: "high", fixVersion: "2.29.4" },
+  { library: "axios", affectedBelow: "1.6.0", cve: "CVE-2023-45857", cvss: 6.5, severity: "medium", fixVersion: "1.6.0" }
+];
+function semverLt(a, b) {
+  const parse = (v) => v.split(".").map((seg) => parseInt(seg, 10) || 0);
+  const pa = parse(a);
+  const pb = parse(b);
+  const len = Math.max(pa.length, pb.length);
+  for (let i = 0; i < len; i++) {
+    const x = pa[i] ?? 0;
+    const y = pb[i] ?? 0;
+    if (x !== y) return x < y;
+  }
+  return false;
+}
+function checkLibraryCves(libraries, pageUrl) {
+  const findings = [];
+  for (const lib of libraries) {
+    const advisory = KNOWN_ADVISORIES.find((a) => a.library === lib.name.toLowerCase());
+    if (!advisory) continue;
+    if (!semverLt(lib.version, advisory.affectedBelow)) continue;
+    findings.push({
+      checkId: "known-vulnerable-library",
+      title: `Known vulnerable library: ${lib.name} ${lib.version}`,
+      description: `${lib.name} ${lib.version} is affected by ${advisory.cve} (CVSS ${advisory.cvss}). All versions below ${advisory.affectedBelow} are vulnerable; the issue is fixed in ${advisory.fixVersion}. Detected via ${lib.detectedFrom}. Matched against a small built-in advisory list, not a vulnerability database; dependency scanning comes from Dependabot.`,
+      fix: `Upgrade ${lib.name} to ${advisory.fixVersion} or later.`,
+      severity: advisory.severity,
+      kind: "cause",
+      pageUrl,
+      category: "libraries",
+      owasp: "A06:2021 Vulnerable and Outdated Components",
+      cwe: "CWE-1104",
+      effort: "low",
+      helpUrl: `https://nvd.nist.gov/vuln/detail/${advisory.cve}`,
+      currentValue: `${lib.name}@${lib.version}`,
+      recommendedValue: `${lib.name}@${advisory.fixVersion}`
+    });
+  }
+  return findings;
+}
+var GLOBAL_LIBRARIES = ["jquery", "lodash", "moment", "axios"];
+var SCRIPT_PATTERNS = [
+  { library: "jquery", re: /jquery[-.@](\d+\.\d+(?:\.\d+)?)/i },
+  { library: "lodash", re: /lodash[-.@](\d+\.\d+(?:\.\d+)?)/i },
+  { library: "moment", re: /moment[-.@](\d+\.\d+(?:\.\d+)?)/i },
+  { library: "axios", re: /axios[-.@](\d+\.\d+(?:\.\d+)?)/i }
+];
+function detectLibrariesFromScripts(scriptSrcs) {
+  const found = [];
+  const seen = /* @__PURE__ */ new Set();
+  for (const src of scriptSrcs) {
+    for (const { library, re } of SCRIPT_PATTERNS) {
+      const match = src.match(re);
+      const version = match?.[1];
+      if (!version) continue;
+      const key = `${library}@${version}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      found.push({ name: library, version, detectedFrom: "script-src" });
+    }
+  }
+  return found;
+}
+function mergeDetections(scriptSrcs, globals) {
+  const byName = /* @__PURE__ */ new Map();
+  for (const lib of detectLibrariesFromScripts(scriptSrcs)) byName.set(lib.name, lib);
+  for (const name of GLOBAL_LIBRARIES) {
+    const version = globals?.[name];
+    if (version) byName.set(name, { name, version: String(version), detectedFrom: "window-global" });
+  }
+  return Array.from(byName.values());
+}
+
+// ../engine-security/src/findings/mapFindings.ts
+function mapFindings(scan) {
+  const findings = [
+    ...checkHeaders(scan.responseHeaders, scan.url),
+    ...checkCsp(scan.responseHeaders, scan.url, scan.metaCsp),
+    ...checkCookies(scan.setCookieHeaders, scan.url),
+    ...checkCors(scan.responseHeaders, scan.url)
+  ];
+  findings.push(...checkLibraryCves(scan.detectedLibraries ?? [], scan.url));
+  for (const mixedUrl of scan.mixedContentUrls) {
+    findings.push({
+      checkId: "mixed-content",
+      title: "Mixed content (HTTP resource on HTTPS page)",
+      description: `HTTP resource loaded on HTTPS page: ${mixedUrl}`,
+      fix: "Serve all resources over HTTPS. Update the src/href to use https://.",
+      severity: "high",
+      kind: "cause",
+      pageUrl: scan.url,
+      category: "mixed-content",
+      owasp: "A02:2021 Cryptographic Failures",
+      cwe: "CWE-311",
+      effort: "low",
+      helpUrl: "https://developer.mozilla.org/en-US/docs/Web/Security/Mixed_content",
+      affectedUrls: [mixedUrl],
+      currentValue: mixedUrl,
+      recommendedValue: mixedUrl.replace(/^http:\/\//, "https://")
+    });
+  }
+  return findings;
+}
+
+// ../engine-security/src/scanner/scanLoadedPage.ts
+var GLOBAL_EXPRS = {
+  jquery: "window.jQuery && window.jQuery.fn && window.jQuery.fn.jquery ? window.jQuery.fn.jquery : null",
+  // MD-115: underscore.js also sets window._ with a VERSION; only lodash has cloneDeep and
+  // templateSettings.imports. As delivered, underscore 1.13 read as a vulnerable lodash.
+  lodash: "window._ && window._.VERSION && window._.cloneDeep && window._.templateSettings && window._.templateSettings.imports ? window._.VERSION : null",
+  moment: "window.moment && window.moment.version ? window.moment.version : null",
+  axios: "window.axios && window.axios.VERSION ? window.axios.VERSION : null"
+};
+function scriptSrcsFromHtml(html) {
+  const srcs = [];
+  const re = /<script\b[^>]*\bsrc\s*=\s*["']([^"']+)["'][^>]*>/gi;
+  let m;
+  while ((m = re.exec(html)) !== null) srcs.push(m[1]);
+  return srcs;
+}
+function stripInert2(html) {
+  return html.replace(/<!--[\s\S]*?-->/g, " ").replace(/<template\b[\s\S]*?<\/template>/gi, " ").replace(/<noscript\b[\s\S]*?<\/noscript>/gi, " ");
+}
+function attr2(tag, name) {
+  const m = new RegExp(`[\\s"']${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s"'>]+))`, "i").exec(tag);
+  const v = m?.[1] ?? m?.[2] ?? m?.[3];
+  return v === void 0 ? null : v.replace(/&amp;/g, "&");
+}
+function metaCspFromHtml(html) {
+  for (const tag of stripInert2(html).match(/<meta\b[^>]*>/gi) ?? []) {
+    if ((attr2(tag, "http-equiv") ?? "").toLowerCase() === "content-security-policy") {
+      const c = attr2(tag, "content");
+      if (c !== null && c.trim() !== "") return c;
+    }
+  }
+  return void 0;
+}
+var LOADING_LINK_RELS = /* @__PURE__ */ new Set(["stylesheet", "icon", "shortcut", "preload", "modulepreload", "manifest", "apple-touch-icon", "mask-icon"]);
+function mixedContentFromHtml(html, pageUrl, csp) {
+  if (!/^https:\/\//i.test(pageUrl)) return [];
+  if (csp !== void 0 && /(^|;)\s*upgrade-insecure-requests\s*(;|$)/i.test(csp)) return [];
+  const urls = [];
+  const add = (v) => {
+    if (v !== null && /^http:\/\//i.test(v.trim())) urls.push(v.trim());
+  };
+  for (const tag of stripInert2(html).match(/<(img|script|iframe|audio|video|source|embed|track|link|object)\b[^>]*>/gi) ?? []) {
+    const name = /^<(\w+)/.exec(tag)[1].toLowerCase();
+    if (name === "link") {
+      const rels = (attr2(tag, "rel") ?? "").toLowerCase().split(/\s+/);
+      if (rels.some((r) => LOADING_LINK_RELS.has(r))) add(attr2(tag, "href"));
+      continue;
+    }
+    add(attr2(tag, name === "object" ? "data" : "src"));
+    if (name === "video") add(attr2(tag, "poster"));
+    const srcset = attr2(tag, "srcset");
+    if (srcset !== null) for (const part of srcset.split(",")) add(part.trim().split(/\s+/)[0] ?? null);
+  }
+  return [...new Set(urls)];
+}
+function pageScanDataFromLoaded(loaded) {
+  const rawSetCookie = loaded.headers["set-cookie"] ?? "";
+  const metaCsp = metaCspFromHtml(loaded.html);
+  return {
+    url: loaded.url,
+    responseHeaders: loaded.headers,
+    setCookieHeaders: rawSetCookie.split("\n").map((s) => s.trim()).filter(Boolean),
+    mixedContentUrls: mixedContentFromHtml(loaded.html, loaded.finalUrl ?? loaded.url, [loaded.headers["content-security-policy"], metaCsp].filter(Boolean).join(";")),
+    ...metaCsp !== void 0 ? { metaCsp } : {},
+    scriptSrcs: scriptSrcsFromHtml(loaded.html),
+    iframeSrcs: [],
+    statusCode: loaded.status ?? 0,
+    scanDurationMs: 0
+  };
+}
+async function libraryGlobals(evaluate) {
+  const out = {};
+  for (const [name, expr] of Object.entries(GLOBAL_EXPRS)) {
+    try {
+      const v = await evaluate(expr);
+      if (typeof v === "string" && v.length > 0) out[name] = v;
+    } catch {
+    }
+  }
+  return out;
+}
+async function scanLoadedPage3(loaded) {
+  const data = pageScanDataFromLoaded(loaded);
+  data.detectedLibraries = mergeDetections(data.scriptSrcs, await libraryGlobals(loaded.evaluate));
+  const findings = mapFindings(data);
+  const isHttps = /^https:\/\//i.test(loaded.finalUrl ?? loaded.url);
+  if (!isHttps) {
+    return { data, findings: findings.filter((f) => !HTTP_ONLY_RULES.has(f.checkId)) };
+  }
+  return { data, findings };
+}
+var HTTP_ONLY_RULES = /* @__PURE__ */ new Set([
+  "missing-hsts",
+  "weak-hsts-no-max-age",
+  "weak-hsts-max-age",
+  "cookie-missing-secure",
+  "mixed-content"
+]);
+
+// ../engine-security/src/rules.ts
+var RULE_CONFIDENCE3 = {
+  "missing-hsts": "likely",
+  "weak-hsts-no-max-age": "likely",
+  "weak-hsts-max-age": "likely",
+  "missing-x-content-type-options": "likely",
+  "missing-clickjacking-protection": "likely",
+  "missing-referrer-policy": "likely",
+  "missing-permissions-policy": "likely",
+  "info-disclosure-server-version": "likely",
+  "info-disclosure-x-powered-by": "likely",
+  "missing-csp": "likely",
+  "csp-unsafe-inline": "likely",
+  "csp-unsafe-eval": "likely",
+  "csp-wildcard-script-src": "likely",
+  "csp-missing-object-src": "likely",
+  "cors-wildcard-with-credentials": "likely",
+  "cors-wildcard-origin": "likely",
+  "cookie-missing-httponly": "likely",
+  "cookie-missing-secure": "likely",
+  "cookie-missing-samesite": "likely",
+  "mixed-content": "likely",
+  "known-vulnerable-library": "possible"
+  // version inferred from a script URL / window global
+};
+function confidenceFor3(ruleId) {
+  return RULE_CONFIDENCE3[ruleId] ?? "possible";
+}
+
+// ../engine-security/src/adapter.ts
+var SECURITY_ENGINE = "security";
+function subjectFor2(n2) {
+  if (n2.checkId === "cookie-missing-httponly" || n2.checkId === "cookie-missing-secure" || n2.checkId === "cookie-missing-samesite") {
+    const raw = n2.currentValue ?? "";
+    return (raw.split(/\s|\(/)[0] ?? "").trim() || "unknown";
+  }
+  if (n2.checkId === "known-vulnerable-library") {
+    const cv = n2.currentValue ?? "";
+    return cv.split("@")[0] ?? cv;
+  }
+  if (n2.checkId === "mixed-content") {
+    const u = n2.affectedUrls?.[0];
+    return u !== void 0 && /^https?:\/\//i.test(u) ? normaliseUrl(u) : "";
+  }
+  return "";
+}
+function evidenceFor3(n2, pageUrl) {
+  const ev = [];
+  if (n2.currentValue !== void 0) ev.push({ kind: "text", label: "Current", value: n2.currentValue });
+  if (n2.recommendedValue !== void 0) ev.push({ kind: "text", label: "Recommended", value: n2.recommendedValue });
+  for (const u of (n2.affectedUrls ?? []).slice(0, 5)) {
+    if (/^https?:\/\//i.test(u)) ev.push({ kind: "request", label: "Affected URL", url: u });
+  }
+  if (n2.cwe) ev.push({ kind: "text", label: "CWE", value: n2.cwe });
+  if (ev.length === 0) ev.push({ kind: "text", label: "Page", value: pageUrl });
+  return ev;
+}
+function toFinding3(n2, ctx) {
+  const pageUrl = n2.pageUrl || ctx.pageUrl || null;
+  const evidence = evidenceFor3(n2, pageUrl ?? "*");
+  if (evidence.length === 0) return null;
+  const subject = subjectFor2(n2);
+  const fingerprint = fingerprintFinding(SECURITY_ENGINE, {
+    checkId: n2.checkId,
+    pageUrl: pageUrl ?? void 0,
+    headerName: subject
+  });
+  const helpUrl = n2.helpUrl && n2.helpUrl.startsWith("https:") ? n2.helpUrl : void 0;
+  return {
+    id: `${n2.checkId}:${subject}`,
+    engine: SECURITY_ENGINE,
+    ruleId: n2.checkId,
+    fingerprint,
+    pageUrl: pageUrl === null ? null : normaliseUrl(pageUrl),
+    severity: mapSeverity(SECURITY_ENGINE, n2.checkId, n2.severity),
+    nativeSeverity: n2.severity,
+    confidence: confidenceFor3(n2.checkId),
+    kind: n2.kind,
+    metric: null,
+    title: n2.title,
+    explanation: n2.description,
+    evidence,
+    ...n2.fix ? { fix: n2.fix } : {},
+    lessons: [],
+    ...helpUrl ? { helpUrl } : {},
+    effort: n2.effort
+  };
+}
+function toFindings3(natives, ctx) {
+  const out = [];
+  for (const n2 of natives) {
+    const f = toFinding3(n2, ctx);
+    if (f) out.push(f);
+  }
+  return out;
+}
+
+// src/engines/security.ts
+var SECURITY_ENGINE_VERSION = "0.2.0";
+function securityEngine() {
+  return {
+    id: "security",
+    version: SECURITY_ENGINE_VERSION,
+    input: "pages",
+    timeoutMs: 18e4,
+    mutatesPage: false,
+    async scan(ctx) {
+      const pages = [];
+      const findings = [];
+      for (const page of ctx.pages) {
+        if (ctx.signal.aborted) break;
+        try {
+          const r = await scanLoadedPage3({
+            url: page.url,
+            finalUrl: page.finalUrl,
+            status: page.status,
+            headers: page.headers,
+            html: page.html,
+            evaluate: (expr) => page.page.evaluate(expr)
+          });
+          findings.push(...toFindings3(r.findings, { engineVersion: SECURITY_ENGINE_VERSION, pageUrl: page.url }));
+          pages.push({ url: page.url, success: true });
+        } catch (e) {
+          ctx.log(`security: ${page.url} failed: ${e instanceof Error ? e.message : String(e)}`);
+          pages.push({ url: page.url, success: false, failureReason: "crash" });
+        }
+      }
+      for (const failed of ctx.failedPages) pages.push({ ...failed });
+      return { pages, findings };
+    }
+  };
+}
+
+// ../engine-links/src/checks/broken.ts
+var HELP_URL = "https://developer.mozilla.org/en-US/docs/Web/HTTP/Status";
+function checkBroken(links, statusMap, pageUrl, category = "broken") {
+  const findings = [];
+  for (const link of links) {
+    const result = statusMap.get(link.href);
+    if (!result || result.skipped) continue;
+    const { statusCode, error } = result;
+    if (statusCode === 0) {
+      findings.push({
+        checkId: `broken-link-${error === "timeout" ? "timeout" : "network"}`,
+        checkType: "broken",
+        title: error === "timeout" ? "Link timed out" : "Link unreachable (network error)",
+        description: `Could not reach ${link.href}${error ? ` (${error})` : ""}.`,
+        fix: "Verify the host is up and reachable; check for typos in the URL or DNS failures.",
+        severity: "critical",
+        kind: "cause",
+        pageUrl,
+        href: link.href,
+        linkText: link.text,
+        selector: link.selector,
+        effort: "low",
+        helpUrl: HELP_URL,
+        category
+      });
+      continue;
+    }
+    if (statusCode >= 400) {
+      const is404 = statusCode === 404;
+      findings.push({
+        checkId: `broken-link-${statusCode}`,
+        checkType: "broken",
+        title: `Broken link (${statusCode})`,
+        description: `Link returns HTTP ${statusCode}: ${link.href}`,
+        fix: is404 ? "Update the URL, redirect it, or remove the link." : `The server returned ${statusCode}. Check if the target resource exists and is accessible.`,
+        severity: "critical",
+        kind: "cause",
+        pageUrl,
+        href: link.href,
+        statusCode,
+        linkText: link.text,
+        selector: link.selector,
+        effort: "low",
+        helpUrl: `${HELP_URL}/${statusCode}`,
+        category
+      });
+    }
+  }
+  return findings;
+}
+
+// ../engine-links/src/checks/redirects.ts
+var HELP_URL2 = "https://web.dev/redirects/";
+function hostOf(url) {
+  try {
+    return new URL(url).hostname.toLowerCase();
+  } catch {
+    return null;
+  }
+}
+function schemeOf(url) {
+  try {
+    return new URL(url).protocol.toLowerCase();
+  } catch {
+    return null;
+  }
+}
+function checkRedirects(links, statusMap, pageUrl) {
+  const findings = [];
+  for (const link of links) {
+    const result = statusMap.get(link.href);
+    if (!result || !result.redirectChain || result.redirectChain.length <= 1) continue;
+    const chain = result.redirectChain;
+    const hops = chain.length - 1;
+    const finalUrl = chain[chain.length - 1];
+    if (hops > 5) {
+      findings.push({
+        checkId: "redirect-chain-excessive",
+        checkType: "redirect",
+        title: `Excessive redirect chain (${hops} hops)`,
+        description: `Link redirects ${hops} times before reaching ${finalUrl}. This is almost certainly a misconfiguration.`,
+        fix: "Point the link directly at the final URL and fix the server-side redirect loop.",
+        severity: "critical",
+        kind: "symptom",
+        pageUrl,
+        href: link.href,
+        resolvedUrl: finalUrl,
+        redirectChain: chain,
+        linkText: link.text,
+        selector: link.selector,
+        effort: "low",
+        helpUrl: HELP_URL2,
+        category: "redirect"
+      });
+    } else if (hops > 2) {
+      findings.push({
+        checkId: "redirect-chain-long",
+        checkType: "redirect",
+        title: `Long redirect chain (${hops} hops)`,
+        description: `Link redirects ${hops} times before reaching ${finalUrl}, adding latency and diluting SEO value.`,
+        fix: "Update the link to point directly at the final URL.",
+        severity: "warning",
+        kind: "symptom",
+        pageUrl,
+        href: link.href,
+        resolvedUrl: finalUrl,
+        redirectChain: chain,
+        linkText: link.text,
+        selector: link.selector,
+        effort: "low",
+        helpUrl: HELP_URL2,
+        category: "redirect"
+      });
+    }
+    const originHost = hostOf(link.href);
+    const finalHost = hostOf(finalUrl);
+    if (originHost && finalHost && originHost !== finalHost) {
+      findings.push({
+        checkId: "redirect-cross-domain",
+        checkType: "redirect",
+        title: "Redirect crosses domain",
+        description: `Link to ${originHost} redirects to ${finalHost}. Fine if intentional (CDN, rebrand), otherwise suspicious.`,
+        fix: "Verify the cross-domain redirect is intentional; if so, link directly to the final domain.",
+        severity: "warning",
+        kind: "cause",
+        pageUrl,
+        href: link.href,
+        resolvedUrl: finalUrl,
+        redirectChain: chain,
+        linkText: link.text,
+        selector: link.selector,
+        effort: "low",
+        helpUrl: HELP_URL2,
+        category: "redirect"
+      });
+    }
+    const originScheme = schemeOf(link.href);
+    const finalScheme = schemeOf(finalUrl);
+    if (originScheme === "http:" && finalScheme === "https:") {
+      findings.push({
+        checkId: "redirect-http-https-upgrade",
+        checkType: "redirect",
+        title: "HTTP link upgraded to HTTPS by redirect",
+        description: `Link uses http:// but the server upgrades it to ${finalUrl}. Works, but the href should be updated.`,
+        fix: "Change the href to the https:// URL directly.",
+        severity: "info",
+        kind: "symptom",
+        pageUrl,
+        href: link.href,
+        resolvedUrl: finalUrl,
+        redirectChain: chain,
+        linkText: link.text,
+        selector: link.selector,
+        effort: "low",
+        helpUrl: "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security",
+        category: "redirect"
+      });
+    }
+  }
+  return findings;
+}
+
+// ../engine-links/src/checks/anchors.ts
+var HELP_URL3 = "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#href";
+function isAnchorFragment(fragment) {
+  if (fragment.startsWith("/") || fragment.startsWith("!")) return false;
+  if (fragment.toLowerCase() === "top") return false;
+  if (fragment.startsWith(":~:")) return false;
+  return true;
+}
+function checkAnchors(links, pageAnchors, statusMap, pageUrl) {
+  const anchorLookup = /* @__PURE__ */ new Map();
+  for (const a of pageAnchors) anchorLookup.set(a.toLowerCase(), a);
+  const pageOrigin = (() => {
+    try {
+      return new URL(pageUrl).origin;
+    } catch {
+      return null;
+    }
+  })();
+  const findings = [];
+  const pageStatus = statusMap.get(pageUrl);
+  for (const link of links) {
+    const href = link.href.trim();
+    const hashIdx = href.indexOf("#");
+    if (hashIdx === -1) continue;
+    const fragment = href.slice(hashIdx + 1);
+    if (!fragment) continue;
+    if (!isAnchorFragment(fragment)) continue;
+    const isSamePage = hashIdx === 0;
+    let sameOrigin = false;
+    if (!isSamePage) {
+      try {
+        sameOrigin = new URL(href).origin === pageOrigin;
+      } catch {
+        continue;
+      }
+    }
+    if (!isSamePage && !sameOrigin) continue;
+    if (anchorLookup.has(fragment.toLowerCase())) continue;
+    const targetUrl = isSamePage ? pageUrl : href.slice(0, hashIdx);
+    const status = statusMap.get(targetUrl) ?? statusMap.get(href);
+    const nonOkTarget = status !== void 0 && status.statusCode !== 200 || isSamePage && pageStatus !== void 0 && pageStatus.statusCode !== 200;
+    findings.push({
+      checkId: "broken-anchor",
+      checkType: "anchor",
+      title: nonOkTarget ? `Broken anchor link (target page returned HTTP ${status.statusCode})` : "Broken anchor link",
+      description: nonOkTarget ? `Link points to #${fragment} and the target page returned HTTP ${status.statusCode}, so the fragment can never resolve.` : `Link points to #${fragment} but no element with that id or name exists on the page.`,
+      fix: `Add id="${fragment}" to the target element, or update the href to an existing anchor.`,
+      severity: nonOkTarget ? "critical" : "warning",
+      kind: "cause",
+      pageUrl,
+      href,
+      linkText: link.text,
+      selector: link.selector,
+      statusCode: status?.statusCode ?? (isSamePage ? pageStatus?.statusCode : void 0),
+      effort: "low",
+      helpUrl: HELP_URL3,
+      category: "anchor"
+    });
+  }
+  return findings;
+}
+
+// ../engine-links/src/scanner/scanLoadedPage.ts
+var import_p_limit = __toESM(require_p_limit(), 1);
+var EXTRACT_EXPR = `(() => {
+  const out = [];
+  let i = 0;
+  for (const a of document.querySelectorAll('a[href]')) {
+    const raw = a.getAttribute('href') ?? '';
+    let resolved = '';
+    try { resolved = a.href || ''; } catch { resolved = ''; }
+    let sel = 'a[href]';
+    if (a.id) sel = 'a#' + a.id;
+    else if (i < 200) {
+      // nth-of-type among same-parent anchors is stable across renders
+      const parent = a.parentElement;
+      if (parent) {
+        let n = 0;
+        for (const c of parent.children) { if (c.tagName === 'A') n++; if (c === a) break; }
+        sel = parent.tagName.toLowerCase() + ' > a:nth-of-type(' + n + ')';
+      }
+    }
+    out.push({ raw, resolved, text: (a.textContent || '').trim().slice(0, 80), selector: sel });
+    i++;
+  }
+  return out;
+})()`;
+function linksFromHtml(html, pageUrl) {
+  const out = [];
+  const re = /<a\s[^>]*href\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'>]+))[^>]*>([\s\S]*?)<\/a>/gi;
+  let m;
+  while ((m = re.exec(html)) !== null) {
+    const raw = m[1] ?? m[2] ?? m[3] ?? "";
+    if (!raw) continue;
+    let resolved = "";
+    try {
+      resolved = new URL(raw, pageUrl).toString();
+    } catch {
+      resolved = raw;
+    }
+    out.push({
+      raw,
+      resolved,
+      text: m[4]?.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 80) ?? "",
+      selector: "a[href]"
+    });
+  }
+  return out;
+}
+function anchorsFromHtml(rawHtml) {
+  const anchors = /* @__PURE__ */ new Set();
+  const html = rawHtml.replace(/<!--[\s\S]*?-->/g, " ").replace(/<template\b[\s\S]*?<\/template>/gi, " ");
+  const idRe = /<[a-zA-Z][^>]*?\sid\s*=\s*(?:"([^"]+)"|'([^']+)'|([^\s"'>]+))/gi;
+  let m;
+  while ((m = idRe.exec(html)) !== null) anchors.add(m[1] ?? m[2] ?? m[3] ?? "");
+  const nameRe = /<a\s[^>]*name\s*=\s*(?:"([^"]+)"|'([^']+)')/gi;
+  while ((m = nameRe.exec(html)) !== null) anchors.add(m[1] ?? m[2] ?? "");
+  return [...anchors];
+}
+var ANCHORS_EXPR = `[...document.querySelectorAll('[id], a[name]')].map((e) => e.id || e.getAttribute('name') || '').filter(Boolean)`;
+async function anchorsFromLoaded(loaded) {
+  try {
+    const ids = await loaded.evaluate(ANCHORS_EXPR);
+    if (Array.isArray(ids) && ids.every((x) => typeof x === "string")) return [...new Set(ids)];
+  } catch {
+  }
+  return anchorsFromHtml(loaded.html);
+}
+async function extractFromLoaded(loaded) {
+  try {
+    const fromDom = await loaded.evaluate(EXTRACT_EXPR);
+    if (Array.isArray(fromDom) && fromDom.length > 0) {
+      return fromDom.map((l) => ({ raw: l.raw, resolved: l.resolved || l.raw, text: l.text ?? "", selector: l.selector ?? "a[href]" }));
+    }
+  } catch {
+  }
+  return linksFromHtml(loaded.html, loaded.finalUrl ?? loaded.url);
+}
+function splitInternalExternal(links, pageUrl) {
+  let origin = null;
+  try {
+    origin = new URL(pageUrl).origin;
+  } catch {
+    return { internal: [], external: [] };
+  }
+  const internal = [];
+  const external = [];
+  for (const l of links) {
+    if (!/^https?:/i.test(l.resolved)) continue;
+    let target = null;
+    try {
+      target = new URL(l.resolved).origin;
+    } catch {
+      continue;
+    }
+    if (target === origin) internal.push(l);
+    else external.push(l);
+  }
+  return { internal, external };
+}
+function externalCacheKey(url) {
+  try {
+    const u = new URL(url);
+    u.protocol = u.protocol.toLowerCase();
+    u.hostname = u.hostname.toLowerCase();
+    u.hash = "";
+    return u.toString();
+  } catch {
+    return url.toLowerCase();
+  }
+}
+var externalCache = /* @__PURE__ */ new Map();
+var EXTERNAL_CAP = { maxUrls: 100, concurrency: 4, timeoutMs: 1e4, maxRedirectHops: 5 };
+var PR_USER_AGENT = "MergeDeltaLinks/1.0 (+https://mergedelta.netlify.app)";
+var SOFT_STATUSES = /* @__PURE__ */ new Set([403, 429, 999]);
+async function checkExternal(url, fetchImpl, cache = externalCache, stop) {
+  const key = externalCacheKey(url);
+  const hit = cache.get(key);
+  if (hit) return hit;
+  const p = (async () => {
+    const chain = [url];
+    let current = url;
+    let method = "HEAD";
+    for (let hop = 0; hop <= EXTERNAL_CAP.maxRedirectHops; hop++) {
+      let res;
+      try {
+        res = await fetchImpl(current, {
+          method,
+          redirect: "manual",
+          signal: stop !== void 0 ? AbortSignal.any([AbortSignal.timeout(EXTERNAL_CAP.timeoutMs), stop]) : AbortSignal.timeout(EXTERNAL_CAP.timeoutMs),
+          headers: { "User-Agent": PR_USER_AGENT, Accept: "*/*" }
+        });
+      } catch (err) {
+        if (stop?.aborted === true) return { href: url, statusCode: 0, skipped: true };
+        const e = err;
+        const timedOut = e?.name === "TimeoutError" || e?.name === "AbortError" || /timed? ?out/i.test(e?.message ?? "");
+        return { href: url, statusCode: 0, error: timedOut ? "timeout" : `network error: ${e?.message ?? "unknown"}`, redirectChain: chain.length > 1 ? chain : void 0 };
+      }
+      if (method === "HEAD" && !(res.status >= 200 && res.status < 400)) {
+        method = "GET";
+        hop--;
+        continue;
+      }
+      if ([301, 302, 303, 307, 308].includes(res.status)) {
+        const location = res.headers.get("location");
+        if (!location) return { href: url, statusCode: res.status, redirectChain: chain };
+        let next;
+        try {
+          next = new URL(location, current).toString();
+        } catch {
+          return { href: url, statusCode: res.status, redirectChain: chain };
+        }
+        if (chain.includes(next)) return { href: url, statusCode: res.status, redirectChain: [...chain, next], error: "redirect loop detected" };
+        chain.push(next);
+        current = next;
+        if (method === "HEAD" && (res.status === 303 || res.status === 302)) method = "GET";
+        continue;
+      }
+      return { href: url, statusCode: res.status, redirectChain: chain.length > 1 ? chain : void 0, finalUrl: chain.length > 1 ? current : void 0 };
+    }
+    return { href: url, statusCode: 0, error: `too many redirects (>${EXTERNAL_CAP.maxRedirectHops})`, redirectChain: chain };
+  })();
+  cache.set(key, p);
+  void p.then((r) => {
+    if (r.skipped === true && cache.get(key) === p) cache.delete(key);
+  });
+  return p;
+}
+var LOCAL_SUFFIXES = [".localhost", ".local", ".internal", ".test"];
+function isPrivateIpv4(host) {
+  const m = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(host);
+  if (m === null) return false;
+  const [a, b] = [Number(m[1]), Number(m[2])];
+  return a === 0 || a === 127 || a === 10 || a === 172 && b >= 16 && b <= 31 || a === 192 && b === 168 || a === 169 && b === 254;
+}
+function isPrivateIpv6(host) {
+  const h4 = host.replace(/^\[|\]$/g, "").toLowerCase();
+  if (!h4.includes(":")) return false;
+  return h4 === "::1" || h4 === "::" || /^f[cd][0-9a-f]{0,2}:/.test(h4) || /^fe[89ab][0-9a-f]?:/.test(h4);
+}
+function isPlatformPreviewHost(host) {
+  return /^[a-z0-9-]+--[a-z0-9-]+\.netlify\.app$/.test(host) || /^[a-z0-9-]+-git-[a-z0-9-]+\.vercel\.app$/.test(host);
+}
+function isDevUrlRaw(raw) {
+  const href = raw.trim();
+  if (!/^(https?:)?\/\//i.test(href)) return false;
+  let host;
+  try {
+    host = new URL(href.startsWith("//") ? `http:${href}` : href).hostname.toLowerCase();
+  } catch {
+    return false;
+  }
+  if (host === "") return false;
+  if (host === "localhost" || LOCAL_SUFFIXES.some((s) => host.endsWith(s))) return true;
+  if (isPrivateIpv4(host) || isPrivateIpv6(host)) return true;
+  return isPlatformPreviewHost(host);
+}
+function checkRawHrefs(links, pageUrl) {
+  const findings = [];
+  for (const link of links) {
+    const raw = link.raw.trim();
+    if (!raw || raw === "#" || raw === "#!") {
+      findings.push({
+        checkId: "placeholder-link",
+        checkType: "placeholder",
+        title: "Placeholder link",
+        description: `Link has href="${raw || ""}" \u2014 a placeholder that navigates nowhere.`,
+        fix: "Replace with the real URL or remove the link before shipping to production.",
+        severity: "warning",
+        kind: "cause",
+        pageUrl,
+        href: raw || "",
+        linkText: link.text,
+        selector: link.selector,
+        effort: "low",
+        helpUrl: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a",
+        category: "placeholder"
+      });
+      continue;
+    }
+    if (raw.toLowerCase().startsWith("javascript:")) {
+      findings.push({
+        checkId: "javascript-void-link",
+        checkType: "placeholder",
+        title: "JavaScript void link",
+        description: `Link uses href="${raw}" which prevents keyboard navigation and breaks screen readers.`,
+        fix: "Use a <button> element for actions, or provide a real URL. Never use javascript:void(0) as an href.",
+        severity: "warning",
+        kind: "cause",
+        pageUrl,
+        href: raw,
+        linkText: link.text,
+        selector: link.selector,
+        effort: "medium",
+        helpUrl: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#href",
+        category: "placeholder"
+      });
+      continue;
+    }
+    if (isDevUrlRaw(raw)) {
+      findings.push({
+        checkId: "dev-url-leaked",
+        checkType: "placeholder",
+        title: "Development URL shipped to production",
+        description: `The link's href is ${raw} \u2014 a development/staging/private address written by the author.`,
+        fix: "Replace with the production URL. Add a lint rule or env-variable substitution to prevent this.",
+        severity: "critical",
+        kind: "cause",
+        pageUrl,
+        href: raw,
+        linkText: link.text,
+        selector: link.selector,
+        effort: "low",
+        helpUrl: "https://web.dev/lighthouse-best-practices/",
+        category: "dev-url"
+      });
+    }
+  }
+  return findings;
+}
+function externalCapFinding(count, pageUrl) {
+  return {
+    checkId: "external-checks-capped",
+    checkType: "ok",
+    title: `External link checks capped at ${EXTERNAL_CAP.maxUrls}`,
+    description: `${count} external URLs were beyond the cap of ${EXTERNAL_CAP.maxUrls} per side and were not checked.`,
+    fix: "Reduce the number of unique external links on the page, or check them in the full site scan.",
+    severity: "info",
+    kind: "symptom",
+    pageUrl,
+    href: "",
+    effort: "low",
+    helpUrl: "https://github.com/webperformancelearn/links-diagnosis-engine#caps",
+    category: "external-cap"
+  };
+}
+var LINK_BUDGETS = { internalMs: 5e4, externalMs: 5e4 };
+var INTERNAL_UNIT = "internal-links";
+var EXTERNAL_UNIT = "external-links";
+function downgradeExternal(f) {
+  const soft = f.statusCode !== void 0 && SOFT_STATUSES.has(f.statusCode);
+  const networkish = f.checkId === "broken-link-network" || f.checkId === "broken-link-timeout";
+  const base = { ...f, external: true, scanUnit: EXTERNAL_UNIT };
+  if (soft || networkish) return { ...base, severity: "info" };
+  return { ...base, severity: f.severity === "critical" ? "warning" : f.severity };
+}
+function deadline(ms, parent) {
+  const signals = [AbortSignal.timeout(Math.max(0, ms))];
+  if (parent !== void 0) signals.push(parent);
+  return AbortSignal.any(signals);
+}
+async function runUntil(items, concurrency, stop, work) {
+  const limit = (0, import_p_limit.default)(concurrency);
+  const done = [];
+  let skipped = 0;
+  await Promise.all(items.map((item) => limit(async () => {
+    if (stop.aborted) {
+      skipped++;
+      return;
+    }
+    const result = await work(item);
+    done.push({ item, result });
+  })));
+  return { done, skipped };
+}
+async function scanSideDetailed(loadedPages, deps = {}) {
+  const internalFetch = deps.internalFetch ?? fetch;
+  const externalFetch = deps.externalFetch ?? fetch;
+  const cache = deps.externalCache ?? externalCache;
+  const findings = [];
+  const failedPages = [];
+  const unchecked = { internal: 0, external: 0 };
+  const pages = [];
+  for (const loaded of loadedPages) {
+    try {
+      pages.push({ loaded, links: await extractFromLoaded(loaded), anchors: await anchorsFromLoaded(loaded) });
+    } catch {
+      failedPages.push(loaded.url);
+    }
+  }
+  for (const p of pages) {
+    findings.push(...checkRawHrefs(p.links, p.loaded.url));
+  }
+  const internalTargets = /* @__PURE__ */ new Map();
+  for (const p of pages) {
+    const { internal } = splitInternalExternal(p.links, p.loaded.url);
+    for (const l of internal) {
+      if (!internalTargets.has(l.resolved)) internalTargets.set(l.resolved, []);
+      internalTargets.get(l.resolved).push(l);
+    }
+  }
+  const internalResults = /* @__PURE__ */ new Map();
+  if (internalTargets.size > 0) {
+    const stop = deadline(deps.budgets?.internalMs ?? LINK_BUDGETS.internalMs, deps.signal);
+    const r = await runUntil([...internalTargets.keys()], 4, stop, (url) => checkExternalInternal(url, internalFetch, stop));
+    for (const { item, result } of r.done) {
+      if (result.skipped === true) unchecked.internal++;
+      else internalResults.set(item, result);
+    }
+    unchecked.internal += r.skipped;
+  }
+  const internalUnit = { scanUnit: INTERNAL_UNIT };
+  for (const p of pages) {
+    const { internal } = splitInternalExternal(p.links, p.loaded.url);
+    const links = internal.map((l) => ({ href: l.resolved, text: l.text, selector: l.selector }));
+    findings.push(...[...checkBroken(links, internalResults, p.loaded.url), ...checkRedirects(links, internalResults, p.loaded.url)].map((f) => ({ ...f, ...internalUnit })));
+    const samePageOnly = links.filter((l) => {
+      try {
+        const raw = internal.find((r) => r.resolved === l.href).raw;
+        if (raw.startsWith("#")) return true;
+        const u = new URL(l.href);
+        const page = new URL(p.loaded.url);
+        return u.pathname === page.pathname && u.search === page.search;
+      } catch {
+        return false;
+      }
+    });
+    findings.push(...checkAnchors(samePageOnly, p.anchors, internalResults, p.loaded.url));
+  }
+  const anchorsByUrl = /* @__PURE__ */ new Map();
+  for (const p of pages) anchorsByUrl.set(p.loaded.url, p.anchors);
+  for (const p of pages) {
+    const { internal } = splitInternalExternal(p.links, p.loaded.url);
+    for (const l of internal) {
+      const hashIdx = l.raw.indexOf("#");
+      if (hashIdx <= 0) continue;
+      const fragment = l.raw.slice(hashIdx + 1);
+      if (!fragment || !isAnchorFragment(fragment)) continue;
+      const base = l.resolved.split("#")[0];
+      const targetAnchors = anchorsByUrl.get(base) ?? null;
+      if (targetAnchors === null) continue;
+      if (targetAnchors.some((a) => a.toLowerCase() === fragment.toLowerCase())) continue;
+      const status = internalResults.get(base);
+      const nonOkTarget = status !== void 0 && status.statusCode !== 200;
+      findings.push({
+        checkId: "broken-anchor",
+        checkType: "anchor",
+        title: `Broken anchor #${fragment}`,
+        description: `The link points to #${fragment} but the target page has no such id or name${nonOkTarget ? " (and the target returned a non-200 status)" : ""}.`,
+        fix: "Update the fragment to match an existing id on the target page, or add the id.",
+        severity: nonOkTarget ? "critical" : "warning",
+        kind: "symptom",
+        pageUrl: p.loaded.url,
+        href: l.resolved,
+        statusCode: status?.statusCode,
+        linkText: l.text,
+        selector: l.selector,
+        effort: "low",
+        helpUrl: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/a#href",
+        category: "anchor"
+      });
+    }
+  }
+  const externalTargets = /* @__PURE__ */ new Map();
+  for (const p of pages) {
+    const { external } = splitInternalExternal(p.links, p.loaded.url);
+    for (const l of external) {
+      if (isDevUrlRaw(l.raw)) continue;
+      if (!externalTargets.has(externalCacheKey(l.resolved))) externalTargets.set(externalCacheKey(l.resolved), l);
+    }
+  }
+  const externalKeys = [...externalTargets.keys()];
+  const overCap = Math.max(0, externalKeys.length - EXTERNAL_CAP.maxUrls);
+  const checkedKeys = externalKeys.slice(0, EXTERNAL_CAP.maxUrls);
+  unchecked.external += overCap;
+  if (externalKeys.length > 0) {
+    const stop = deadline(deps.budgets?.externalMs ?? LINK_BUDGETS.externalMs, deps.signal);
+    const r = await runUntil(checkedKeys, EXTERNAL_CAP.concurrency, stop, (k) => checkExternal(externalTargets.get(k).resolved, externalFetch, cache, stop));
+    unchecked.external += r.skipped + r.done.filter((d) => d.result.skipped === true).length;
+    const byHref = /* @__PURE__ */ new Map();
+    for (const { result } of r.done) if (result.skipped !== true) byHref.set(result.href, result);
+    for (const p of pages) {
+      const { external } = splitInternalExternal(p.links, p.loaded.url);
+      const links = external.filter((l) => !isDevUrlRaw(l.raw)).map((l) => ({ href: l.resolved, text: l.text, selector: l.selector }));
+      const scoped = /* @__PURE__ */ new Map();
+      for (const l of links) {
+        const res = byHref.get(l.href);
+        if (res) scoped.set(l.href, res);
+      }
+      const downgraded = [...checkBroken(links, scoped, p.loaded.url), ...checkRedirects(links, scoped, p.loaded.url)].map(downgradeExternal);
+      findings.push(...downgraded);
+    }
+  }
+  if (overCap > 0 && pages.length > 0) {
+    findings.push(externalCapFinding(overCap, pages[0].loaded.url));
+  }
+  const budgetSkipped = unchecked.external - overCap;
+  if ((unchecked.internal > 0 || budgetSkipped > 0) && pages.length > 0) {
+    findings.push(budgetFinding(unchecked.internal, budgetSkipped, pages[0].loaded.url));
+  }
+  return { findings, failedPages, unchecked };
+}
+function budgetFinding(internal, external, pageUrl) {
+  const parts = [internal > 0 ? `${internal} internal` : "", external > 0 ? `${external} external` : ""].filter(Boolean).join(" and ");
+  return {
+    checkId: "link-checks-time-budget",
+    checkType: "ok",
+    title: "Some links were not checked within the time budget",
+    description: `${parts} link target(s) were not checked within the per-side time budget; findings for them are not compared on this run.`,
+    fix: "Slow or unresponsive link targets use up the budget; check them in a full site scan.",
+    severity: "info",
+    kind: "symptom",
+    pageUrl,
+    href: "",
+    effort: "low",
+    helpUrl: "https://mergedelta.netlify.app",
+    category: "external-cap"
+  };
+}
+async function checkExternalInternal(url, fetchImpl, stop) {
+  const chain = [url];
+  let current = url;
+  let method = "HEAD";
+  for (let hop = 0; hop <= EXTERNAL_CAP.maxRedirectHops; hop++) {
+    let res;
+    try {
+      res = await fetchImpl(current, {
+        method,
+        redirect: "manual",
+        signal: stop !== void 0 ? AbortSignal.any([AbortSignal.timeout(EXTERNAL_CAP.timeoutMs), stop]) : AbortSignal.timeout(EXTERNAL_CAP.timeoutMs),
+        headers: { "User-Agent": PR_USER_AGENT, Accept: "*/*" }
+      });
+    } catch (err) {
+      if (stop?.aborted === true) return { href: url, statusCode: 0, skipped: true };
+      const e = err;
+      const timedOut = e?.name === "TimeoutError" || e?.name === "AbortError" || /timed? ?out/i.test(e?.message ?? "");
+      return { href: url, statusCode: 0, error: timedOut ? "timeout" : `network error: ${e?.message ?? "unknown"}`, redirectChain: chain.length > 1 ? chain : void 0 };
+    }
+    if (method === "HEAD" && !(res.status >= 200 && res.status < 400)) {
+      method = "GET";
+      hop--;
+      continue;
+    }
+    if ([301, 302, 303, 307, 308].includes(res.status)) {
+      const location = res.headers.get("location");
+      if (!location) return { href: url, statusCode: res.status, redirectChain: chain };
+      let next;
+      try {
+        next = new URL(location, current).toString();
+      } catch {
+        return { href: url, statusCode: res.status, redirectChain: chain };
+      }
+      if (chain.includes(next)) return { href: url, statusCode: res.status, redirectChain: [...chain, next], error: "redirect loop detected" };
+      chain.push(next);
+      current = next;
+      if (method === "HEAD" && (res.status === 303 || res.status === 302)) method = "GET";
+      continue;
+    }
+    return { href: url, statusCode: res.status, redirectChain: chain.length > 1 ? chain : void 0, finalUrl: chain.length > 1 ? current : void 0 };
+  }
+  return { href: url, statusCode: 0, error: `too many redirects (>${EXTERNAL_CAP.maxRedirectHops})`, redirectChain: chain };
+}
+
+// ../engine-links/src/rules.ts
+var RULE_CONFIDENCE4 = {
+  // broken-link-<status> is a family; the adapter looks the family up when the
+  // exact id (e.g. broken-link-404) is not present. A concrete status IS the
+  // deterministic check → likely.
+  "broken-link": "likely",
+  "broken-link-timeout": "possible",
+  "broken-link-network": "possible",
+  "redirect-chain-excessive": "likely",
+  "redirect-chain-long": "likely",
+  "redirect-cross-domain": "possible",
+  "redirect-http-https-upgrade": "likely",
+  "placeholder-link": "likely",
+  "javascript-void-link": "likely",
+  "dev-url-leaked": "likely",
+  "mailto-invalid": "likely",
+  "broken-anchor": "possible"
+};
+function confidenceFor4(ruleId) {
+  return RULE_CONFIDENCE4[ruleId] ?? (ruleId.startsWith("broken-link-") ? RULE_CONFIDENCE4["broken-link"] : "likely");
+}
+
+// ../engine-links/src/adapter.ts
+var LINKS_ENGINE = "links";
+var BROKEN_LINK_FAMILY = "broken-link";
+function ruleFamily(checkId) {
+  return checkId.startsWith("broken-link-") ? BROKEN_LINK_FAMILY : checkId;
+}
+function evidenceFor4(n2) {
+  const ev = [];
+  if (n2.href) {
+    if (/^https?:\/\//i.test(n2.href)) ev.push({ kind: "request", label: "Link", url: n2.href });
+    else ev.push({ kind: "text", label: "Link", value: n2.href });
+  }
+  if (n2.resolvedUrl && /^https?:\/\//i.test(n2.resolvedUrl)) {
+    ev.push({ kind: "request", label: "Resolves to", url: n2.resolvedUrl });
+  }
+  if (n2.statusCode !== void 0) {
+    ev.push({ kind: "text", label: "Status", value: n2.statusCode, unit: "count" });
+  }
+  if (n2.linkText) ev.push({ kind: "text", label: "Link text", value: n2.linkText });
+  if (n2.selector) ev.push({ kind: "element", label: "Selector", selector: n2.selector });
+  if (n2.redirectChain) {
+    for (const hop of n2.redirectChain.slice(0, 10)) {
+      if (/^https?:\/\//i.test(hop)) ev.push({ kind: "request", label: "Redirect hop", url: hop });
+    }
+  }
+  return ev;
+}
+function toFinding4(n2, ctx) {
+  const evidence = evidenceFor4(n2);
+  if (evidence.length === 0) return null;
+  const pageUrl = n2.pageUrl || ctx.pageUrl || null;
+  const subject = normaliseUrl(n2.href);
+  const ruleId = n2.checkId;
+  const fingerprint = fingerprintFinding(LINKS_ENGINE, {
+    checkId: ruleFamily(ruleId),
+    pageUrl: pageUrl ?? void 0,
+    url: n2.href
+  });
+  const helpUrl = n2.helpUrl && n2.helpUrl.startsWith("https:") ? n2.helpUrl : void 0;
+  return {
+    id: `${ruleId}:${subject}`,
+    engine: LINKS_ENGINE,
+    ruleId,
+    fingerprint,
+    pageUrl: pageUrl === null ? null : normaliseUrl(pageUrl),
+    severity: mapSeverity(LINKS_ENGINE, ruleId, n2.severity),
+    nativeSeverity: n2.severity,
+    // MD-120: external targets are flaky by nature, so always `possible` (task 2-4 Item 2)
+    confidence: n2.external === true ? "possible" : confidenceFor4(ruleId),
+    ...n2.scanUnit !== void 0 ? { scanUnit: n2.scanUnit } : {},
+    kind: n2.kind,
+    metric: null,
+    title: n2.title,
+    explanation: n2.description,
+    evidence,
+    ...n2.fix ? { fix: n2.fix } : {},
+    lessons: [],
+    ...helpUrl ? { helpUrl } : {},
+    effort: n2.effort
+  };
+}
+function toFindings4(natives, ctx) {
+  const findings = [];
+  for (const n2 of natives) {
+    const f = toFinding4(n2, ctx);
+    if (f) findings.push(f);
+  }
+  return findings;
+}
+
+// src/engines/links.ts
+var LINKS_ENGINE_VERSION = "0.2.0";
+function linksEngine() {
+  return {
+    id: "links",
+    version: LINKS_ENGINE_VERSION,
+    input: "pages",
+    timeoutMs: 18e4,
+    mutatesPage: false,
+    async scan(ctx) {
+      const pages = [];
+      const findings = [];
+      const loaded = ctx.pages.map((page) => ({
+        url: page.url,
+        finalUrl: page.finalUrl,
+        status: page.status,
+        headers: page.headers,
+        html: page.html,
+        evaluate: (fn) => page.page.evaluate(fn)
+      }));
+      if (ctx.signal.aborted) {
+        for (const failed2 of ctx.failedPages) pages.push({ ...failed2 });
+        return { pages, findings };
+      }
+      const r = await scanSideDetailed(loaded, { signal: ctx.signal });
+      findings.push(...toFindings4(r.findings, { engineVersion: LINKS_ENGINE_VERSION }));
+      const failed = new Set(r.failedPages);
+      for (const page of ctx.pages) {
+        pages.push(failed.has(page.url) ? { url: page.url, success: false, failureReason: "crash" } : { url: page.url, success: true });
+      }
+      if (r.unchecked.internal > 0) pages.push({ url: `unit:${INTERNAL_UNIT}`, success: false, failureReason: "timeout" });
+      if (r.unchecked.external > 0) pages.push({ url: `unit:${EXTERNAL_UNIT}`, success: false, failureReason: "timeout" });
+      for (const failed2 of ctx.failedPages) pages.push({ ...failed2 });
+      return { pages, findings };
+    }
+  };
+}
+
+// ../engine-bundle/src/analyzer/measureOutput.ts
+var import_node_fs2 = require("node:fs");
+var import_node_path2 = require("node:path");
+var import_node_zlib = require("node:zlib");
+var import_node_util = require("node:util");
+var gzipAsync = (0, import_node_util.promisify)(import_node_zlib.gzip);
+var brotliAsync = (0, import_node_util.promisify)(import_node_zlib.brotliCompress);
+var BROTLI_QUALITY = 5;
+var WALK_CAP = { maxFiles: 2e3, maxTotalBytes: 200 * 1024 * 1024 };
+var BUDGETS = { totalJsKb: 500, initialJsKb: 350, chunkKb: 200, cssKb: 100 };
+var SKIP_DIRS = /* @__PURE__ */ new Set(["node_modules"]);
+function isDotDir(name) {
+  return name.startsWith(".") && name !== "." && name !== "..";
+}
+function classify(file) {
+  if (file.endsWith(".map")) return "map";
+  if (/\.(js|mjs|cjs)$/.test(file)) return "js";
+  if (file.endsWith(".css")) return "css";
+  return null;
+}
+function stripHash(fileName) {
+  const dot = fileName.lastIndexOf(".");
+  const stem = dot > 0 ? fileName.slice(0, dot) : fileName;
+  const ext = dot > 0 ? fileName.slice(dot) : "";
+  const stripped = stripStemHash(stem);
+  return stripped === stem ? fileName : stripped + ext;
+}
+function stripStemHash(stem) {
+  const longHex = /^(.+)-([a-f0-9]{9,})$/.exec(stem);
+  if (longHex !== null && /[0-9]/.test(longHex[2])) return longHex[1];
+  if (stem.length > 9 && stem[stem.length - 9] === "-") {
+    const seg = stem.slice(-8);
+    if (/^[A-Za-z0-9_-]{8}$/.test(seg) && (!/^[a-z]+$/.test(seg) || /^[a-f]+$/.test(seg))) return stem.slice(0, -9);
+  }
+  const dotHex = /^(.+)\.([a-f0-9]{8,})$/.exec(stem);
+  if (dotHex !== null) return dotHex[1];
+  return stem;
+}
+function parseViteManifest(json2) {
+  let parsed;
+  try {
+    parsed = JSON.parse(json2);
+  } catch {
+    return null;
+  }
+  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) return null;
+  const obj = parsed;
+  const entries = /* @__PURE__ */ new Map();
+  const fileToSource = /* @__PURE__ */ new Map();
+  const entryFiles = /* @__PURE__ */ new Set();
+  const fileOfKey = /* @__PURE__ */ new Map();
+  const importsOfKey = /* @__PURE__ */ new Map();
+  const entryKeys = [];
+  for (const [key, v] of Object.entries(obj)) {
+    if (typeof v !== "object" || v === null) continue;
+    const rec = v;
+    if (typeof rec["file"] !== "string") continue;
+    const file = rec["file"];
+    const ext = file.slice(file.lastIndexOf("."));
+    const source = typeof rec["src"] === "string" && rec["src"] !== "" ? rec["src"] : typeof rec["name"] === "string" && rec["name"] !== "" ? `${rec["name"]}${ext}` : key.startsWith("_") ? stripHash(key.slice(1)) : key;
+    fileToSource.set(file, source);
+    fileOfKey.set(key, file);
+    importsOfKey.set(key, Array.isArray(rec["imports"]) ? rec["imports"].filter((x) => typeof x === "string") : []);
+    if (rec["isEntry"] === true) {
+      entries.set(source, file);
+      entryFiles.add(file);
+      entryKeys.push(key);
+    }
+  }
+  if (fileToSource.size === 0) return null;
+  const initialFiles = /* @__PURE__ */ new Set();
+  const seen = /* @__PURE__ */ new Set();
+  const stack = [...entryKeys];
+  while (stack.length > 0) {
+    const k = stack.pop();
+    if (seen.has(k)) continue;
+    seen.add(k);
+    const f = fileOfKey.get(k);
+    if (f !== void 0) initialFiles.add(f);
+    stack.push(...importsOfKey.get(k) ?? []);
+  }
+  return { entries, fileToSource, entryFiles, initialFiles };
+}
+function walkOutput(dir) {
+  const entries = [];
+  let capped = false;
+  let cappedCount = 0;
+  let totalBytes = 0;
+  const walk = (current) => {
+    let names;
+    try {
+      names = (0, import_node_fs2.readdirSync)(current);
+    } catch {
+      return;
+    }
+    names.sort();
+    for (const name of names) {
+      const full = (0, import_node_path2.join)(current, name);
+      let st;
+      try {
+        st = (0, import_node_fs2.statSync)(full);
+      } catch {
+        continue;
+      }
+      if (st.isDirectory()) {
+        if (SKIP_DIRS.has(name) || isDotDir(name)) continue;
+        walk(full);
+        continue;
+      }
+      if (!st.isFile()) continue;
+      const kind = classify(name);
+      if (kind === null) continue;
+      if (entries.length >= WALK_CAP.maxFiles || totalBytes + st.size > WALK_CAP.maxTotalBytes) {
+        capped = true;
+        cappedCount++;
+        continue;
+      }
+      totalBytes += st.size;
+      entries.push({ path: (0, import_node_path2.relative)(dir, full).split(import_node_path2.sep).join("/"), full, kind, size: st.size });
+    }
+  };
+  walk(dir);
+  return { entries, capped, cappedCount };
+}
+function measured(e, manifest, rawBytes, gzipBytes, brotliBytes) {
+  const base = e.path.split("/").pop() ?? e.path;
+  const manifestSource = manifest?.fileToSource.get(e.path) ?? manifest?.fileToSource.get(base);
+  const dir = e.path.includes("/") ? e.path.slice(0, e.path.lastIndexOf("/") + 1) : "";
+  const chunk = manifestSource ?? `${dir}${stripHash(base)}`;
+  return {
+    path: e.path,
+    chunk,
+    rawBytes,
+    gzipBytes,
+    brotliBytes,
+    kind: e.kind,
+    // MD-122: "initial" = an entry or a static import of one (the manifest's import graph)
+    isEntry: (manifest?.initialFiles.has(e.path) ?? false) || (manifest?.initialFiles.has(base) ?? false)
+  };
+}
+function summarise(files, mapFiles, capped, cappedCount, manifest) {
+  const js = files.filter((f) => f.kind === "js");
+  const css = files.filter((f) => f.kind === "css");
+  const initial = js.filter((f) => f.isEntry);
+  return {
+    files,
+    mapFiles,
+    totalJsGzip: js.reduce((s, f) => s + f.gzipBytes, 0),
+    totalJsRaw: js.reduce((s, f) => s + f.rawBytes, 0),
+    totalCssGzip: css.reduce((s, f) => s + f.gzipBytes, 0),
+    initialJsGzip: initial.reduce((s, f) => s + f.gzipBytes, 0),
+    capped,
+    cappedCount,
+    hasManifest: manifest !== null
+  };
+}
+var BROTLI_PARAMS = { params: { [import_node_zlib.constants.BROTLI_PARAM_QUALITY]: BROTLI_QUALITY } };
+async function measureOutputAsync(dir, signal) {
+  const manifest = readManifest(dir);
+  const { entries, capped, cappedCount } = walkOutput(dir);
+  const files = [];
+  const mapFiles = [];
+  for (const e of entries) {
+    if (signal?.aborted === true) throw Object.assign(new Error("bundle measurement aborted"), { name: "AbortError" });
+    let raw;
+    try {
+      raw = (0, import_node_fs2.readFileSync)(e.full);
+    } catch {
+      continue;
+    }
+    if (e.kind === "map") {
+      mapFiles.push(measured(e, manifest, raw.length, 0, 0));
+      continue;
+    }
+    const [gz, br] = await Promise.all([gzipAsync(raw, { level: 9 }), brotliAsync(raw, BROTLI_PARAMS)]);
+    files.push(measured(e, manifest, raw.length, gz.length, br.length));
+  }
+  return summarise(files, mapFiles, capped, cappedCount, manifest);
+}
+function readManifest(dir) {
+  for (const candidate of [".vite/manifest.json", "manifest.json"]) {
+    let text;
+    try {
+      text = (0, import_node_fs2.readFileSync)((0, import_node_path2.join)(dir, candidate), "utf-8");
+    } catch {
+      continue;
+    }
+    const m = parseViteManifest(text);
+    if (m) return m;
+  }
+  return null;
+}
+function readOutputFile(dir, path) {
+  try {
+    return (0, import_node_fs2.readFileSync)((0, import_node_path2.join)(dir, path));
+  } catch {
+    return null;
+  }
+}
+
+// ../engine-bundle/src/checks/bandChecks.ts
+var DEV_MARKERS = [
+  { re: /\breact(?:-[\w-]+)?(?:\.[\w-]+)*\.development\b/, label: "a React development build" },
+  { re: /\bvue\.(?:global|esm-browser|runtime\.global|runtime\.esm-browser)\.js\b|You are running a development build of Vue|You are running Vue in development mode/, label: "a Vue development build" },
+  { re: /"production"\s*!==?\s*(process\.env\.NODE_ENV|__DEV__)/, label: "a development-only guard (production check left in)" }
+];
+function kb2(bytes) {
+  return `${(bytes / 1024).toFixed(1)} KB`;
+}
+function bandSeverity(gzipBytes, budgetKb) {
+  const kbSize = gzipBytes / 1024;
+  if (kbSize >= budgetKb * 2) return "critical";
+  if (kbSize > budgetKb) return "warning";
+  return null;
+}
+function bandChecks(m, readFile2) {
+  const findings = [];
+  const byChunk = /* @__PURE__ */ new Map();
+  for (const f of m.files) {
+    if (f.kind !== "js") continue;
+    if (!byChunk.has(f.chunk)) byChunk.set(f.chunk, []);
+    byChunk.get(f.chunk).push(f);
+  }
+  for (const [chunk, parts] of byChunk) {
+    const gzip2 = parts.reduce((s, f) => s + f.gzipBytes, 0);
+    const raw = parts.reduce((s, f) => s + f.rawBytes, 0);
+    const brotli = parts.reduce((s, f) => s + f.brotliBytes, 0);
+    const sev = bandSeverity(gzip2, BUDGETS.chunkKb);
+    if (sev === null) continue;
+    findings.push({
+      checkId: "chunk-over-budget",
+      title: `Chunk "${chunk}" is over budget (${kb2(gzip2)} gzip > ${BUDGETS.chunkKb} KB)`,
+      description: `The chunk "${chunk}" measures ${kb2(gzip2)} gzipped (raw ${kb2(raw)}, brotli q5 ${kb2(brotli)}), over the ${BUDGETS.chunkKb} KB gzip budget${sev === "critical" ? " and at or beyond twice the budget" : ""}.`,
+      fix: sev === "critical" ? `Split "${chunk}" further (dynamic imports), or raise its budget deliberately after review.` : `Trim "${chunk}" (code-split, tree-shake, or replace heavy imports) to get under ${BUDGETS.chunkKb} KB gzip.`,
+      impact: sev === "critical" ? "critical" : "medium",
+      kind: "cause",
+      chunkName: chunk,
+      baseSize: void 0,
+      prSize: gzip2,
+      effort: "medium",
+      helpUrl: "https://rollupjs.org/guide/en/#code-splitting",
+      category: "budget"
+    });
+  }
+  const totalSev = bandSeverity(m.totalJsGzip, BUDGETS.totalJsKb);
+  if (totalSev !== null) {
+    findings.push({
+      checkId: "total-js-over-budget",
+      title: `Total JS is over budget (${kb2(m.totalJsGzip)} gzip > ${BUDGETS.totalJsKb} KB)`,
+      description: `All shipped JavaScript measures ${kb2(m.totalJsGzip)} gzipped across ${m.files.filter((f) => f.kind === "js").length} files, over the ${BUDGETS.totalJsKb} KB gzip budget${totalSev === "critical" ? " and at or beyond twice the budget" : ""}.`,
+      fix: "Audit the largest chunks; drop unused dependencies; move code to lazy chunks.",
+      impact: totalSev === "critical" ? "critical" : "medium",
+      kind: "cause",
+      chunkName: "global",
+      prSize: m.totalJsGzip,
+      effort: "medium",
+      helpUrl: "https://web.dev/reduce-javascript-payloads/",
+      category: "budget"
+    });
+  }
+  if (m.hasManifest) {
+    const initSev = bandSeverity(m.initialJsGzip, BUDGETS.initialJsKb);
+    if (initSev !== null) {
+      findings.push({
+        checkId: "initial-js-over-budget",
+        title: `Initial JS is over budget (${kb2(m.initialJsGzip)} gzip > ${BUDGETS.initialJsKb} KB)`,
+        description: `Initial JS (the entry chunks and their static imports, from the manifest) measures ${kb2(m.initialJsGzip)} gzipped, over the ${BUDGETS.initialJsKb} KB gzip budget.`,
+        fix: "Move non-critical code out of the entry chunks into lazy-loaded ones.",
+        impact: initSev === "critical" ? "critical" : "medium",
+        kind: "cause",
+        chunkName: "global",
+        prSize: m.initialJsGzip,
+        effort: "medium",
+        helpUrl: "https://web.dev/code-splitting-splitchunks/",
+        category: "budget"
+      });
+    }
+  }
+  const cssSev = bandSeverity(m.totalCssGzip, BUDGETS.cssKb);
+  if (cssSev !== null) {
+    findings.push({
+      checkId: "css-over-budget",
+      title: `Total CSS is over budget (${kb2(m.totalCssGzip)} gzip > ${BUDGETS.cssKb} KB)`,
+      description: `All shipped CSS measures ${kb2(m.totalCssGzip)} gzipped, over the ${BUDGETS.cssKb} KB gzip budget.`,
+      fix: "Purge unused CSS; split per-route stylesheets; audit large framework imports.",
+      impact: cssSev === "critical" ? "critical" : "medium",
+      kind: "cause",
+      chunkName: "global",
+      prSize: m.totalCssGzip,
+      effort: "medium",
+      helpUrl: "https://purgecss.com/",
+      category: "budget"
+    });
+  }
+  if (m.mapFiles.length > 0) {
+    const totalMapBytes = m.mapFiles.reduce((s, f) => s + f.rawBytes, 0);
+    findings.push({
+      checkId: "source-maps-in-prod",
+      title: `${m.mapFiles.length} source map file(s) shipped in the build output`,
+      description: `Source maps (${kb2(totalMapBytes)} total) are in the output, publicly exposing source code.`,
+      fix: "Set sourcemap: false in production builds, or use hidden source maps kept out of the output.",
+      impact: "high",
+      kind: "cause",
+      chunkName: m.mapFiles[0].chunk,
+      assetName: m.mapFiles.map((f) => f.path).slice(0, 5).join(", "),
+      effort: "low",
+      helpUrl: "https://vitejs.dev/config/build-options.html#build-sourcemap",
+      category: "size"
+    });
+  }
+  for (const f of m.files) {
+    if (f.kind !== "js") continue;
+    const buf = readFile2(f.path);
+    if (buf === null) continue;
+    const head = buf.subarray(0, 512 * 1024).toString("utf-8");
+    for (const { re, label: label2 } of DEV_MARKERS) {
+      if (re.test(head)) {
+        findings.push({
+          checkId: "dev-build-shipped",
+          title: `Development build shipped in the output (${f.chunk})`,
+          description: `${f.path} contains ${label2}. A development build is larger, slower and logs warnings in production.`,
+          fix: "Build with NODE_ENV=production / mode: 'production' so the production build is emitted.",
+          impact: "critical",
+          kind: "cause",
+          chunkName: f.chunk,
+          assetName: f.path,
+          prSize: f.gzipBytes,
+          effort: "low",
+          helpUrl: "https://vitejs.dev/guide/build.html",
+          category: "size"
+        });
+        break;
+      }
+    }
+  }
+  if (m.capped) {
+    findings.push({
+      checkId: "output-walk-capped",
+      title: `Output walk capped (${m.cappedCount} files not measured)`,
+      description: `The build output exceeded the walk caps (${m.files.length}+ files or the 200 MB total); ${m.cappedCount} files were not measured.`,
+      fix: "Reduce the output size, or raise the caps for this repository after review.",
+      impact: "info",
+      kind: "symptom",
+      chunkName: "global",
+      effort: "low",
+      helpUrl: "https://github.com/webperformancelearn/bundle-diagnosis-engine#caps",
+      category: "size"
+    });
+  }
+  return findings;
+}
+
+// ../engine-bundle/src/rules.ts
+var PR_SCAN_RULES2 = {
+  "chunk-over-budget": "likely",
+  // the gzip size is measured, the band is exact
+  "total-js-over-budget": "likely",
+  // measured
+  "initial-js-over-budget": "likely",
+  // measured, but only with a manifest (else NO finding)
+  "css-over-budget": "likely",
+  // measured
+  "source-maps-in-prod": "likely",
+  // the .map files are observed on disk
+  "dev-build-shipped": "possible",
+  // markers are matched, but a matched string is inferred evidence
+  "output-walk-capped": "likely"
+  // the cap count is exact
+};
+var RULE_CONFIDENCE5 = {
+  "chunk-size-increase": "likely",
+  "new-large-chunk": "likely",
+  "total-js-increase": "likely",
+  "css-size-increase": "likely",
+  "initial-js-budget-exceeded": "likely",
+  "initial-js-budget-warning": "likely",
+  "source-maps-in-prod": "likely",
+  "known-heavy-dep": "possible",
+  "new-dependency-added": "possible",
+  "duplicate-module": "possible",
+  ...PR_SCAN_RULES2
+};
+function confidenceFor5(ruleId) {
+  return RULE_CONFIDENCE5[ruleId] ?? "possible";
+}
+
+// ../engine-bundle/src/adapter.ts
+var BUNDLE_ENGINE = "bundle";
+function subjectFor3(n2) {
+  if (n2.checkId === "chunk-size-increase" || n2.checkId === "new-large-chunk") return n2.chunkName ?? "global";
+  if (n2.checkId === "chunk-over-budget" || n2.checkId === "dev-build-shipped") return n2.chunkName ?? "global";
+  if (n2.checkId === "known-heavy-dep" || n2.checkId === "new-dependency-added" || n2.checkId === "duplicate-module") return n2.depName ?? "";
+  return "global";
+}
+function evidenceFor5(n2) {
+  const ev = [];
+  if (n2.baseSize !== void 0) ev.push({ kind: "metric", label: "Base size", value: n2.baseSize, unit: "bytes", side: "base" });
+  if (n2.prSize !== void 0) ev.push({ kind: "metric", label: "PR size", value: n2.prSize, unit: "bytes", side: "head" });
+  if (n2.diff !== void 0) ev.push({ kind: "metric", label: "Delta", value: n2.diff, unit: "bytes" });
+  if (n2.diffPct !== void 0) ev.push({ kind: "metric", label: "Change", value: n2.diffPct, unit: "percent" });
+  if (n2.chunkName) ev.push({ kind: "text", label: "Chunk", value: n2.chunkName });
+  if (n2.assetName) ev.push({ kind: "file", label: "Asset", path: n2.assetName.replace(/^\/+/, "") });
+  if (n2.depName) ev.push({ kind: "text", label: "Package", value: n2.depName });
+  if (ev.length === 0) ev.push({ kind: "text", label: "Rule", value: n2.checkId });
+  return ev;
+}
+function toFinding5(n2, ctx) {
+  const evidence = evidenceFor5(n2);
+  if (evidence.length === 0) return null;
+  const subject = subjectFor3(n2);
+  const fingerprint = fingerprintFinding(BUNDLE_ENGINE, {
+    checkId: n2.checkId,
+    chunkName: n2.chunkName ?? (subject === "global" ? "global" : void 0),
+    packageName: n2.depName ?? (subject !== "global" ? subject : void 0)
+  });
+  const helpUrl = n2.helpUrl && n2.helpUrl.startsWith("https:") ? n2.helpUrl : void 0;
+  return {
+    id: `${n2.checkId}:${subject}`,
+    engine: BUNDLE_ENGINE,
+    ruleId: n2.checkId,
+    fingerprint,
+    pageUrl: null,
+    severity: mapSeverity(BUNDLE_ENGINE, n2.checkId, n2.impact),
+    nativeSeverity: n2.impact,
+    confidence: confidenceFor5(n2.checkId),
+    kind: n2.kind === "regression" ? "symptom" : n2.kind,
+    // 0b-1 §4
+    metric: null,
+    title: n2.title,
+    explanation: n2.description,
+    evidence,
+    ...n2.fix ? { fix: n2.fix } : {},
+    lessons: [],
+    ...helpUrl ? { helpUrl } : {},
+    effort: typeof n2.effort === "number" ? n2.effort <= 1 ? "low" : n2.effort <= 2 ? "medium" : "high" : n2.effort
+  };
+}
+function toFindings5(natives, ctx) {
+  const out = [];
+  for (const n2 of natives) {
+    const f = toFinding5(n2, ctx);
+    if (f) out.push(f);
+  }
+  return out;
+}
+
+// src/engines/bundle.ts
+var BUNDLE_ENGINE_VERSION = "0.2.0";
+function bundleEngine() {
+  return {
+    id: "bundle",
+    version: BUNDLE_ENGINE_VERSION,
+    input: "build-output",
+    timeoutMs: 18e4,
+    mutatesPage: false,
+    async scan(ctx) {
+      const dir = ctx.side.buildOutputDir;
+      if (dir === null) {
+        throw new Error("bundle: no build output directory (the orchestrator should have skipped this engine)");
+      }
+      if (ctx.signal.aborted) return { pages: [], findings: [] };
+      const m = await measureOutputAsync(dir, ctx.signal);
+      const natives = bandChecks(m, (path) => readOutputFile(dir, path));
+      const findings = toFindings5(natives, { engineVersion: BUNDLE_ENGINE_VERSION });
+      ctx.log(`bundle: ${m.files.length} files measured, ${findings.length} findings (manifest: ${m.hasManifest})`);
+      return { pages: [], findings };
+    }
+  };
+}
+
+// ../engine-i18n/src/scanner/discoverLocales.ts
+var import_node_fs3 = require("node:fs");
+var import_node_path3 = require("node:path");
+
+// ../engine-i18n/node_modules/js-yaml/dist/js-yaml.mjs
+function getDefaultExportFromCjs(x) {
+  return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, "default") ? x["default"] : x;
+}
+var jsYaml = {};
+var loader = {};
+var common = {};
+var hasRequiredCommon;
+function requireCommon() {
+  if (hasRequiredCommon) return common;
+  hasRequiredCommon = 1;
+  function isNothing(subject) {
+    return typeof subject === "undefined" || subject === null;
+  }
+  function isObject(subject) {
+    return typeof subject === "object" && subject !== null;
+  }
+  function toArray(sequence) {
+    if (Array.isArray(sequence)) return sequence;
+    else if (isNothing(sequence)) return [];
+    return [sequence];
+  }
+  function extend(target, source) {
+    if (source) {
+      const sourceKeys = Object.keys(source);
+      for (let index = 0, length = sourceKeys.length; index < length; index += 1) {
+        const key = sourceKeys[index];
+        target[key] = source[key];
+      }
+    }
+    return target;
+  }
+  function repeat(string, count) {
+    let result = "";
+    for (let cycle = 0; cycle < count; cycle += 1) {
+      result += string;
+    }
+    return result;
+  }
+  function isNegativeZero(number) {
+    return number === 0 && Number.NEGATIVE_INFINITY === 1 / number;
+  }
+  common.isNothing = isNothing;
+  common.isObject = isObject;
+  common.toArray = toArray;
+  common.repeat = repeat;
+  common.isNegativeZero = isNegativeZero;
+  common.extend = extend;
+  return common;
+}
+var exception;
+var hasRequiredException;
+function requireException() {
+  if (hasRequiredException) return exception;
+  hasRequiredException = 1;
+  function formatError(exception2, compact) {
+    let where = "";
+    const message = exception2.reason || "(unknown reason)";
+    if (!exception2.mark) return message;
+    if (exception2.mark.name) {
+      where += 'in "' + exception2.mark.name + '" ';
+    }
+    where += "(" + (exception2.mark.line + 1) + ":" + (exception2.mark.column + 1) + ")";
+    if (!compact && exception2.mark.snippet) {
+      where += "\n\n" + exception2.mark.snippet;
+    }
+    return message + " " + where;
+  }
+  function YAMLException2(reason, mark) {
+    Error.call(this);
+    this.name = "YAMLException";
+    this.reason = reason;
+    this.mark = mark;
+    this.message = formatError(this, false);
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, this.constructor);
+    } else {
+      this.stack = new Error().stack || "";
+    }
+  }
+  YAMLException2.prototype = Object.create(Error.prototype);
+  YAMLException2.prototype.constructor = YAMLException2;
+  YAMLException2.prototype.toString = function toString(compact) {
+    return this.name + ": " + formatError(this, compact);
+  };
+  exception = YAMLException2;
+  return exception;
+}
+var snippet;
+var hasRequiredSnippet;
+function requireSnippet() {
+  if (hasRequiredSnippet) return snippet;
+  hasRequiredSnippet = 1;
+  const common2 = requireCommon();
+  function getLine(buffer, lineStart, lineEnd, position, maxLineLength) {
+    let head = "";
+    let tail = "";
+    const maxHalfLength = Math.floor(maxLineLength / 2) - 1;
+    if (position - lineStart > maxHalfLength) {
+      head = " ... ";
+      lineStart = position - maxHalfLength + head.length;
+    }
+    if (lineEnd - position > maxHalfLength) {
+      tail = " ...";
+      lineEnd = position + maxHalfLength - tail.length;
+    }
+    return {
+      str: head + buffer.slice(lineStart, lineEnd).replace(/\t/g, "\u2192") + tail,
+      pos: position - lineStart + head.length
+      // relative position
+    };
+  }
+  function padStart(string, max) {
+    return common2.repeat(" ", max - string.length) + string;
+  }
+  function makeSnippet(mark, options) {
+    options = Object.create(options || null);
+    if (!mark.buffer) return null;
+    if (!options.maxLength) options.maxLength = 79;
+    if (typeof options.indent !== "number") options.indent = 1;
+    if (typeof options.linesBefore !== "number") options.linesBefore = 3;
+    if (typeof options.linesAfter !== "number") options.linesAfter = 2;
+    const re = /\r?\n|\r|\0/g;
+    const lineStarts = [0];
+    const lineEnds = [];
+    let match;
+    let foundLineNo = -1;
+    while (match = re.exec(mark.buffer)) {
+      lineEnds.push(match.index);
+      lineStarts.push(match.index + match[0].length);
+      if (mark.position <= match.index && foundLineNo < 0) {
+        foundLineNo = lineStarts.length - 2;
+      }
+    }
+    if (foundLineNo < 0) foundLineNo = lineStarts.length - 1;
+    let result = "";
+    const lineNoLength = Math.min(mark.line + options.linesAfter, lineEnds.length).toString().length;
+    const maxLineLength = options.maxLength - (options.indent + lineNoLength + 3);
+    for (let i = 1; i <= options.linesBefore; i++) {
+      if (foundLineNo - i < 0) break;
+      const line2 = getLine(
+        mark.buffer,
+        lineStarts[foundLineNo - i],
+        lineEnds[foundLineNo - i],
+        mark.position - (lineStarts[foundLineNo] - lineStarts[foundLineNo - i]),
+        maxLineLength
+      );
+      result = common2.repeat(" ", options.indent) + padStart((mark.line - i + 1).toString(), lineNoLength) + " | " + line2.str + "\n" + result;
+    }
+    const line = getLine(mark.buffer, lineStarts[foundLineNo], lineEnds[foundLineNo], mark.position, maxLineLength);
+    result += common2.repeat(" ", options.indent) + padStart((mark.line + 1).toString(), lineNoLength) + " | " + line.str + "\n";
+    result += common2.repeat("-", options.indent + lineNoLength + 3 + line.pos) + "^\n";
+    for (let i = 1; i <= options.linesAfter; i++) {
+      if (foundLineNo + i >= lineEnds.length) break;
+      const line2 = getLine(
+        mark.buffer,
+        lineStarts[foundLineNo + i],
+        lineEnds[foundLineNo + i],
+        mark.position - (lineStarts[foundLineNo] - lineStarts[foundLineNo + i]),
+        maxLineLength
+      );
+      result += common2.repeat(" ", options.indent) + padStart((mark.line + i + 1).toString(), lineNoLength) + " | " + line2.str + "\n";
+    }
+    return result.replace(/\n$/, "");
+  }
+  snippet = makeSnippet;
+  return snippet;
+}
+var type;
+var hasRequiredType;
+function requireType() {
+  if (hasRequiredType) return type;
+  hasRequiredType = 1;
+  const YAMLException2 = requireException();
+  const TYPE_CONSTRUCTOR_OPTIONS = [
+    "kind",
+    "multi",
+    "resolve",
+    "construct",
+    "instanceOf",
+    "predicate",
+    "represent",
+    "representName",
+    "defaultStyle",
+    "styleAliases"
+  ];
+  const YAML_NODE_KINDS = [
+    "scalar",
+    "sequence",
+    "mapping"
+  ];
+  function compileStyleAliases(map2) {
+    const result = {};
+    if (map2 !== null) {
+      Object.keys(map2).forEach(function(style) {
+        map2[style].forEach(function(alias) {
+          result[String(alias)] = style;
+        });
+      });
+    }
+    return result;
+  }
+  function Type2(tag, options) {
+    options = options || {};
+    Object.keys(options).forEach(function(name) {
+      if (TYPE_CONSTRUCTOR_OPTIONS.indexOf(name) === -1) {
+        throw new YAMLException2('Unknown option "' + name + '" is met in definition of "' + tag + '" YAML type.');
+      }
+    });
+    this.options = options;
+    this.tag = tag;
+    this.kind = options["kind"] || null;
+    this.resolve = options["resolve"] || function() {
+      return true;
+    };
+    this.construct = options["construct"] || function(data) {
+      return data;
+    };
+    this.instanceOf = options["instanceOf"] || null;
+    this.predicate = options["predicate"] || null;
+    this.represent = options["represent"] || null;
+    this.representName = options["representName"] || null;
+    this.defaultStyle = options["defaultStyle"] || null;
+    this.multi = options["multi"] || false;
+    this.styleAliases = compileStyleAliases(options["styleAliases"] || null);
+    if (YAML_NODE_KINDS.indexOf(this.kind) === -1) {
+      throw new YAMLException2('Unknown kind "' + this.kind + '" is specified for "' + tag + '" YAML type.');
+    }
+  }
+  type = Type2;
+  return type;
+}
+var schema;
+var hasRequiredSchema;
+function requireSchema() {
+  if (hasRequiredSchema) return schema;
+  hasRequiredSchema = 1;
+  const YAMLException2 = requireException();
+  const Type2 = requireType();
+  function compileList(schema2, name) {
+    const result = [];
+    schema2[name].forEach(function(currentType) {
+      let newIndex = result.length;
+      result.forEach(function(previousType, previousIndex) {
+        if (previousType.tag === currentType.tag && previousType.kind === currentType.kind && previousType.multi === currentType.multi) {
+          newIndex = previousIndex;
+        }
+      });
+      result[newIndex] = currentType;
+    });
+    return result;
+  }
+  function compileMap() {
+    const result = {
+      scalar: {},
+      sequence: {},
+      mapping: {},
+      fallback: {},
+      multi: {
+        scalar: [],
+        sequence: [],
+        mapping: [],
+        fallback: []
+      }
+    };
+    function collectType(type2) {
+      if (type2.multi) {
+        result.multi[type2.kind].push(type2);
+        result.multi["fallback"].push(type2);
+      } else {
+        result[type2.kind][type2.tag] = result["fallback"][type2.tag] = type2;
+      }
+    }
+    for (let index = 0, length = arguments.length; index < length; index += 1) {
+      arguments[index].forEach(collectType);
+    }
+    return result;
+  }
+  function Schema2(definition) {
+    return this.extend(definition);
+  }
+  Schema2.prototype.extend = function extend(definition) {
+    let implicit = [];
+    let explicit = [];
+    if (definition instanceof Type2) {
+      explicit.push(definition);
+    } else if (Array.isArray(definition)) {
+      explicit = explicit.concat(definition);
+    } else if (definition && (Array.isArray(definition.implicit) || Array.isArray(definition.explicit))) {
+      if (definition.implicit) implicit = implicit.concat(definition.implicit);
+      if (definition.explicit) explicit = explicit.concat(definition.explicit);
+    } else {
+      throw new YAMLException2("Schema.extend argument should be a Type, [ Type ], or a schema definition ({ implicit: [...], explicit: [...] })");
+    }
+    implicit.forEach(function(type2) {
+      if (!(type2 instanceof Type2)) {
+        throw new YAMLException2("Specified list of YAML types (or a single Type object) contains a non-Type object.");
+      }
+      if (type2.loadKind && type2.loadKind !== "scalar") {
+        throw new YAMLException2("There is a non-scalar type in the implicit list of a schema. Implicit resolving of such types is not supported.");
+      }
+      if (type2.multi) {
+        throw new YAMLException2("There is a multi type in the implicit list of a schema. Multi tags can only be listed as explicit.");
+      }
+    });
+    explicit.forEach(function(type2) {
+      if (!(type2 instanceof Type2)) {
+        throw new YAMLException2("Specified list of YAML types (or a single Type object) contains a non-Type object.");
+      }
+    });
+    const result = Object.create(Schema2.prototype);
+    result.implicit = (this.implicit || []).concat(implicit);
+    result.explicit = (this.explicit || []).concat(explicit);
+    result.compiledImplicit = compileList(result, "implicit");
+    result.compiledExplicit = compileList(result, "explicit");
+    result.compiledTypeMap = compileMap(result.compiledImplicit, result.compiledExplicit);
+    return result;
+  };
+  schema = Schema2;
+  return schema;
+}
+var str;
+var hasRequiredStr;
+function requireStr() {
+  if (hasRequiredStr) return str;
+  hasRequiredStr = 1;
+  const Type2 = requireType();
+  str = new Type2("tag:yaml.org,2002:str", {
+    kind: "scalar",
+    construct: function(data) {
+      return data !== null ? data : "";
+    }
+  });
+  return str;
+}
+var seq;
+var hasRequiredSeq;
+function requireSeq() {
+  if (hasRequiredSeq) return seq;
+  hasRequiredSeq = 1;
+  const Type2 = requireType();
+  seq = new Type2("tag:yaml.org,2002:seq", {
+    kind: "sequence",
+    construct: function(data) {
+      return data !== null ? data : [];
+    }
+  });
+  return seq;
+}
+var map;
+var hasRequiredMap;
+function requireMap() {
+  if (hasRequiredMap) return map;
+  hasRequiredMap = 1;
+  const Type2 = requireType();
+  map = new Type2("tag:yaml.org,2002:map", {
+    kind: "mapping",
+    construct: function(data) {
+      return data !== null ? data : {};
+    }
+  });
+  return map;
+}
+var failsafe;
+var hasRequiredFailsafe;
+function requireFailsafe() {
+  if (hasRequiredFailsafe) return failsafe;
+  hasRequiredFailsafe = 1;
+  const Schema2 = requireSchema();
+  failsafe = new Schema2({
+    explicit: [
+      requireStr(),
+      requireSeq(),
+      requireMap()
+    ]
+  });
+  return failsafe;
+}
+var _null;
+var hasRequired_null;
+function require_null() {
+  if (hasRequired_null) return _null;
+  hasRequired_null = 1;
+  const Type2 = requireType();
+  function resolveYamlNull(data) {
+    if (data === null) return true;
+    const max = data.length;
+    return max === 1 && data === "~" || max === 4 && (data === "null" || data === "Null" || data === "NULL");
+  }
+  function constructYamlNull() {
+    return null;
+  }
+  function isNull(object) {
+    return object === null;
+  }
+  _null = new Type2("tag:yaml.org,2002:null", {
+    kind: "scalar",
+    resolve: resolveYamlNull,
+    construct: constructYamlNull,
+    predicate: isNull,
+    represent: {
+      canonical: function() {
+        return "~";
+      },
+      lowercase: function() {
+        return "null";
+      },
+      uppercase: function() {
+        return "NULL";
+      },
+      camelcase: function() {
+        return "Null";
+      },
+      empty: function() {
+        return "";
+      }
+    },
+    defaultStyle: "lowercase"
+  });
+  return _null;
+}
+var bool;
+var hasRequiredBool;
+function requireBool() {
+  if (hasRequiredBool) return bool;
+  hasRequiredBool = 1;
+  const Type2 = requireType();
+  function resolveYamlBoolean(data) {
+    if (data === null) return false;
+    const max = data.length;
+    return max === 4 && (data === "true" || data === "True" || data === "TRUE") || max === 5 && (data === "false" || data === "False" || data === "FALSE");
+  }
+  function constructYamlBoolean(data) {
+    return data === "true" || data === "True" || data === "TRUE";
+  }
+  function isBoolean(object) {
+    return Object.prototype.toString.call(object) === "[object Boolean]";
+  }
+  bool = new Type2("tag:yaml.org,2002:bool", {
+    kind: "scalar",
+    resolve: resolveYamlBoolean,
+    construct: constructYamlBoolean,
+    predicate: isBoolean,
+    represent: {
+      lowercase: function(object) {
+        return object ? "true" : "false";
+      },
+      uppercase: function(object) {
+        return object ? "TRUE" : "FALSE";
+      },
+      camelcase: function(object) {
+        return object ? "True" : "False";
+      }
+    },
+    defaultStyle: "lowercase"
+  });
+  return bool;
+}
+var int;
+var hasRequiredInt;
+function requireInt() {
+  if (hasRequiredInt) return int;
+  hasRequiredInt = 1;
+  const common2 = requireCommon();
+  const Type2 = requireType();
+  function isHexCode(c) {
+    return c >= 48 && c <= 57 || c >= 65 && c <= 70 || c >= 97 && c <= 102;
+  }
+  function isOctCode(c) {
+    return c >= 48 && c <= 55;
+  }
+  function isDecCode(c) {
+    return c >= 48 && c <= 57;
+  }
+  function resolveYamlInteger(data) {
+    if (data === null) return false;
+    const max = data.length;
+    let index = 0;
+    let hasDigits = false;
+    if (!max) return false;
+    let ch = data[index];
+    if (ch === "-" || ch === "+") {
+      ch = data[++index];
+    }
+    if (ch === "0") {
+      if (index + 1 === max) return true;
+      ch = data[++index];
+      if (ch === "b") {
+        index++;
+        for (; index < max; index++) {
+          ch = data[index];
+          if (ch !== "0" && ch !== "1") return false;
+          hasDigits = true;
+        }
+        return hasDigits && isFinite(parseYamlInteger(data));
+      }
+      if (ch === "x") {
+        index++;
+        for (; index < max; index++) {
+          if (!isHexCode(data.charCodeAt(index))) return false;
+          hasDigits = true;
+        }
+        return hasDigits && isFinite(parseYamlInteger(data));
+      }
+      if (ch === "o") {
+        index++;
+        for (; index < max; index++) {
+          if (!isOctCode(data.charCodeAt(index))) return false;
+          hasDigits = true;
+        }
+        return hasDigits && isFinite(parseYamlInteger(data));
+      }
+    }
+    for (; index < max; index++) {
+      if (!isDecCode(data.charCodeAt(index))) {
+        return false;
+      }
+      hasDigits = true;
+    }
+    if (!hasDigits) return false;
+    return isFinite(parseYamlInteger(data));
+  }
+  function parseYamlInteger(data) {
+    let value = data;
+    let sign = 1;
+    let ch = value[0];
+    if (ch === "-" || ch === "+") {
+      if (ch === "-") sign = -1;
+      value = value.slice(1);
+      ch = value[0];
+    }
+    if (value === "0") return 0;
+    if (ch === "0") {
+      if (value[1] === "b") return sign * parseInt(value.slice(2), 2);
+      if (value[1] === "x") return sign * parseInt(value.slice(2), 16);
+      if (value[1] === "o") return sign * parseInt(value.slice(2), 8);
+    }
+    return sign * parseInt(value, 10);
+  }
+  function constructYamlInteger(data) {
+    return parseYamlInteger(data);
+  }
+  function isInteger(object) {
+    return Object.prototype.toString.call(object) === "[object Number]" && (object % 1 === 0 && !common2.isNegativeZero(object));
+  }
+  int = new Type2("tag:yaml.org,2002:int", {
+    kind: "scalar",
+    resolve: resolveYamlInteger,
+    construct: constructYamlInteger,
+    predicate: isInteger,
+    represent: {
+      binary: function(obj) {
+        return obj >= 0 ? "0b" + obj.toString(2) : "-0b" + obj.toString(2).slice(1);
+      },
+      octal: function(obj) {
+        return obj >= 0 ? "0o" + obj.toString(8) : "-0o" + obj.toString(8).slice(1);
+      },
+      decimal: function(obj) {
+        return obj.toString(10);
+      },
+      hexadecimal: function(obj) {
+        return obj >= 0 ? "0x" + obj.toString(16).toUpperCase() : "-0x" + obj.toString(16).toUpperCase().slice(1);
+      }
+    },
+    defaultStyle: "decimal",
+    styleAliases: {
+      binary: [2, "bin"],
+      octal: [8, "oct"],
+      decimal: [10, "dec"],
+      hexadecimal: [16, "hex"]
+    }
+  });
+  return int;
+}
+var float;
+var hasRequiredFloat;
+function requireFloat() {
+  if (hasRequiredFloat) return float;
+  hasRequiredFloat = 1;
+  const common2 = requireCommon();
+  const Type2 = requireType();
+  const YAML_FLOAT_PATTERN = new RegExp(
+    // 2.5e4, 2.5 and integers
+    "^(?:[-+]?(?:[0-9]+)(?:\\.[0-9]*)?(?:[eE][-+]?[0-9]+)?|\\.[0-9]+(?:[eE][-+]?[0-9]+)?|[-+]?\\.(?:inf|Inf|INF)|\\.(?:nan|NaN|NAN))$"
+  );
+  const YAML_FLOAT_SPECIAL_PATTERN = new RegExp(
+    "^(?:[-+]?\\.(?:inf|Inf|INF)|\\.(?:nan|NaN|NAN))$"
+  );
+  function resolveYamlFloat(data) {
+    if (data === null) return false;
+    if (!YAML_FLOAT_PATTERN.test(data)) {
+      return false;
+    }
+    if (isFinite(parseFloat(data, 10))) {
+      return true;
+    }
+    return YAML_FLOAT_SPECIAL_PATTERN.test(data);
+  }
+  function constructYamlFloat(data) {
+    let value = data.toLowerCase();
+    const sign = value[0] === "-" ? -1 : 1;
+    if ("+-".indexOf(value[0]) >= 0) {
+      value = value.slice(1);
+    }
+    if (value === ".inf") {
+      return sign === 1 ? Number.POSITIVE_INFINITY : Number.NEGATIVE_INFINITY;
+    } else if (value === ".nan") {
+      return NaN;
+    }
+    return sign * parseFloat(value, 10);
+  }
+  const SCIENTIFIC_WITHOUT_DOT = /^[-+]?[0-9]+e/;
+  function representYamlFloat(object, style) {
+    if (isNaN(object)) {
+      switch (style) {
+        case "lowercase":
+          return ".nan";
+        case "uppercase":
+          return ".NAN";
+        case "camelcase":
+          return ".NaN";
+      }
+    } else if (Number.POSITIVE_INFINITY === object) {
+      switch (style) {
+        case "lowercase":
+          return ".inf";
+        case "uppercase":
+          return ".INF";
+        case "camelcase":
+          return ".Inf";
+      }
+    } else if (Number.NEGATIVE_INFINITY === object) {
+      switch (style) {
+        case "lowercase":
+          return "-.inf";
+        case "uppercase":
+          return "-.INF";
+        case "camelcase":
+          return "-.Inf";
+      }
+    } else if (common2.isNegativeZero(object)) {
+      return "-0.0";
+    }
+    const res = object.toString(10);
+    return SCIENTIFIC_WITHOUT_DOT.test(res) ? res.replace("e", ".e") : res;
+  }
+  function isFloat(object) {
+    return Object.prototype.toString.call(object) === "[object Number]" && (object % 1 !== 0 || common2.isNegativeZero(object));
+  }
+  float = new Type2("tag:yaml.org,2002:float", {
+    kind: "scalar",
+    resolve: resolveYamlFloat,
+    construct: constructYamlFloat,
+    predicate: isFloat,
+    represent: representYamlFloat,
+    defaultStyle: "lowercase"
+  });
+  return float;
+}
+var json;
+var hasRequiredJson;
+function requireJson() {
+  if (hasRequiredJson) return json;
+  hasRequiredJson = 1;
+  json = requireFailsafe().extend({
+    implicit: [
+      require_null(),
+      requireBool(),
+      requireInt(),
+      requireFloat()
+    ]
+  });
+  return json;
+}
+var core;
+var hasRequiredCore;
+function requireCore() {
+  if (hasRequiredCore) return core;
+  hasRequiredCore = 1;
+  core = requireJson();
+  return core;
+}
+var timestamp;
+var hasRequiredTimestamp;
+function requireTimestamp() {
+  if (hasRequiredTimestamp) return timestamp;
+  hasRequiredTimestamp = 1;
+  const Type2 = requireType();
+  const YAML_DATE_REGEXP = new RegExp(
+    "^([0-9][0-9][0-9][0-9])-([0-9][0-9])-([0-9][0-9])$"
+  );
+  const YAML_TIMESTAMP_REGEXP = new RegExp(
+    "^([0-9][0-9][0-9][0-9])-([0-9][0-9]?)-([0-9][0-9]?)(?:[Tt]|[ \\t]+)([0-9][0-9]?):([0-9][0-9]):([0-9][0-9])(?:\\.([0-9]*))?(?:[ \\t]*(Z|([-+])([0-9][0-9]?)(?::([0-9][0-9]))?))?$"
+  );
+  function resolveYamlTimestamp(data) {
+    if (data === null) return false;
+    if (YAML_DATE_REGEXP.exec(data) !== null) return true;
+    if (YAML_TIMESTAMP_REGEXP.exec(data) !== null) return true;
+    return false;
+  }
+  function constructYamlTimestamp(data) {
+    let fraction = 0;
+    let delta = null;
+    let match = YAML_DATE_REGEXP.exec(data);
+    if (match === null) match = YAML_TIMESTAMP_REGEXP.exec(data);
+    if (match === null) throw new Error("Date resolve error");
+    const year = +match[1];
+    const month = +match[2] - 1;
+    const day = +match[3];
+    if (!match[4]) {
+      return new Date(Date.UTC(year, month, day));
+    }
+    const hour = +match[4];
+    const minute = +match[5];
+    const second = +match[6];
+    if (match[7]) {
+      fraction = match[7].slice(0, 3);
+      while (fraction.length < 3) {
+        fraction += "0";
+      }
+      fraction = +fraction;
+    }
+    if (match[9]) {
+      const tzHour = +match[10];
+      const tzMinute = +(match[11] || 0);
+      delta = (tzHour * 60 + tzMinute) * 6e4;
+      if (match[9] === "-") delta = -delta;
+    }
+    const date = new Date(Date.UTC(year, month, day, hour, minute, second, fraction));
+    if (delta) date.setTime(date.getTime() - delta);
+    return date;
+  }
+  function representYamlTimestamp(object) {
+    return object.toISOString();
+  }
+  timestamp = new Type2("tag:yaml.org,2002:timestamp", {
+    kind: "scalar",
+    resolve: resolveYamlTimestamp,
+    construct: constructYamlTimestamp,
+    instanceOf: Date,
+    represent: representYamlTimestamp
+  });
+  return timestamp;
+}
+var merge;
+var hasRequiredMerge;
+function requireMerge() {
+  if (hasRequiredMerge) return merge;
+  hasRequiredMerge = 1;
+  const Type2 = requireType();
+  function resolveYamlMerge(data) {
+    return data === "<<" || data === null;
+  }
+  merge = new Type2("tag:yaml.org,2002:merge", {
+    kind: "scalar",
+    resolve: resolveYamlMerge
+  });
+  return merge;
+}
+var binary;
+var hasRequiredBinary;
+function requireBinary() {
+  if (hasRequiredBinary) return binary;
+  hasRequiredBinary = 1;
+  const Type2 = requireType();
+  const BASE64_MAP = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=\n\r";
+  function resolveYamlBinary(data) {
+    if (data === null) return false;
+    let bitlen = 0;
+    const max = data.length;
+    const map2 = BASE64_MAP;
+    for (let idx = 0; idx < max; idx++) {
+      const code = map2.indexOf(data.charAt(idx));
+      if (code > 64) continue;
+      if (code < 0) return false;
+      bitlen += 6;
+    }
+    return bitlen % 8 === 0;
+  }
+  function constructYamlBinary(data) {
+    const input = data.replace(/[\r\n=]/g, "");
+    const max = input.length;
+    const map2 = BASE64_MAP;
+    let bits = 0;
+    const result = [];
+    for (let idx = 0; idx < max; idx++) {
+      if (idx % 4 === 0 && idx) {
+        result.push(bits >> 16 & 255);
+        result.push(bits >> 8 & 255);
+        result.push(bits & 255);
+      }
+      bits = bits << 6 | map2.indexOf(input.charAt(idx));
+    }
+    const tailbits = max % 4 * 6;
+    if (tailbits === 0) {
+      result.push(bits >> 16 & 255);
+      result.push(bits >> 8 & 255);
+      result.push(bits & 255);
+    } else if (tailbits === 18) {
+      result.push(bits >> 10 & 255);
+      result.push(bits >> 2 & 255);
+    } else if (tailbits === 12) {
+      result.push(bits >> 4 & 255);
+    }
+    return new Uint8Array(result);
+  }
+  function representYamlBinary(object) {
+    let result = "";
+    let bits = 0;
+    const max = object.length;
+    const map2 = BASE64_MAP;
+    for (let idx = 0; idx < max; idx++) {
+      if (idx % 3 === 0 && idx) {
+        result += map2[bits >> 18 & 63];
+        result += map2[bits >> 12 & 63];
+        result += map2[bits >> 6 & 63];
+        result += map2[bits & 63];
+      }
+      bits = (bits << 8) + object[idx];
+    }
+    const tail = max % 3;
+    if (tail === 0) {
+      result += map2[bits >> 18 & 63];
+      result += map2[bits >> 12 & 63];
+      result += map2[bits >> 6 & 63];
+      result += map2[bits & 63];
+    } else if (tail === 2) {
+      result += map2[bits >> 10 & 63];
+      result += map2[bits >> 4 & 63];
+      result += map2[bits << 2 & 63];
+      result += map2[64];
+    } else if (tail === 1) {
+      result += map2[bits >> 2 & 63];
+      result += map2[bits << 4 & 63];
+      result += map2[64];
+      result += map2[64];
+    }
+    return result;
+  }
+  function isBinary(obj) {
+    return Object.prototype.toString.call(obj) === "[object Uint8Array]";
+  }
+  binary = new Type2("tag:yaml.org,2002:binary", {
+    kind: "scalar",
+    resolve: resolveYamlBinary,
+    construct: constructYamlBinary,
+    predicate: isBinary,
+    represent: representYamlBinary
+  });
+  return binary;
+}
+var omap;
+var hasRequiredOmap;
+function requireOmap() {
+  if (hasRequiredOmap) return omap;
+  hasRequiredOmap = 1;
+  const Type2 = requireType();
+  const _hasOwnProperty = Object.prototype.hasOwnProperty;
+  const _toString = Object.prototype.toString;
+  function resolveYamlOmap(data) {
+    if (data === null) return true;
+    const objectKeys = {};
+    const object = data;
+    for (let index = 0, length = object.length; index < length; index += 1) {
+      const pair = object[index];
+      let pairHasKey = false;
+      if (_toString.call(pair) !== "[object Object]") return false;
+      let pairKey;
+      for (pairKey in pair) {
+        if (_hasOwnProperty.call(pair, pairKey)) {
+          if (!pairHasKey) pairHasKey = true;
+          else return false;
+        }
+      }
+      if (!pairHasKey) return false;
+      if (_hasOwnProperty.call(objectKeys, pairKey)) return false;
+      Object.defineProperty(objectKeys, pairKey, { value: true });
+    }
+    return true;
+  }
+  function constructYamlOmap(data) {
+    return data !== null ? data : [];
+  }
+  omap = new Type2("tag:yaml.org,2002:omap", {
+    kind: "sequence",
+    resolve: resolveYamlOmap,
+    construct: constructYamlOmap
+  });
+  return omap;
+}
+var pairs;
+var hasRequiredPairs;
+function requirePairs() {
+  if (hasRequiredPairs) return pairs;
+  hasRequiredPairs = 1;
+  const Type2 = requireType();
+  const _toString = Object.prototype.toString;
+  function resolveYamlPairs(data) {
+    if (data === null) return true;
+    const object = data;
+    const result = new Array(object.length);
+    for (let index = 0, length = object.length; index < length; index += 1) {
+      const pair = object[index];
+      if (_toString.call(pair) !== "[object Object]") return false;
+      const keys = Object.keys(pair);
+      if (keys.length !== 1) return false;
+      result[index] = [keys[0], pair[keys[0]]];
+    }
+    return true;
+  }
+  function constructYamlPairs(data) {
+    if (data === null) return [];
+    const object = data;
+    const result = new Array(object.length);
+    for (let index = 0, length = object.length; index < length; index += 1) {
+      const pair = object[index];
+      const keys = Object.keys(pair);
+      result[index] = [keys[0], pair[keys[0]]];
+    }
+    return result;
+  }
+  pairs = new Type2("tag:yaml.org,2002:pairs", {
+    kind: "sequence",
+    resolve: resolveYamlPairs,
+    construct: constructYamlPairs
+  });
+  return pairs;
+}
+var set;
+var hasRequiredSet;
+function requireSet() {
+  if (hasRequiredSet) return set;
+  hasRequiredSet = 1;
+  const Type2 = requireType();
+  const _hasOwnProperty = Object.prototype.hasOwnProperty;
+  function resolveYamlSet(data) {
+    if (data === null) return true;
+    const object = data;
+    for (const key in object) {
+      if (_hasOwnProperty.call(object, key)) {
+        if (object[key] !== null) return false;
+      }
+    }
+    return true;
+  }
+  function constructYamlSet(data) {
+    return data !== null ? data : {};
+  }
+  set = new Type2("tag:yaml.org,2002:set", {
+    kind: "mapping",
+    resolve: resolveYamlSet,
+    construct: constructYamlSet
+  });
+  return set;
+}
+var _default;
+var hasRequired_default;
+function require_default() {
+  if (hasRequired_default) return _default;
+  hasRequired_default = 1;
+  _default = requireCore().extend({
+    implicit: [
+      requireTimestamp(),
+      requireMerge()
+    ],
+    explicit: [
+      requireBinary(),
+      requireOmap(),
+      requirePairs(),
+      requireSet()
+    ]
+  });
+  return _default;
+}
+var hasRequiredLoader;
+function requireLoader() {
+  if (hasRequiredLoader) return loader;
+  hasRequiredLoader = 1;
+  const common2 = requireCommon();
+  const YAMLException2 = requireException();
+  const makeSnippet = requireSnippet();
+  const DEFAULT_SCHEMA2 = require_default();
+  const _hasOwnProperty = Object.prototype.hasOwnProperty;
+  const CONTEXT_FLOW_IN = 1;
+  const CONTEXT_FLOW_OUT = 2;
+  const CONTEXT_BLOCK_IN = 3;
+  const CONTEXT_BLOCK_OUT = 4;
+  const CHOMPING_CLIP = 1;
+  const CHOMPING_STRIP = 2;
+  const CHOMPING_KEEP = 3;
+  const PATTERN_NON_PRINTABLE = /[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x84\x86-\x9F\uFFFE\uFFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF]/;
+  const PATTERN_NON_ASCII_LINE_BREAKS = /[\x85\u2028\u2029]/;
+  const PATTERN_FLOW_INDICATORS = /[,\[\]{}]/;
+  const PATTERN_TAG_HANDLE = /^(?:!|!!|![0-9A-Za-z-]+!)$/;
+  const PATTERN_TAG_URI = /^(?:!|[^,\[\]{}])(?:%[0-9a-f]{2}|[0-9a-z\-#;/?:@&=+$,_.!~*'()\[\]])*$/i;
+  function _class(obj) {
+    return Object.prototype.toString.call(obj);
+  }
+  function isEol(c) {
+    return c === 10 || c === 13;
+  }
+  function isWhiteSpace(c) {
+    return c === 9 || c === 32;
+  }
+  function isWsOrEol(c) {
+    return c === 9 || c === 32 || c === 10 || c === 13;
+  }
+  function isFlowIndicator(c) {
+    return c === 44 || c === 91 || c === 93 || c === 123 || c === 125;
+  }
+  function fromHexCode(c) {
+    if (c >= 48 && c <= 57) {
+      return c - 48;
+    }
+    const lc = c | 32;
+    if (lc >= 97 && lc <= 102) {
+      return lc - 97 + 10;
+    }
+    return -1;
+  }
+  function escapedHexLen(c) {
+    if (c === 120) {
+      return 2;
+    }
+    if (c === 117) {
+      return 4;
+    }
+    if (c === 85) {
+      return 8;
+    }
+    return 0;
+  }
+  function fromDecimalCode(c) {
+    if (c >= 48 && c <= 57) {
+      return c - 48;
+    }
+    return -1;
+  }
+  function simpleEscapeSequence(c) {
+    switch (c) {
+      case 48:
+        return "\0";
+      case 97:
+        return "\x07";
+      case 98:
+        return "\b";
+      case 116:
+        return "	";
+      case 9:
+        return "	";
+      case 110:
+        return "\n";
+      case 118:
+        return "\v";
+      case 102:
+        return "\f";
+      case 114:
+        return "\r";
+      case 101:
+        return "\x1B";
+      case 32:
+        return " ";
+      case 34:
+        return '"';
+      case 47:
+        return "/";
+      case 92:
+        return "\\";
+      case 78:
+        return "\x85";
+      case 95:
+        return "\xA0";
+      case 76:
+        return "\u2028";
+      case 80:
+        return "\u2029";
+      default:
+        return "";
+    }
+  }
+  function charFromCodepoint(c) {
+    if (c <= 65535) {
+      return String.fromCharCode(c);
+    }
+    return String.fromCharCode(
+      (c - 65536 >> 10) + 55296,
+      (c - 65536 & 1023) + 56320
+    );
+  }
+  function setProperty(object, key, value) {
+    if (key === "__proto__") {
+      Object.defineProperty(object, key, {
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        value
+      });
+    } else {
+      object[key] = value;
+    }
+  }
+  const simpleEscapeCheck = new Array(256);
+  const simpleEscapeMap = new Array(256);
+  for (let i = 0; i < 256; i++) {
+    simpleEscapeCheck[i] = simpleEscapeSequence(i) ? 1 : 0;
+    simpleEscapeMap[i] = simpleEscapeSequence(i);
+  }
+  function State(input, options) {
+    this.input = input;
+    this.filename = options["filename"] || null;
+    this.schema = options["schema"] || DEFAULT_SCHEMA2;
+    this.onWarning = options["onWarning"] || null;
+    this.legacy = options["legacy"] || false;
+    this.json = options["json"] || false;
+    this.listener = options["listener"] || null;
+    this.maxDepth = typeof options["maxDepth"] === "number" ? options["maxDepth"] : 100;
+    this.maxTotalMergeKeys = typeof options["maxTotalMergeKeys"] === "number" ? options["maxTotalMergeKeys"] : 1e4;
+    this.implicitTypes = this.schema.compiledImplicit;
+    this.typeMap = this.schema.compiledTypeMap;
+    this.length = input.length;
+    this.position = 0;
+    this.line = 0;
+    this.lineStart = 0;
+    this.lineIndent = 0;
+    this.depth = 0;
+    this.totalMergeKeys = 0;
+    this.firstTabInLine = -1;
+    this.documents = [];
+    this.anchorMapTransactions = [];
+  }
+  function generateError(state, message) {
+    const mark = {
+      name: state.filename,
+      buffer: state.input.slice(0, -1),
+      // omit trailing \0
+      position: state.position,
+      line: state.line,
+      column: state.position - state.lineStart
+    };
+    mark.snippet = makeSnippet(mark);
+    return new YAMLException2(message, mark);
+  }
+  function throwError(state, message) {
+    throw generateError(state, message);
+  }
+  function throwWarning(state, message) {
+    if (state.onWarning) {
+      state.onWarning.call(null, generateError(state, message));
+    }
+  }
+  function storeAnchor(state, name, value) {
+    const transactions = state.anchorMapTransactions;
+    if (transactions.length !== 0) {
+      const transaction = transactions[transactions.length - 1];
+      if (!_hasOwnProperty.call(transaction, name)) {
+        transaction[name] = {
+          existed: _hasOwnProperty.call(state.anchorMap, name),
+          value: state.anchorMap[name]
+        };
+      }
+    }
+    state.anchorMap[name] = value;
+  }
+  function beginAnchorTransaction(state) {
+    state.anchorMapTransactions.push(/* @__PURE__ */ Object.create(null));
+  }
+  function commitAnchorTransaction(state) {
+    const transaction = state.anchorMapTransactions.pop();
+    const transactions = state.anchorMapTransactions;
+    if (transactions.length === 0) return;
+    const parent = transactions[transactions.length - 1];
+    const names = Object.keys(transaction);
+    for (let index = 0, length = names.length; index < length; index += 1) {
+      const name = names[index];
+      if (!_hasOwnProperty.call(parent, name)) {
+        parent[name] = transaction[name];
+      }
+    }
+  }
+  function rollbackAnchorTransaction(state) {
+    const transaction = state.anchorMapTransactions.pop();
+    const names = Object.keys(transaction);
+    for (let index = names.length - 1; index >= 0; index -= 1) {
+      const entry = transaction[names[index]];
+      if (entry.existed) {
+        state.anchorMap[names[index]] = entry.value;
+      } else {
+        delete state.anchorMap[names[index]];
+      }
+    }
+  }
+  function snapshotState(state) {
+    return {
+      position: state.position,
+      line: state.line,
+      lineStart: state.lineStart,
+      lineIndent: state.lineIndent,
+      firstTabInLine: state.firstTabInLine,
+      tag: state.tag,
+      anchor: state.anchor,
+      kind: state.kind,
+      result: state.result
+    };
+  }
+  function restoreState(state, snapshot) {
+    state.position = snapshot.position;
+    state.line = snapshot.line;
+    state.lineStart = snapshot.lineStart;
+    state.lineIndent = snapshot.lineIndent;
+    state.firstTabInLine = snapshot.firstTabInLine;
+    state.tag = snapshot.tag;
+    state.anchor = snapshot.anchor;
+    state.kind = snapshot.kind;
+    state.result = snapshot.result;
+  }
+  const directiveHandlers = {
+    YAML: function handleYamlDirective(state, name, args) {
+      if (state.version !== null) {
+        throwError(state, "duplication of %YAML directive");
+      }
+      if (args.length !== 1) {
+        throwError(state, "YAML directive accepts exactly one argument");
+      }
+      const match = /^([0-9]+)\.([0-9]+)$/.exec(args[0]);
+      if (match === null) {
+        throwError(state, "ill-formed argument of the YAML directive");
+      }
+      const major = parseInt(match[1], 10);
+      const minor = parseInt(match[2], 10);
+      if (major !== 1) {
+        throwError(state, "unacceptable YAML version of the document");
+      }
+      state.version = args[0];
+      state.checkLineBreaks = minor < 2;
+      if (minor !== 1 && minor !== 2) {
+        throwWarning(state, "unsupported YAML version of the document");
+      }
+    },
+    TAG: function handleTagDirective(state, name, args) {
+      let prefix;
+      if (args.length !== 2) {
+        throwError(state, "TAG directive accepts exactly two arguments");
+      }
+      const handle = args[0];
+      prefix = args[1];
+      if (!PATTERN_TAG_HANDLE.test(handle)) {
+        throwError(state, "ill-formed tag handle (first argument) of the TAG directive");
+      }
+      if (_hasOwnProperty.call(state.tagMap, handle)) {
+        throwError(state, 'there is a previously declared suffix for "' + handle + '" tag handle');
+      }
+      if (!PATTERN_TAG_URI.test(prefix)) {
+        throwError(state, "ill-formed tag prefix (second argument) of the TAG directive");
+      }
+      try {
+        prefix = decodeURIComponent(prefix);
+      } catch (err) {
+        throwError(state, "tag prefix is malformed: " + prefix);
+      }
+      state.tagMap[handle] = prefix;
+    }
+  };
+  function captureSegment(state, start, end, checkJson) {
+    if (start < end) {
+      const _result = state.input.slice(start, end);
+      if (checkJson) {
+        for (let _position = 0, _length = _result.length; _position < _length; _position += 1) {
+          const _character = _result.charCodeAt(_position);
+          if (!(_character === 9 || _character >= 32 && _character <= 1114111)) {
+            throwError(state, "expected valid JSON character");
+          }
+        }
+      } else if (PATTERN_NON_PRINTABLE.test(_result)) {
+        throwError(state, "the stream contains non-printable characters");
+      }
+      state.result += _result;
+    }
+  }
+  function chargeMergeWork(state) {
+    state.totalMergeKeys++;
+    if (state.maxTotalMergeKeys !== -1 && state.totalMergeKeys > state.maxTotalMergeKeys) {
+      throwError(state, "merge keys exceeded maxTotalMergeKeys (" + state.maxTotalMergeKeys + ")");
+    }
+  }
+  function mergeMappings(state, destination, source, overridableKeys) {
+    if (!common2.isObject(source)) {
+      throwError(state, "cannot merge mappings; the provided source object is unacceptable");
+    }
+    chargeMergeWork(state);
+    const sourceKeys = Object.keys(source);
+    for (let index = 0, quantity = sourceKeys.length; index < quantity; index += 1) {
+      const key = sourceKeys[index];
+      chargeMergeWork(state);
+      if (!_hasOwnProperty.call(destination, key)) {
+        setProperty(destination, key, source[key]);
+        overridableKeys[key] = true;
+      }
+    }
+  }
+  function storeMappingPair(state, _result, overridableKeys, keyTag, keyNode, valueNode, startLine, startLineStart, startPos) {
+    if (Array.isArray(keyNode)) {
+      keyNode = Array.prototype.slice.call(keyNode);
+      for (let index = 0, quantity = keyNode.length; index < quantity; index += 1) {
+        if (Array.isArray(keyNode[index])) {
+          throwError(state, "nested arrays are not supported inside keys");
+        }
+        if (typeof keyNode === "object" && _class(keyNode[index]) === "[object Object]") {
+          keyNode[index] = "[object Object]";
+        }
+      }
+    }
+    if (typeof keyNode === "object" && _class(keyNode) === "[object Object]") {
+      keyNode = "[object Object]";
+    }
+    keyNode = String(keyNode);
+    if (_result === null) {
+      _result = {};
+    }
+    if (keyTag === "tag:yaml.org,2002:merge") {
+      if (Array.isArray(valueNode)) {
+        if (valueNode.length > 100) {
+          throwError(state, "abnormal merge sequence size");
+        }
+        for (let index = 0, quantity = valueNode.length; index < quantity; index += 1) {
+          mergeMappings(state, _result, valueNode[index], overridableKeys);
+        }
+      } else {
+        mergeMappings(state, _result, valueNode, overridableKeys);
+      }
+    } else {
+      if (!state.json && !_hasOwnProperty.call(overridableKeys, keyNode) && _hasOwnProperty.call(_result, keyNode)) {
+        state.line = startLine || state.line;
+        state.lineStart = startLineStart || state.lineStart;
+        state.position = startPos || state.position;
+        throwError(state, "duplicated mapping key");
+      }
+      setProperty(_result, keyNode, valueNode);
+      delete overridableKeys[keyNode];
+    }
+    return _result;
+  }
+  function readLineBreak(state) {
+    const ch = state.input.charCodeAt(state.position);
+    if (ch === 10) {
+      state.position++;
+    } else if (ch === 13) {
+      state.position++;
+      if (state.input.charCodeAt(state.position) === 10) {
+        state.position++;
+      }
+    } else {
+      throwError(state, "a line break is expected");
+    }
+    state.line += 1;
+    state.lineStart = state.position;
+    state.firstTabInLine = -1;
+  }
+  function skipSeparationSpace(state, allowComments, checkIndent) {
+    let lineBreaks = 0;
+    let ch = state.input.charCodeAt(state.position);
+    while (ch !== 0) {
+      while (isWhiteSpace(ch)) {
+        if (ch === 9 && state.firstTabInLine === -1) {
+          state.firstTabInLine = state.position;
+        }
+        ch = state.input.charCodeAt(++state.position);
+      }
+      if (allowComments && ch === 35) {
+        do {
+          ch = state.input.charCodeAt(++state.position);
+        } while (ch !== 10 && ch !== 13 && ch !== 0);
+      }
+      if (isEol(ch)) {
+        readLineBreak(state);
+        ch = state.input.charCodeAt(state.position);
+        lineBreaks++;
+        state.lineIndent = 0;
+        while (ch === 32) {
+          state.lineIndent++;
+          ch = state.input.charCodeAt(++state.position);
+        }
+      } else {
+        break;
+      }
+    }
+    if (checkIndent !== -1 && lineBreaks !== 0 && state.lineIndent < checkIndent) {
+      throwWarning(state, "deficient indentation");
+    }
+    return lineBreaks;
+  }
+  function testDocumentSeparator(state) {
+    let _position = state.position;
+    let ch = state.input.charCodeAt(_position);
+    if ((ch === 45 || ch === 46) && ch === state.input.charCodeAt(_position + 1) && ch === state.input.charCodeAt(_position + 2)) {
+      _position += 3;
+      ch = state.input.charCodeAt(_position);
+      if (ch === 0 || isWsOrEol(ch)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  function writeFoldedLines(state, count) {
+    if (count === 1) {
+      state.result += " ";
+    } else if (count > 1) {
+      state.result += common2.repeat("\n", count - 1);
+    }
+  }
+  function readPlainScalar(state, nodeIndent, withinFlowCollection) {
+    let captureStart;
+    let captureEnd;
+    let hasPendingContent;
+    let _line;
+    let _lineStart;
+    let _lineIndent;
+    const _kind = state.kind;
+    const _result = state.result;
+    let ch = state.input.charCodeAt(state.position);
+    if (isWsOrEol(ch) || isFlowIndicator(ch) || ch === 35 || ch === 38 || ch === 42 || ch === 33 || ch === 124 || ch === 62 || ch === 39 || ch === 34 || ch === 37 || ch === 64 || ch === 96) {
+      return false;
+    }
+    if (ch === 63 || ch === 45) {
+      const following = state.input.charCodeAt(state.position + 1);
+      if (isWsOrEol(following) || withinFlowCollection && isFlowIndicator(following)) {
+        return false;
+      }
+    }
+    state.kind = "scalar";
+    state.result = "";
+    captureStart = captureEnd = state.position;
+    hasPendingContent = false;
+    while (ch !== 0) {
+      if (ch === 58) {
+        const following = state.input.charCodeAt(state.position + 1);
+        if (isWsOrEol(following) || withinFlowCollection && isFlowIndicator(following)) {
+          break;
+        }
+      } else if (ch === 35) {
+        const preceding = state.input.charCodeAt(state.position - 1);
+        if (isWsOrEol(preceding)) {
+          break;
+        }
+      } else if (state.position === state.lineStart && testDocumentSeparator(state) || withinFlowCollection && isFlowIndicator(ch)) {
+        break;
+      } else if (isEol(ch)) {
+        _line = state.line;
+        _lineStart = state.lineStart;
+        _lineIndent = state.lineIndent;
+        skipSeparationSpace(state, false, -1);
+        if (state.lineIndent >= nodeIndent) {
+          hasPendingContent = true;
+          ch = state.input.charCodeAt(state.position);
+          continue;
+        } else {
+          state.position = captureEnd;
+          state.line = _line;
+          state.lineStart = _lineStart;
+          state.lineIndent = _lineIndent;
+          break;
+        }
+      }
+      if (hasPendingContent) {
+        captureSegment(state, captureStart, captureEnd, false);
+        writeFoldedLines(state, state.line - _line);
+        captureStart = captureEnd = state.position;
+        hasPendingContent = false;
+      }
+      if (!isWhiteSpace(ch)) {
+        captureEnd = state.position + 1;
+      }
+      ch = state.input.charCodeAt(++state.position);
+    }
+    captureSegment(state, captureStart, captureEnd, false);
+    if (state.result) {
+      return true;
+    }
+    state.kind = _kind;
+    state.result = _result;
+    return false;
+  }
+  function readSingleQuotedScalar(state, nodeIndent) {
+    let captureStart;
+    let captureEnd;
+    let ch = state.input.charCodeAt(state.position);
+    if (ch !== 39) {
+      return false;
+    }
+    state.kind = "scalar";
+    state.result = "";
+    state.position++;
+    captureStart = captureEnd = state.position;
+    while ((ch = state.input.charCodeAt(state.position)) !== 0) {
+      if (ch === 39) {
+        captureSegment(state, captureStart, state.position, true);
+        ch = state.input.charCodeAt(++state.position);
+        if (ch === 39) {
+          captureStart = state.position;
+          state.position++;
+          captureEnd = state.position;
+        } else {
+          return true;
+        }
+      } else if (isEol(ch)) {
+        captureSegment(state, captureStart, captureEnd, true);
+        writeFoldedLines(state, skipSeparationSpace(state, false, nodeIndent));
+        captureStart = captureEnd = state.position;
+      } else if (state.position === state.lineStart && testDocumentSeparator(state)) {
+        throwError(state, "unexpected end of the document within a single quoted scalar");
+      } else {
+        state.position++;
+        if (!isWhiteSpace(ch)) {
+          captureEnd = state.position;
+        }
+      }
+    }
+    throwError(state, "unexpected end of the stream within a single quoted scalar");
+  }
+  function readDoubleQuotedScalar(state, nodeIndent) {
+    let captureStart;
+    let captureEnd;
+    let tmp;
+    let ch = state.input.charCodeAt(state.position);
+    if (ch !== 34) {
+      return false;
+    }
+    state.kind = "scalar";
+    state.result = "";
+    state.position++;
+    captureStart = captureEnd = state.position;
+    while ((ch = state.input.charCodeAt(state.position)) !== 0) {
+      if (ch === 34) {
+        captureSegment(state, captureStart, state.position, true);
+        state.position++;
+        return true;
+      } else if (ch === 92) {
+        captureSegment(state, captureStart, state.position, true);
+        ch = state.input.charCodeAt(++state.position);
+        if (isEol(ch)) {
+          skipSeparationSpace(state, false, nodeIndent);
+        } else if (ch < 256 && simpleEscapeCheck[ch]) {
+          state.result += simpleEscapeMap[ch];
+          state.position++;
+        } else if ((tmp = escapedHexLen(ch)) > 0) {
+          let hexLength = tmp;
+          let hexResult = 0;
+          for (; hexLength > 0; hexLength--) {
+            ch = state.input.charCodeAt(++state.position);
+            if ((tmp = fromHexCode(ch)) >= 0) {
+              hexResult = (hexResult << 4) + tmp;
+            } else {
+              throwError(state, "expected hexadecimal character");
+            }
+          }
+          state.result += charFromCodepoint(hexResult);
+          state.position++;
+        } else {
+          throwError(state, "unknown escape sequence");
+        }
+        captureStart = captureEnd = state.position;
+      } else if (isEol(ch)) {
+        captureSegment(state, captureStart, captureEnd, true);
+        writeFoldedLines(state, skipSeparationSpace(state, false, nodeIndent));
+        captureStart = captureEnd = state.position;
+      } else if (state.position === state.lineStart && testDocumentSeparator(state)) {
+        throwError(state, "unexpected end of the document within a double quoted scalar");
+      } else {
+        state.position++;
+        if (!isWhiteSpace(ch)) {
+          captureEnd = state.position;
+        }
+      }
+    }
+    throwError(state, "unexpected end of the stream within a double quoted scalar");
+  }
+  function readFlowCollection(state, nodeIndent) {
+    let readNext = true;
+    let _line;
+    let _lineStart;
+    let _pos;
+    const _tag = state.tag;
+    let _result;
+    const _anchor = state.anchor;
+    let terminator;
+    let isPair;
+    let isExplicitPair;
+    let isMapping;
+    const overridableKeys = /* @__PURE__ */ Object.create(null);
+    let keyNode;
+    let keyTag;
+    let valueNode;
+    let ch = state.input.charCodeAt(state.position);
+    if (ch === 91) {
+      terminator = 93;
+      isMapping = false;
+      _result = [];
+    } else if (ch === 123) {
+      terminator = 125;
+      isMapping = true;
+      _result = {};
+    } else {
+      return false;
+    }
+    if (state.anchor !== null) {
+      storeAnchor(state, state.anchor, _result);
+    }
+    ch = state.input.charCodeAt(++state.position);
+    while (ch !== 0) {
+      skipSeparationSpace(state, true, nodeIndent);
+      ch = state.input.charCodeAt(state.position);
+      if (ch === terminator) {
+        state.position++;
+        state.tag = _tag;
+        state.anchor = _anchor;
+        state.kind = isMapping ? "mapping" : "sequence";
+        state.result = _result;
+        return true;
+      } else if (!readNext) {
+        throwError(state, "missed comma between flow collection entries");
+      } else if (ch === 44) {
+        throwError(state, "expected the node content, but found ','");
+      }
+      keyTag = keyNode = valueNode = null;
+      isPair = isExplicitPair = false;
+      if (ch === 63) {
+        const following = state.input.charCodeAt(state.position + 1);
+        if (isWsOrEol(following)) {
+          isPair = isExplicitPair = true;
+          state.position++;
+          skipSeparationSpace(state, true, nodeIndent);
+        }
+      }
+      _line = state.line;
+      _lineStart = state.lineStart;
+      _pos = state.position;
+      composeNode(state, nodeIndent, CONTEXT_FLOW_IN, false, true);
+      keyTag = state.tag;
+      keyNode = state.result;
+      skipSeparationSpace(state, true, nodeIndent);
+      ch = state.input.charCodeAt(state.position);
+      if ((isExplicitPair || state.line === _line) && ch === 58) {
+        isPair = true;
+        ch = state.input.charCodeAt(++state.position);
+        skipSeparationSpace(state, true, nodeIndent);
+        composeNode(state, nodeIndent, CONTEXT_FLOW_IN, false, true);
+        valueNode = state.result;
+      }
+      if (isMapping) {
+        storeMappingPair(state, _result, overridableKeys, keyTag, keyNode, valueNode, _line, _lineStart, _pos);
+      } else if (isPair) {
+        _result.push(storeMappingPair(state, null, overridableKeys, keyTag, keyNode, valueNode, _line, _lineStart, _pos));
+      } else {
+        _result.push(keyNode);
+      }
+      skipSeparationSpace(state, true, nodeIndent);
+      ch = state.input.charCodeAt(state.position);
+      if (ch === 44) {
+        readNext = true;
+        ch = state.input.charCodeAt(++state.position);
+      } else {
+        readNext = false;
+      }
+    }
+    throwError(state, "unexpected end of the stream within a flow collection");
+  }
+  function readBlockScalar(state, nodeIndent) {
+    let folding;
+    let chomping = CHOMPING_CLIP;
+    let didReadContent = false;
+    let detectedIndent = false;
+    let textIndent = nodeIndent;
+    let emptyLines = 0;
+    let atMoreIndented = false;
+    let tmp;
+    let ch = state.input.charCodeAt(state.position);
+    if (ch === 124) {
+      folding = false;
+    } else if (ch === 62) {
+      folding = true;
+    } else {
+      return false;
+    }
+    state.kind = "scalar";
+    state.result = "";
+    while (ch !== 0) {
+      ch = state.input.charCodeAt(++state.position);
+      if (ch === 43 || ch === 45) {
+        if (CHOMPING_CLIP === chomping) {
+          chomping = ch === 43 ? CHOMPING_KEEP : CHOMPING_STRIP;
+        } else {
+          throwError(state, "repeat of a chomping mode identifier");
+        }
+      } else if ((tmp = fromDecimalCode(ch)) >= 0) {
+        if (tmp === 0) {
+          throwError(state, "bad explicit indentation width of a block scalar; it cannot be less than one");
+        } else if (!detectedIndent) {
+          textIndent = nodeIndent + tmp - 1;
+          detectedIndent = true;
+        } else {
+          throwError(state, "repeat of an indentation width identifier");
+        }
+      } else {
+        break;
+      }
+    }
+    if (isWhiteSpace(ch)) {
+      do {
+        ch = state.input.charCodeAt(++state.position);
+      } while (isWhiteSpace(ch));
+      if (ch === 35) {
+        do {
+          ch = state.input.charCodeAt(++state.position);
+        } while (!isEol(ch) && ch !== 0);
+      }
+    }
+    while (ch !== 0) {
+      readLineBreak(state);
+      state.lineIndent = 0;
+      ch = state.input.charCodeAt(state.position);
+      while ((!detectedIndent || state.lineIndent < textIndent) && ch === 32) {
+        state.lineIndent++;
+        ch = state.input.charCodeAt(++state.position);
+      }
+      if (!detectedIndent && state.lineIndent > textIndent) {
+        textIndent = state.lineIndent;
+      }
+      if (isEol(ch)) {
+        emptyLines++;
+        continue;
+      }
+      if (!detectedIndent && textIndent === 0) {
+        throwError(state, "missing indentation for block scalar");
+      }
+      if (state.lineIndent < textIndent) {
+        if (chomping === CHOMPING_KEEP) {
+          state.result += common2.repeat("\n", didReadContent ? 1 + emptyLines : emptyLines);
+        } else if (chomping === CHOMPING_CLIP) {
+          if (didReadContent) {
+            state.result += "\n";
+          }
+        }
+        break;
+      }
+      if (folding) {
+        if (isWhiteSpace(ch)) {
+          atMoreIndented = true;
+          state.result += common2.repeat("\n", didReadContent ? 1 + emptyLines : emptyLines);
+        } else if (atMoreIndented) {
+          atMoreIndented = false;
+          state.result += common2.repeat("\n", emptyLines + 1);
+        } else if (emptyLines === 0) {
+          if (didReadContent) {
+            state.result += " ";
+          }
+        } else {
+          state.result += common2.repeat("\n", emptyLines);
+        }
+      } else {
+        state.result += common2.repeat("\n", didReadContent ? 1 + emptyLines : emptyLines);
+      }
+      didReadContent = true;
+      detectedIndent = true;
+      emptyLines = 0;
+      const captureStart = state.position;
+      while (!isEol(ch) && ch !== 0) {
+        ch = state.input.charCodeAt(++state.position);
+      }
+      captureSegment(state, captureStart, state.position, false);
+    }
+    return true;
+  }
+  function readBlockSequence(state, nodeIndent) {
+    const _tag = state.tag;
+    const _anchor = state.anchor;
+    const _result = [];
+    let detected = false;
+    if (state.firstTabInLine !== -1) return false;
+    if (state.anchor !== null) {
+      storeAnchor(state, state.anchor, _result);
+    }
+    let ch = state.input.charCodeAt(state.position);
+    while (ch !== 0) {
+      if (state.firstTabInLine !== -1) {
+        state.position = state.firstTabInLine;
+        throwError(state, "tab characters must not be used in indentation");
+      }
+      if (ch !== 45) {
+        break;
+      }
+      const following = state.input.charCodeAt(state.position + 1);
+      if (!isWsOrEol(following)) {
+        break;
+      }
+      detected = true;
+      state.position++;
+      if (skipSeparationSpace(state, true, -1)) {
+        if (state.lineIndent <= nodeIndent) {
+          _result.push(null);
+          ch = state.input.charCodeAt(state.position);
+          continue;
+        }
+      }
+      const _line = state.line;
+      composeNode(state, nodeIndent, CONTEXT_BLOCK_IN, false, true);
+      _result.push(state.result);
+      skipSeparationSpace(state, true, -1);
+      ch = state.input.charCodeAt(state.position);
+      if ((state.line === _line || state.lineIndent > nodeIndent) && ch !== 0) {
+        throwError(state, "bad indentation of a sequence entry");
+      } else if (state.lineIndent < nodeIndent) {
+        break;
+      }
+    }
+    if (detected) {
+      state.tag = _tag;
+      state.anchor = _anchor;
+      state.kind = "sequence";
+      state.result = _result;
+      return true;
+    }
+    return false;
+  }
+  function readBlockMapping(state, nodeIndent, flowIndent) {
+    let allowCompact;
+    let _keyLine;
+    let _keyLineStart;
+    let _keyPos;
+    const _tag = state.tag;
+    const _anchor = state.anchor;
+    const _result = {};
+    const overridableKeys = /* @__PURE__ */ Object.create(null);
+    let keyTag = null;
+    let keyNode = null;
+    let valueNode = null;
+    let atExplicitKey = false;
+    let detected = false;
+    if (state.firstTabInLine !== -1) return false;
+    if (state.anchor !== null) {
+      storeAnchor(state, state.anchor, _result);
+    }
+    let ch = state.input.charCodeAt(state.position);
+    while (ch !== 0) {
+      if (!atExplicitKey && state.firstTabInLine !== -1) {
+        state.position = state.firstTabInLine;
+        throwError(state, "tab characters must not be used in indentation");
+      }
+      const following = state.input.charCodeAt(state.position + 1);
+      const _line = state.line;
+      if ((ch === 63 || ch === 58) && isWsOrEol(following)) {
+        if (ch === 63) {
+          if (atExplicitKey) {
+            storeMappingPair(state, _result, overridableKeys, keyTag, keyNode, null, _keyLine, _keyLineStart, _keyPos);
+            keyTag = keyNode = valueNode = null;
+          }
+          detected = true;
+          atExplicitKey = true;
+          allowCompact = true;
+        } else if (atExplicitKey) {
+          atExplicitKey = false;
+          allowCompact = true;
+        } else {
+          throwError(state, "incomplete explicit mapping pair; a key node is missed; or followed by a non-tabulated empty line");
+        }
+        state.position += 1;
+        ch = following;
+      } else {
+        _keyLine = state.line;
+        _keyLineStart = state.lineStart;
+        _keyPos = state.position;
+        if (!composeNode(state, flowIndent, CONTEXT_FLOW_OUT, false, true)) {
+          break;
+        }
+        if (state.line === _line) {
+          ch = state.input.charCodeAt(state.position);
+          while (isWhiteSpace(ch)) {
+            ch = state.input.charCodeAt(++state.position);
+          }
+          if (ch === 58) {
+            ch = state.input.charCodeAt(++state.position);
+            if (!isWsOrEol(ch)) {
+              throwError(state, "a whitespace character is expected after the key-value separator within a block mapping");
+            }
+            if (atExplicitKey) {
+              storeMappingPair(state, _result, overridableKeys, keyTag, keyNode, null, _keyLine, _keyLineStart, _keyPos);
+              keyTag = keyNode = valueNode = null;
+            }
+            detected = true;
+            atExplicitKey = false;
+            allowCompact = false;
+            keyTag = state.tag;
+            keyNode = state.result;
+          } else if (detected) {
+            throwError(state, "can not read an implicit mapping pair; a colon is missed");
+          } else {
+            state.tag = _tag;
+            state.anchor = _anchor;
+            return true;
+          }
+        } else if (detected) {
+          throwError(state, "can not read a block mapping entry; a multiline key may not be an implicit key");
+        } else {
+          state.tag = _tag;
+          state.anchor = _anchor;
+          return true;
+        }
+      }
+      if (state.line === _line || state.lineIndent > nodeIndent) {
+        if (atExplicitKey) {
+          _keyLine = state.line;
+          _keyLineStart = state.lineStart;
+          _keyPos = state.position;
+        }
+        if (composeNode(state, nodeIndent, CONTEXT_BLOCK_OUT, true, allowCompact)) {
+          if (atExplicitKey) {
+            keyNode = state.result;
+          } else {
+            valueNode = state.result;
+          }
+        }
+        if (!atExplicitKey) {
+          storeMappingPair(state, _result, overridableKeys, keyTag, keyNode, valueNode, _keyLine, _keyLineStart, _keyPos);
+          keyTag = keyNode = valueNode = null;
+        }
+        skipSeparationSpace(state, true, -1);
+        ch = state.input.charCodeAt(state.position);
+      }
+      if ((state.line === _line || state.lineIndent > nodeIndent) && ch !== 0) {
+        throwError(state, "bad indentation of a mapping entry");
+      } else if (state.lineIndent < nodeIndent) {
+        break;
+      }
+    }
+    if (atExplicitKey) {
+      storeMappingPair(state, _result, overridableKeys, keyTag, keyNode, null, _keyLine, _keyLineStart, _keyPos);
+    }
+    if (detected) {
+      state.tag = _tag;
+      state.anchor = _anchor;
+      state.kind = "mapping";
+      state.result = _result;
+    }
+    return detected;
+  }
+  function readTagProperty(state) {
+    let isVerbatim = false;
+    let isNamed = false;
+    let tagHandle;
+    let tagName;
+    let ch = state.input.charCodeAt(state.position);
+    if (ch !== 33) return false;
+    if (state.tag !== null) {
+      throwError(state, "duplication of a tag property");
+    }
+    ch = state.input.charCodeAt(++state.position);
+    if (ch === 60) {
+      isVerbatim = true;
+      ch = state.input.charCodeAt(++state.position);
+    } else if (ch === 33) {
+      isNamed = true;
+      tagHandle = "!!";
+      ch = state.input.charCodeAt(++state.position);
+    } else {
+      tagHandle = "!";
+    }
+    let _position = state.position;
+    if (isVerbatim) {
+      do {
+        ch = state.input.charCodeAt(++state.position);
+      } while (ch !== 0 && ch !== 62);
+      if (state.position < state.length) {
+        tagName = state.input.slice(_position, state.position);
+        ch = state.input.charCodeAt(++state.position);
+      } else {
+        throwError(state, "unexpected end of the stream within a verbatim tag");
+      }
+    } else {
+      while (ch !== 0 && !isWsOrEol(ch)) {
+        if (ch === 33) {
+          if (!isNamed) {
+            tagHandle = state.input.slice(_position - 1, state.position + 1);
+            if (!PATTERN_TAG_HANDLE.test(tagHandle)) {
+              throwError(state, "named tag handle cannot contain such characters");
+            }
+            isNamed = true;
+            _position = state.position + 1;
+          } else {
+            throwError(state, "tag suffix cannot contain exclamation marks");
+          }
+        }
+        ch = state.input.charCodeAt(++state.position);
+      }
+      tagName = state.input.slice(_position, state.position);
+      if (PATTERN_FLOW_INDICATORS.test(tagName)) {
+        throwError(state, "tag suffix cannot contain flow indicator characters");
+      }
+    }
+    if (tagName && !PATTERN_TAG_URI.test(tagName)) {
+      throwError(state, "tag name cannot contain such characters: " + tagName);
+    }
+    try {
+      tagName = decodeURIComponent(tagName);
+    } catch (err) {
+      throwError(state, "tag name is malformed: " + tagName);
+    }
+    if (isVerbatim) {
+      state.tag = tagName;
+    } else if (_hasOwnProperty.call(state.tagMap, tagHandle)) {
+      state.tag = state.tagMap[tagHandle] + tagName;
+    } else if (tagHandle === "!") {
+      state.tag = "!" + tagName;
+    } else if (tagHandle === "!!") {
+      state.tag = "tag:yaml.org,2002:" + tagName;
+    } else {
+      throwError(state, 'undeclared tag handle "' + tagHandle + '"');
+    }
+    return true;
+  }
+  function readAnchorProperty(state) {
+    let ch = state.input.charCodeAt(state.position);
+    if (ch !== 38) return false;
+    if (state.anchor !== null) {
+      throwError(state, "duplication of an anchor property");
+    }
+    ch = state.input.charCodeAt(++state.position);
+    const _position = state.position;
+    while (ch !== 0 && !isWsOrEol(ch) && !isFlowIndicator(ch)) {
+      ch = state.input.charCodeAt(++state.position);
+    }
+    if (state.position === _position) {
+      throwError(state, "name of an anchor node must contain at least one character");
+    }
+    state.anchor = state.input.slice(_position, state.position);
+    return true;
+  }
+  function readAlias(state) {
+    let ch = state.input.charCodeAt(state.position);
+    if (ch !== 42) return false;
+    ch = state.input.charCodeAt(++state.position);
+    const _position = state.position;
+    while (ch !== 0 && !isWsOrEol(ch) && !isFlowIndicator(ch)) {
+      ch = state.input.charCodeAt(++state.position);
+    }
+    if (state.position === _position) {
+      throwError(state, "name of an alias node must contain at least one character");
+    }
+    const alias = state.input.slice(_position, state.position);
+    if (!_hasOwnProperty.call(state.anchorMap, alias)) {
+      throwError(state, 'unidentified alias "' + alias + '"');
+    }
+    state.result = state.anchorMap[alias];
+    skipSeparationSpace(state, true, -1);
+    return true;
+  }
+  function tryReadBlockMappingFromProperty(state, propertyStart, nodeIndent, flowIndent) {
+    const fallbackState = snapshotState(state);
+    beginAnchorTransaction(state);
+    restoreState(state, propertyStart);
+    state.tag = null;
+    state.anchor = null;
+    state.kind = null;
+    state.result = null;
+    if (readBlockMapping(state, nodeIndent, flowIndent) && state.kind === "mapping") {
+      commitAnchorTransaction(state);
+      return true;
+    }
+    rollbackAnchorTransaction(state);
+    restoreState(state, fallbackState);
+    return false;
+  }
+  function composeNode(state, parentIndent, nodeContext, allowToSeek, allowCompact) {
+    let allowBlockScalars;
+    let allowBlockCollections;
+    let indentStatus = 1;
+    let atNewLine = false;
+    let hasContent = false;
+    let propertyStart = null;
+    let type2;
+    let flowIndent;
+    let blockIndent;
+    if (state.depth >= state.maxDepth) {
+      throwError(state, "nesting exceeded maxDepth (" + state.maxDepth + ")");
+    }
+    state.depth += 1;
+    if (state.listener !== null) {
+      state.listener("open", state);
+    }
+    state.tag = null;
+    state.anchor = null;
+    state.kind = null;
+    state.result = null;
+    const allowBlockStyles = allowBlockScalars = allowBlockCollections = CONTEXT_BLOCK_OUT === nodeContext || CONTEXT_BLOCK_IN === nodeContext;
+    if (allowToSeek) {
+      if (skipSeparationSpace(state, true, -1)) {
+        atNewLine = true;
+        if (state.lineIndent > parentIndent) {
+          indentStatus = 1;
+        } else if (state.lineIndent === parentIndent) {
+          indentStatus = 0;
+        } else if (state.lineIndent < parentIndent) {
+          indentStatus = -1;
+        }
+      }
+    }
+    if (indentStatus === 1) {
+      while (true) {
+        const ch = state.input.charCodeAt(state.position);
+        const propertyState = snapshotState(state);
+        if (atNewLine && (ch === 33 && state.tag !== null || ch === 38 && state.anchor !== null)) {
+          break;
+        }
+        if (!readTagProperty(state) && !readAnchorProperty(state)) {
+          break;
+        }
+        if (propertyStart === null) {
+          propertyStart = propertyState;
+        }
+        if (skipSeparationSpace(state, true, -1)) {
+          atNewLine = true;
+          allowBlockCollections = allowBlockStyles;
+          if (state.lineIndent > parentIndent) {
+            indentStatus = 1;
+          } else if (state.lineIndent === parentIndent) {
+            indentStatus = 0;
+          } else if (state.lineIndent < parentIndent) {
+            indentStatus = -1;
+          }
+        } else {
+          allowBlockCollections = false;
+        }
+      }
+    }
+    if (allowBlockCollections) {
+      allowBlockCollections = atNewLine || allowCompact;
+    }
+    if (indentStatus === 1 || CONTEXT_BLOCK_OUT === nodeContext) {
+      if (CONTEXT_FLOW_IN === nodeContext || CONTEXT_FLOW_OUT === nodeContext) {
+        flowIndent = parentIndent;
+      } else {
+        flowIndent = parentIndent + 1;
+      }
+      blockIndent = state.position - state.lineStart;
+      if (indentStatus === 1) {
+        if (allowBlockCollections && (readBlockSequence(state, blockIndent) || readBlockMapping(state, blockIndent, flowIndent)) || readFlowCollection(state, flowIndent)) {
+          hasContent = true;
+        } else {
+          const ch = state.input.charCodeAt(state.position);
+          if (propertyStart !== null && allowBlockStyles && !allowBlockCollections && ch !== 124 && ch !== 62 && tryReadBlockMappingFromProperty(
+            state,
+            propertyStart,
+            propertyStart.position - propertyStart.lineStart,
+            flowIndent
+          )) {
+            hasContent = true;
+          } else if (allowBlockScalars && readBlockScalar(state, flowIndent) || readSingleQuotedScalar(state, flowIndent) || readDoubleQuotedScalar(state, flowIndent)) {
+            hasContent = true;
+          } else if (readAlias(state)) {
+            hasContent = true;
+            if (state.tag !== null || state.anchor !== null) {
+              throwError(state, "alias node should not have any properties");
+            }
+          } else if (readPlainScalar(state, flowIndent, CONTEXT_FLOW_IN === nodeContext)) {
+            hasContent = true;
+            if (state.tag === null) {
+              state.tag = "?";
+            }
+          }
+          if (state.anchor !== null) {
+            storeAnchor(state, state.anchor, state.result);
+          }
+        }
+      } else if (indentStatus === 0) {
+        hasContent = allowBlockCollections && readBlockSequence(state, blockIndent);
+      }
+    }
+    if (state.tag === null) {
+      if (state.anchor !== null) {
+        storeAnchor(state, state.anchor, state.result);
+      }
+    } else if (state.tag === "?") {
+      if (state.result !== null && state.kind !== "scalar") {
+        throwError(state, 'unacceptable node kind for !<?> tag; it should be "scalar", not "' + state.kind + '"');
+      }
+      for (let typeIndex = 0, typeQuantity = state.implicitTypes.length; typeIndex < typeQuantity; typeIndex += 1) {
+        type2 = state.implicitTypes[typeIndex];
+        if (type2.resolve(state.result)) {
+          state.result = type2.construct(state.result);
+          state.tag = type2.tag;
+          if (state.anchor !== null) {
+            storeAnchor(state, state.anchor, state.result);
+          }
+          break;
+        }
+      }
+    } else if (state.tag !== "!") {
+      if (_hasOwnProperty.call(state.typeMap[state.kind || "fallback"], state.tag)) {
+        type2 = state.typeMap[state.kind || "fallback"][state.tag];
+      } else {
+        type2 = null;
+        const typeList = state.typeMap.multi[state.kind || "fallback"];
+        for (let typeIndex = 0, typeQuantity = typeList.length; typeIndex < typeQuantity; typeIndex += 1) {
+          if (state.tag.slice(0, typeList[typeIndex].tag.length) === typeList[typeIndex].tag) {
+            type2 = typeList[typeIndex];
+            break;
+          }
+        }
+      }
+      if (!type2) {
+        throwError(state, "unknown tag !<" + state.tag + ">");
+      }
+      if (state.result !== null && type2.kind !== state.kind) {
+        throwError(state, "unacceptable node kind for !<" + state.tag + '> tag; it should be "' + type2.kind + '", not "' + state.kind + '"');
+      }
+      if (!type2.resolve(state.result, state.tag)) {
+        throwError(state, "cannot resolve a node with !<" + state.tag + "> explicit tag");
+      } else {
+        state.result = type2.construct(state.result, state.tag);
+        if (state.anchor !== null) {
+          storeAnchor(state, state.anchor, state.result);
+        }
+      }
+    }
+    if (state.listener !== null) {
+      state.listener("close", state);
+    }
+    state.depth -= 1;
+    return state.tag !== null || state.anchor !== null || hasContent;
+  }
+  function readDocument(state) {
+    const documentStart = state.position;
+    let hasDirectives = false;
+    let ch;
+    state.version = null;
+    state.checkLineBreaks = state.legacy;
+    state.tagMap = /* @__PURE__ */ Object.create(null);
+    state.anchorMap = /* @__PURE__ */ Object.create(null);
+    while ((ch = state.input.charCodeAt(state.position)) !== 0) {
+      skipSeparationSpace(state, true, -1);
+      ch = state.input.charCodeAt(state.position);
+      if (state.lineIndent > 0 || ch !== 37) {
+        break;
+      }
+      hasDirectives = true;
+      ch = state.input.charCodeAt(++state.position);
+      let _position = state.position;
+      while (ch !== 0 && !isWsOrEol(ch)) {
+        ch = state.input.charCodeAt(++state.position);
+      }
+      const directiveName = state.input.slice(_position, state.position);
+      const directiveArgs = [];
+      if (directiveName.length < 1) {
+        throwError(state, "directive name must not be less than one character in length");
+      }
+      while (ch !== 0) {
+        while (isWhiteSpace(ch)) {
+          ch = state.input.charCodeAt(++state.position);
+        }
+        if (ch === 35) {
+          do {
+            ch = state.input.charCodeAt(++state.position);
+          } while (ch !== 0 && !isEol(ch));
+          break;
+        }
+        if (isEol(ch)) break;
+        _position = state.position;
+        while (ch !== 0 && !isWsOrEol(ch)) {
+          ch = state.input.charCodeAt(++state.position);
+        }
+        directiveArgs.push(state.input.slice(_position, state.position));
+      }
+      if (ch !== 0) readLineBreak(state);
+      if (_hasOwnProperty.call(directiveHandlers, directiveName)) {
+        directiveHandlers[directiveName](state, directiveName, directiveArgs);
+      } else {
+        throwWarning(state, 'unknown document directive "' + directiveName + '"');
+      }
+    }
+    skipSeparationSpace(state, true, -1);
+    if (state.lineIndent === 0 && state.input.charCodeAt(state.position) === 45 && state.input.charCodeAt(state.position + 1) === 45 && state.input.charCodeAt(state.position + 2) === 45) {
+      state.position += 3;
+      skipSeparationSpace(state, true, -1);
+    } else if (hasDirectives) {
+      throwError(state, "directives end mark is expected");
+    }
+    composeNode(state, state.lineIndent - 1, CONTEXT_BLOCK_OUT, false, true);
+    skipSeparationSpace(state, true, -1);
+    if (state.checkLineBreaks && PATTERN_NON_ASCII_LINE_BREAKS.test(state.input.slice(documentStart, state.position))) {
+      throwWarning(state, "non-ASCII line breaks are interpreted as content");
+    }
+    state.documents.push(state.result);
+    if (state.position === state.lineStart && testDocumentSeparator(state)) {
+      if (state.input.charCodeAt(state.position) === 46) {
+        state.position += 3;
+        skipSeparationSpace(state, true, -1);
+      }
+      return;
+    }
+    if (state.position < state.length - 1) {
+      throwError(state, "end of the stream or a document separator is expected");
+    }
+  }
+  function loadDocuments(input, options) {
+    input = String(input);
+    options = options || {};
+    if (input.length !== 0) {
+      if (input.charCodeAt(input.length - 1) !== 10 && input.charCodeAt(input.length - 1) !== 13) {
+        input += "\n";
+      }
+      if (input.charCodeAt(0) === 65279) {
+        input = input.slice(1);
+      }
+    }
+    const state = new State(input, options);
+    const nullpos = input.indexOf("\0");
+    if (nullpos !== -1) {
+      state.position = nullpos;
+      throwError(state, "null byte is not allowed in input");
+    }
+    state.input += "\0";
+    while (state.input.charCodeAt(state.position) === 32) {
+      state.lineIndent += 1;
+      state.position += 1;
+    }
+    while (state.position < state.length - 1) {
+      readDocument(state);
+    }
+    return state.documents;
+  }
+  function loadAll2(input, iterator, options) {
+    if (iterator !== null && typeof iterator === "object" && typeof options === "undefined") {
+      options = iterator;
+      iterator = null;
+    }
+    const documents = loadDocuments(input, options);
+    if (typeof iterator !== "function") {
+      return documents;
+    }
+    for (let index = 0, length = documents.length; index < length; index += 1) {
+      iterator(documents[index]);
+    }
+  }
+  function load2(input, options) {
+    const documents = loadDocuments(input, options);
+    if (documents.length === 0) {
+      return void 0;
+    } else if (documents.length === 1) {
+      return documents[0];
+    }
+    throw new YAMLException2("expected a single document in the stream, but found more");
+  }
+  loader.loadAll = loadAll2;
+  loader.load = load2;
+  return loader;
+}
+var dumper = {};
+var hasRequiredDumper;
+function requireDumper() {
+  if (hasRequiredDumper) return dumper;
+  hasRequiredDumper = 1;
+  const common2 = requireCommon();
+  const YAMLException2 = requireException();
+  const DEFAULT_SCHEMA2 = require_default();
+  const _toString = Object.prototype.toString;
+  const _hasOwnProperty = Object.prototype.hasOwnProperty;
+  const CHAR_BOM = 65279;
+  const CHAR_TAB = 9;
+  const CHAR_LINE_FEED = 10;
+  const CHAR_CARRIAGE_RETURN = 13;
+  const CHAR_SPACE = 32;
+  const CHAR_EXCLAMATION = 33;
+  const CHAR_DOUBLE_QUOTE = 34;
+  const CHAR_SHARP = 35;
+  const CHAR_PERCENT = 37;
+  const CHAR_AMPERSAND = 38;
+  const CHAR_SINGLE_QUOTE = 39;
+  const CHAR_ASTERISK = 42;
+  const CHAR_COMMA = 44;
+  const CHAR_MINUS = 45;
+  const CHAR_COLON = 58;
+  const CHAR_EQUALS = 61;
+  const CHAR_GREATER_THAN = 62;
+  const CHAR_QUESTION = 63;
+  const CHAR_COMMERCIAL_AT = 64;
+  const CHAR_LEFT_SQUARE_BRACKET = 91;
+  const CHAR_RIGHT_SQUARE_BRACKET = 93;
+  const CHAR_GRAVE_ACCENT = 96;
+  const CHAR_LEFT_CURLY_BRACKET = 123;
+  const CHAR_VERTICAL_LINE = 124;
+  const CHAR_RIGHT_CURLY_BRACKET = 125;
+  const ESCAPE_SEQUENCES = {};
+  ESCAPE_SEQUENCES[0] = "\\0";
+  ESCAPE_SEQUENCES[7] = "\\a";
+  ESCAPE_SEQUENCES[8] = "\\b";
+  ESCAPE_SEQUENCES[9] = "\\t";
+  ESCAPE_SEQUENCES[10] = "\\n";
+  ESCAPE_SEQUENCES[11] = "\\v";
+  ESCAPE_SEQUENCES[12] = "\\f";
+  ESCAPE_SEQUENCES[13] = "\\r";
+  ESCAPE_SEQUENCES[27] = "\\e";
+  ESCAPE_SEQUENCES[34] = '\\"';
+  ESCAPE_SEQUENCES[92] = "\\\\";
+  ESCAPE_SEQUENCES[133] = "\\N";
+  ESCAPE_SEQUENCES[160] = "\\_";
+  ESCAPE_SEQUENCES[8232] = "\\L";
+  ESCAPE_SEQUENCES[8233] = "\\P";
+  const DEPRECATED_BOOLEANS_SYNTAX = [
+    "y",
+    "Y",
+    "yes",
+    "Yes",
+    "YES",
+    "on",
+    "On",
+    "ON",
+    "n",
+    "N",
+    "no",
+    "No",
+    "NO",
+    "off",
+    "Off",
+    "OFF"
+  ];
+  const DEPRECATED_BASE60_SYNTAX = /^[-+]?[0-9_]+(?::[0-9_]+)+(?:\.[0-9_]*)?$/;
+  function compileStyleMap(schema2, map2) {
+    if (map2 === null) return {};
+    const result = {};
+    const keys = Object.keys(map2);
+    for (let index = 0, length = keys.length; index < length; index += 1) {
+      let tag = keys[index];
+      let style = String(map2[tag]);
+      if (tag.slice(0, 2) === "!!") {
+        tag = "tag:yaml.org,2002:" + tag.slice(2);
+      }
+      const type2 = schema2.compiledTypeMap["fallback"][tag];
+      if (type2 && _hasOwnProperty.call(type2.styleAliases, style)) {
+        style = type2.styleAliases[style];
+      }
+      result[tag] = style;
+    }
+    return result;
+  }
+  function encodeHex(character) {
+    let handle;
+    let length;
+    const string = character.toString(16).toUpperCase();
+    if (character <= 255) {
+      handle = "x";
+      length = 2;
+    } else if (character <= 65535) {
+      handle = "u";
+      length = 4;
+    } else if (character <= 4294967295) {
+      handle = "U";
+      length = 8;
+    } else {
+      throw new YAMLException2("code point within a string may not be greater than 0xFFFFFFFF");
+    }
+    return "\\" + handle + common2.repeat("0", length - string.length) + string;
+  }
+  const QUOTING_TYPE_SINGLE = 1;
+  const QUOTING_TYPE_DOUBLE = 2;
+  function State(options) {
+    this.schema = options["schema"] || DEFAULT_SCHEMA2;
+    this.indent = Math.max(1, options["indent"] || 2);
+    this.noArrayIndent = options["noArrayIndent"] || false;
+    this.skipInvalid = options["skipInvalid"] || false;
+    this.flowLevel = common2.isNothing(options["flowLevel"]) ? -1 : options["flowLevel"];
+    this.styleMap = compileStyleMap(this.schema, options["styles"] || null);
+    this.sortKeys = options["sortKeys"] || false;
+    this.lineWidth = options["lineWidth"] || 80;
+    this.noRefs = options["noRefs"] || false;
+    this.noCompatMode = options["noCompatMode"] || false;
+    this.condenseFlow = options["condenseFlow"] || false;
+    this.quotingType = options["quotingType"] === '"' ? QUOTING_TYPE_DOUBLE : QUOTING_TYPE_SINGLE;
+    this.forceQuotes = options["forceQuotes"] || false;
+    this.replacer = typeof options["replacer"] === "function" ? options["replacer"] : null;
+    this.implicitTypes = this.schema.compiledImplicit;
+    this.explicitTypes = this.schema.compiledExplicit;
+    this.tag = null;
+    this.result = "";
+    this.duplicates = [];
+    this.usedDuplicates = null;
+  }
+  function indentString(string, spaces) {
+    const ind = common2.repeat(" ", spaces);
+    let position = 0;
+    let result = "";
+    const length = string.length;
+    while (position < length) {
+      let line;
+      const next = string.indexOf("\n", position);
+      if (next === -1) {
+        line = string.slice(position);
+        position = length;
+      } else {
+        line = string.slice(position, next + 1);
+        position = next + 1;
+      }
+      if (line.length && line !== "\n") result += ind;
+      result += line;
+    }
+    return result;
+  }
+  function generateNextLine(state, level) {
+    return "\n" + common2.repeat(" ", state.indent * level);
+  }
+  function testImplicitResolving(state, str2) {
+    for (let index = 0, length = state.implicitTypes.length; index < length; index += 1) {
+      const type2 = state.implicitTypes[index];
+      if (type2.resolve(str2)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  function isWhitespace(c) {
+    return c === CHAR_SPACE || c === CHAR_TAB;
+  }
+  function isPrintable(c) {
+    return c >= 32 && c <= 126 || c >= 161 && c <= 55295 && c !== 8232 && c !== 8233 || c >= 57344 && c <= 65533 && c !== CHAR_BOM || c >= 65536 && c <= 1114111;
+  }
+  function isNsCharOrWhitespace(c) {
+    return isPrintable(c) && c !== CHAR_BOM && // - b-char
+    c !== CHAR_CARRIAGE_RETURN && c !== CHAR_LINE_FEED;
+  }
+  function isPlainSafe(c, prev, inblock) {
+    const cIsNsCharOrWhitespace = isNsCharOrWhitespace(c);
+    const cIsNsChar = cIsNsCharOrWhitespace && !isWhitespace(c);
+    return (
+      // ns-plain-safe
+      (inblock ? cIsNsCharOrWhitespace : cIsNsCharOrWhitespace && // - c-flow-indicator
+      c !== CHAR_COMMA && c !== CHAR_LEFT_SQUARE_BRACKET && c !== CHAR_RIGHT_SQUARE_BRACKET && c !== CHAR_LEFT_CURLY_BRACKET && c !== CHAR_RIGHT_CURLY_BRACKET) && // ns-plain-char
+      c !== CHAR_SHARP && // false on '#'
+      !(prev === CHAR_COLON && !cIsNsChar) || // false on ': '
+      isNsCharOrWhitespace(prev) && !isWhitespace(prev) && c === CHAR_SHARP || // change to true on '[^ ]#'
+      prev === CHAR_COLON && cIsNsChar
+    );
+  }
+  function isPlainSafeFirst(c) {
+    return isPrintable(c) && c !== CHAR_BOM && !isWhitespace(c) && // - s-white
+    // - (c-indicator ::=
+    // “-” | “?” | “:” | “,” | “[” | “]” | “{” | “}”
+    c !== CHAR_MINUS && c !== CHAR_QUESTION && c !== CHAR_COLON && c !== CHAR_COMMA && c !== CHAR_LEFT_SQUARE_BRACKET && c !== CHAR_RIGHT_SQUARE_BRACKET && c !== CHAR_LEFT_CURLY_BRACKET && c !== CHAR_RIGHT_CURLY_BRACKET && // | “#” | “&” | “*” | “!” | “|” | “=” | “>” | “'” | “"”
+    c !== CHAR_SHARP && c !== CHAR_AMPERSAND && c !== CHAR_ASTERISK && c !== CHAR_EXCLAMATION && c !== CHAR_VERTICAL_LINE && c !== CHAR_EQUALS && c !== CHAR_GREATER_THAN && c !== CHAR_SINGLE_QUOTE && c !== CHAR_DOUBLE_QUOTE && // | “%” | “@” | “`”)
+    c !== CHAR_PERCENT && c !== CHAR_COMMERCIAL_AT && c !== CHAR_GRAVE_ACCENT;
+  }
+  function isPlainSafeLast(c) {
+    return !isWhitespace(c) && c !== CHAR_COLON;
+  }
+  function codePointAt(string, pos) {
+    const first = string.charCodeAt(pos);
+    let second;
+    if (first >= 55296 && first <= 56319 && pos + 1 < string.length) {
+      second = string.charCodeAt(pos + 1);
+      if (second >= 56320 && second <= 57343) {
+        return (first - 55296) * 1024 + second - 56320 + 65536;
+      }
+    }
+    return first;
+  }
+  function needIndentIndicator(string) {
+    const leadingSpaceRe = /^\n* /;
+    return leadingSpaceRe.test(string);
+  }
+  const STYLE_PLAIN = 1;
+  const STYLE_SINGLE = 2;
+  const STYLE_LITERAL = 3;
+  const STYLE_FOLDED = 4;
+  const STYLE_DOUBLE = 5;
+  function chooseScalarStyle(string, singleLineOnly, indentPerLevel, lineWidth, testAmbiguousType, quotingType, forceQuotes, inblock) {
+    let i;
+    let char = 0;
+    let prevChar = null;
+    let hasLineBreak = false;
+    let hasFoldableLine = false;
+    const shouldTrackWidth = lineWidth !== -1;
+    let previousLineBreak = -1;
+    let plain = isPlainSafeFirst(codePointAt(string, 0)) && isPlainSafeLast(codePointAt(string, string.length - 1));
+    if (singleLineOnly || forceQuotes) {
+      for (i = 0; i < string.length; char >= 65536 ? i += 2 : i++) {
+        char = codePointAt(string, i);
+        if (!isPrintable(char)) {
+          return STYLE_DOUBLE;
+        }
+        plain = plain && isPlainSafe(char, prevChar, inblock);
+        prevChar = char;
+      }
+    } else {
+      for (i = 0; i < string.length; char >= 65536 ? i += 2 : i++) {
+        char = codePointAt(string, i);
+        if (char === CHAR_LINE_FEED) {
+          hasLineBreak = true;
+          if (shouldTrackWidth) {
+            hasFoldableLine = hasFoldableLine || // Foldable line = too long, and not more-indented.
+            i - previousLineBreak - 1 > lineWidth && string[previousLineBreak + 1] !== " ";
+            previousLineBreak = i;
+          }
+        } else if (!isPrintable(char)) {
+          return STYLE_DOUBLE;
+        }
+        plain = plain && isPlainSafe(char, prevChar, inblock);
+        prevChar = char;
+      }
+      hasFoldableLine = hasFoldableLine || shouldTrackWidth && (i - previousLineBreak - 1 > lineWidth && string[previousLineBreak + 1] !== " ");
+    }
+    if (!hasLineBreak && !hasFoldableLine) {
+      if (plain && !forceQuotes && !testAmbiguousType(string)) {
+        return STYLE_PLAIN;
+      }
+      return quotingType === QUOTING_TYPE_DOUBLE ? STYLE_DOUBLE : STYLE_SINGLE;
+    }
+    if (indentPerLevel > 9 && needIndentIndicator(string)) {
+      return STYLE_DOUBLE;
+    }
+    if (!forceQuotes) {
+      return hasFoldableLine ? STYLE_FOLDED : STYLE_LITERAL;
+    }
+    return quotingType === QUOTING_TYPE_DOUBLE ? STYLE_DOUBLE : STYLE_SINGLE;
+  }
+  function writeScalar(state, string, level, iskey, inblock) {
+    state.dump = (function() {
+      if (string.length === 0) {
+        return state.quotingType === QUOTING_TYPE_DOUBLE ? '""' : "''";
+      }
+      if (!state.noCompatMode) {
+        if (DEPRECATED_BOOLEANS_SYNTAX.indexOf(string) !== -1 || DEPRECATED_BASE60_SYNTAX.test(string)) {
+          return state.quotingType === QUOTING_TYPE_DOUBLE ? '"' + string + '"' : "'" + string + "'";
+        }
+      }
+      const indent = state.indent * Math.max(1, level);
+      const lineWidth = state.lineWidth === -1 ? -1 : Math.max(Math.min(state.lineWidth, 40), state.lineWidth - indent);
+      const singleLineOnly = iskey || // No block styles in flow mode.
+      state.flowLevel > -1 && level >= state.flowLevel;
+      function testAmbiguity(string2) {
+        return testImplicitResolving(state, string2);
+      }
+      switch (chooseScalarStyle(
+        string,
+        singleLineOnly,
+        state.indent,
+        lineWidth,
+        testAmbiguity,
+        state.quotingType,
+        state.forceQuotes && !iskey,
+        inblock
+      )) {
+        case STYLE_PLAIN:
+          return string;
+        case STYLE_SINGLE:
+          return "'" + string.replace(/'/g, "''") + "'";
+        case STYLE_LITERAL:
+          return "|" + blockHeader(string, state.indent) + dropEndingNewline(indentString(string, indent));
+        case STYLE_FOLDED:
+          return ">" + blockHeader(string, state.indent) + dropEndingNewline(indentString(foldString(string, lineWidth), indent));
+        case STYLE_DOUBLE:
+          return '"' + escapeString(string) + '"';
+        default:
+          throw new YAMLException2("impossible error: invalid scalar style");
+      }
+    })();
+  }
+  function blockHeader(string, indentPerLevel) {
+    const indentIndicator = needIndentIndicator(string) ? String(indentPerLevel) : "";
+    const clip = string[string.length - 1] === "\n";
+    const keep = clip && (string[string.length - 2] === "\n" || string === "\n");
+    const chomp = keep ? "+" : clip ? "" : "-";
+    return indentIndicator + chomp + "\n";
+  }
+  function dropEndingNewline(string) {
+    return string[string.length - 1] === "\n" ? string.slice(0, -1) : string;
+  }
+  function foldString(string, width) {
+    const lineRe = /(\n+)([^\n]*)/g;
+    let result = (function() {
+      let nextLF = string.indexOf("\n");
+      nextLF = nextLF !== -1 ? nextLF : string.length;
+      lineRe.lastIndex = nextLF;
+      return foldLine(string.slice(0, nextLF), width);
+    })();
+    let prevMoreIndented = string[0] === "\n" || string[0] === " ";
+    let moreIndented;
+    let match;
+    while (match = lineRe.exec(string)) {
+      const prefix = match[1];
+      const line = match[2];
+      moreIndented = line[0] === " ";
+      result += prefix + (!prevMoreIndented && !moreIndented && line !== "" ? "\n" : "") + foldLine(line, width);
+      prevMoreIndented = moreIndented;
+    }
+    return result;
+  }
+  function foldLine(line, width) {
+    if (line === "" || line[0] === " ") return line;
+    const breakRe = / [^ ]/g;
+    let match;
+    let start = 0;
+    let end;
+    let curr = 0;
+    let next = 0;
+    let result = "";
+    while (match = breakRe.exec(line)) {
+      next = match.index;
+      if (next - start > width) {
+        end = curr > start ? curr : next;
+        result += "\n" + line.slice(start, end);
+        start = end + 1;
+      }
+      curr = next;
+    }
+    result += "\n";
+    if (line.length - start > width && curr > start) {
+      result += line.slice(start, curr) + "\n" + line.slice(curr + 1);
+    } else {
+      result += line.slice(start);
+    }
+    return result.slice(1);
+  }
+  function escapeString(string) {
+    let result = "";
+    let char = 0;
+    for (let i = 0; i < string.length; char >= 65536 ? i += 2 : i++) {
+      char = codePointAt(string, i);
+      const escapeSeq = ESCAPE_SEQUENCES[char];
+      if (!escapeSeq && isPrintable(char)) {
+        result += string[i];
+        if (char >= 65536) result += string[i + 1];
+      } else {
+        result += escapeSeq || encodeHex(char);
+      }
+    }
+    return result;
+  }
+  function writeFlowSequence(state, level, object) {
+    let _result = "";
+    const _tag = state.tag;
+    for (let index = 0, length = object.length; index < length; index += 1) {
+      let value = object[index];
+      if (state.replacer) {
+        value = state.replacer.call(object, String(index), value);
+      }
+      if (writeNode(state, level, value, false, false) || typeof value === "undefined" && writeNode(state, level, null, false, false)) {
+        if (_result !== "") _result += "," + (!state.condenseFlow ? " " : "");
+        _result += state.dump;
+      }
+    }
+    state.tag = _tag;
+    state.dump = "[" + _result + "]";
+  }
+  function writeBlockSequence(state, level, object, compact) {
+    let _result = "";
+    const _tag = state.tag;
+    for (let index = 0, length = object.length; index < length; index += 1) {
+      let value = object[index];
+      if (state.replacer) {
+        value = state.replacer.call(object, String(index), value);
+      }
+      if (writeNode(state, level + 1, value, true, true, false, true) || typeof value === "undefined" && writeNode(state, level + 1, null, true, true, false, true)) {
+        if (!compact || _result !== "") {
+          _result += generateNextLine(state, level);
+        }
+        if (state.dump && CHAR_LINE_FEED === state.dump.charCodeAt(0)) {
+          _result += "-";
+        } else {
+          _result += "- ";
+        }
+        _result += state.dump;
+      }
+    }
+    state.tag = _tag;
+    state.dump = _result || "[]";
+  }
+  function writeFlowMapping(state, level, object) {
+    let _result = "";
+    const _tag = state.tag;
+    const objectKeyList = Object.keys(object);
+    for (let index = 0, length = objectKeyList.length; index < length; index += 1) {
+      let pairBuffer = "";
+      if (_result !== "") pairBuffer += ", ";
+      if (state.condenseFlow) pairBuffer += '"';
+      const objectKey = objectKeyList[index];
+      let objectValue = object[objectKey];
+      if (state.replacer) {
+        objectValue = state.replacer.call(object, objectKey, objectValue);
+      }
+      if (!writeNode(state, level, objectKey, false, false)) {
+        continue;
+      }
+      if (state.dump.length > 1024) pairBuffer += "? ";
+      pairBuffer += state.dump + (state.condenseFlow ? '"' : "") + ":" + (state.condenseFlow ? "" : " ");
+      if (!writeNode(state, level, objectValue, false, false)) {
+        continue;
+      }
+      pairBuffer += state.dump;
+      _result += pairBuffer;
+    }
+    state.tag = _tag;
+    state.dump = "{" + _result + "}";
+  }
+  function writeBlockMapping(state, level, object, compact) {
+    let _result = "";
+    const _tag = state.tag;
+    const objectKeyList = Object.keys(object);
+    if (state.sortKeys === true) {
+      objectKeyList.sort();
+    } else if (typeof state.sortKeys === "function") {
+      objectKeyList.sort(state.sortKeys);
+    } else if (state.sortKeys) {
+      throw new YAMLException2("sortKeys must be a boolean or a function");
+    }
+    for (let index = 0, length = objectKeyList.length; index < length; index += 1) {
+      let pairBuffer = "";
+      if (!compact || _result !== "") {
+        pairBuffer += generateNextLine(state, level);
+      }
+      const objectKey = objectKeyList[index];
+      let objectValue = object[objectKey];
+      if (state.replacer) {
+        objectValue = state.replacer.call(object, objectKey, objectValue);
+      }
+      if (!writeNode(state, level + 1, objectKey, true, true, true)) {
+        continue;
+      }
+      const explicitPair = state.tag !== null && state.tag !== "?" || state.dump && state.dump.length > 1024;
+      if (explicitPair) {
+        if (state.dump && CHAR_LINE_FEED === state.dump.charCodeAt(0)) {
+          pairBuffer += "?";
+        } else {
+          pairBuffer += "? ";
+        }
+      }
+      pairBuffer += state.dump;
+      if (explicitPair) {
+        pairBuffer += generateNextLine(state, level);
+      }
+      if (!writeNode(state, level + 1, objectValue, true, explicitPair)) {
+        continue;
+      }
+      if (state.dump && CHAR_LINE_FEED === state.dump.charCodeAt(0)) {
+        pairBuffer += ":";
+      } else {
+        pairBuffer += ": ";
+      }
+      pairBuffer += state.dump;
+      _result += pairBuffer;
+    }
+    state.tag = _tag;
+    state.dump = _result || "{}";
+  }
+  function detectType(state, object, explicit) {
+    const typeList = explicit ? state.explicitTypes : state.implicitTypes;
+    for (let index = 0, length = typeList.length; index < length; index += 1) {
+      const type2 = typeList[index];
+      if ((type2.instanceOf || type2.predicate) && (!type2.instanceOf || typeof object === "object" && object instanceof type2.instanceOf) && (!type2.predicate || type2.predicate(object))) {
+        if (explicit) {
+          if (type2.multi && type2.representName) {
+            state.tag = type2.representName(object);
+          } else {
+            state.tag = type2.tag;
+          }
+        } else {
+          state.tag = "?";
+        }
+        if (type2.represent) {
+          const style = state.styleMap[type2.tag] || type2.defaultStyle;
+          let _result;
+          if (_toString.call(type2.represent) === "[object Function]") {
+            _result = type2.represent(object, style);
+          } else if (_hasOwnProperty.call(type2.represent, style)) {
+            _result = type2.represent[style](object, style);
+          } else {
+            throw new YAMLException2("!<" + type2.tag + '> tag resolver accepts not "' + style + '" style');
+          }
+          state.dump = _result;
+        }
+        return true;
+      }
+    }
+    return false;
+  }
+  function writeNode(state, level, object, block, compact, iskey, isblockseq) {
+    state.tag = null;
+    state.dump = object;
+    if (!detectType(state, object, false)) {
+      detectType(state, object, true);
+    }
+    const type2 = _toString.call(state.dump);
+    const inblock = block;
+    if (block) {
+      block = state.flowLevel < 0 || state.flowLevel > level;
+    }
+    const objectOrArray = type2 === "[object Object]" || type2 === "[object Array]";
+    let duplicateIndex;
+    let duplicate;
+    if (objectOrArray) {
+      duplicateIndex = state.duplicates.indexOf(object);
+      duplicate = duplicateIndex !== -1;
+    }
+    if (state.tag !== null && state.tag !== "?" || duplicate || state.indent !== 2 && level > 0) {
+      compact = false;
+    }
+    if (duplicate && state.usedDuplicates[duplicateIndex]) {
+      state.dump = "*ref_" + duplicateIndex;
+    } else {
+      if (objectOrArray && duplicate && !state.usedDuplicates[duplicateIndex]) {
+        state.usedDuplicates[duplicateIndex] = true;
+      }
+      if (type2 === "[object Object]") {
+        if (block && Object.keys(state.dump).length !== 0) {
+          writeBlockMapping(state, level, state.dump, compact);
+          if (duplicate) {
+            state.dump = "&ref_" + duplicateIndex + state.dump;
+          }
+        } else {
+          writeFlowMapping(state, level, state.dump);
+          if (duplicate) {
+            state.dump = "&ref_" + duplicateIndex + " " + state.dump;
+          }
+        }
+      } else if (type2 === "[object Array]") {
+        if (block && state.dump.length !== 0) {
+          if (state.noArrayIndent && !isblockseq && level > 0) {
+            writeBlockSequence(state, level - 1, state.dump, compact);
+          } else {
+            writeBlockSequence(state, level, state.dump, compact);
+          }
+          if (duplicate) {
+            state.dump = "&ref_" + duplicateIndex + state.dump;
+          }
+        } else {
+          writeFlowSequence(state, level, state.dump);
+          if (duplicate) {
+            state.dump = "&ref_" + duplicateIndex + " " + state.dump;
+          }
+        }
+      } else if (type2 === "[object String]") {
+        if (state.tag !== "?") {
+          writeScalar(state, state.dump, level, iskey, inblock);
+        }
+      } else if (type2 === "[object Undefined]") {
+        return false;
+      } else {
+        if (state.skipInvalid) return false;
+        throw new YAMLException2("unacceptable kind of an object to dump " + type2);
+      }
+      if (state.tag !== null && state.tag !== "?") {
+        let tagStr = encodeURI(
+          state.tag[0] === "!" ? state.tag.slice(1) : state.tag
+        ).replace(/!/g, "%21");
+        if (state.tag[0] === "!") {
+          tagStr = "!" + tagStr;
+        } else if (tagStr.slice(0, 18) === "tag:yaml.org,2002:") {
+          tagStr = "!!" + tagStr.slice(18);
+        } else {
+          tagStr = "!<" + tagStr + ">";
+        }
+        state.dump = tagStr + " " + state.dump;
+      }
+    }
+    return true;
+  }
+  function getDuplicateReferences(object, state) {
+    const objects = [];
+    const duplicatesIndexes = [];
+    inspectNode(object, objects, duplicatesIndexes);
+    const length = duplicatesIndexes.length;
+    for (let index = 0; index < length; index += 1) {
+      state.duplicates.push(objects[duplicatesIndexes[index]]);
+    }
+    state.usedDuplicates = new Array(length);
+  }
+  function inspectNode(object, objects, duplicatesIndexes) {
+    if (object !== null && typeof object === "object") {
+      const index = objects.indexOf(object);
+      if (index !== -1) {
+        if (duplicatesIndexes.indexOf(index) === -1) {
+          duplicatesIndexes.push(index);
+        }
+      } else {
+        objects.push(object);
+        if (Array.isArray(object)) {
+          for (let i = 0, length = object.length; i < length; i += 1) {
+            inspectNode(object[i], objects, duplicatesIndexes);
+          }
+        } else {
+          const objectKeyList = Object.keys(object);
+          for (let i = 0, length = objectKeyList.length; i < length; i += 1) {
+            inspectNode(object[objectKeyList[i]], objects, duplicatesIndexes);
+          }
+        }
+      }
+    }
+  }
+  function dump2(input, options) {
+    options = options || {};
+    const state = new State(options);
+    if (!state.noRefs) getDuplicateReferences(input, state);
+    let value = input;
+    if (state.replacer) {
+      value = state.replacer.call({ "": value }, "", value);
+    }
+    if (writeNode(state, 0, value, true, true)) return state.dump + "\n";
+    return "";
+  }
+  dumper.dump = dump2;
+  return dumper;
+}
+var hasRequiredJsYaml;
+function requireJsYaml() {
+  if (hasRequiredJsYaml) return jsYaml;
+  hasRequiredJsYaml = 1;
+  const loader2 = requireLoader();
+  const dumper2 = requireDumper();
+  function renamed(from, to) {
+    return function() {
+      throw new Error("Function yaml." + from + " is removed in js-yaml 4. Use yaml." + to + " instead, which is now safe by default.");
+    };
+  }
+  jsYaml.Type = requireType();
+  jsYaml.Schema = requireSchema();
+  jsYaml.FAILSAFE_SCHEMA = requireFailsafe();
+  jsYaml.JSON_SCHEMA = requireJson();
+  jsYaml.CORE_SCHEMA = requireCore();
+  jsYaml.DEFAULT_SCHEMA = require_default();
+  jsYaml.load = loader2.load;
+  jsYaml.loadAll = loader2.loadAll;
+  jsYaml.dump = dumper2.dump;
+  jsYaml.YAMLException = requireException();
+  jsYaml.types = {
+    binary: requireBinary(),
+    float: requireFloat(),
+    map: requireMap(),
+    null: require_null(),
+    pairs: requirePairs(),
+    set: requireSet(),
+    timestamp: requireTimestamp(),
+    bool: requireBool(),
+    int: requireInt(),
+    merge: requireMerge(),
+    omap: requireOmap(),
+    seq: requireSeq(),
+    str: requireStr()
+  };
+  jsYaml.safeLoad = renamed("safeLoad", "load");
+  jsYaml.safeLoadAll = renamed("safeLoadAll", "loadAll");
+  jsYaml.safeDump = renamed("safeDump", "dump");
+  return jsYaml;
+}
+var jsYamlExports = requireJsYaml();
+var yaml = /* @__PURE__ */ getDefaultExportFromCjs(jsYamlExports);
+var {
+  Type,
+  Schema,
+  FAILSAFE_SCHEMA,
+  JSON_SCHEMA,
+  CORE_SCHEMA,
+  DEFAULT_SCHEMA,
+  load,
+  loadAll,
+  dump,
+  YAMLException,
+  types,
+  safeLoad,
+  safeLoadAll,
+  safeDump
+} = yaml;
+
+// ../engine-i18n/src/scanner/discoverLocales.ts
+var LOCALE_DIR_NAMES = ["locales", "locale", "i18n", "lang", "langs", "translations", "messages"];
+var SKIP_DIRS2 = /* @__PURE__ */ new Set(["node_modules", ".git", "dist", "build", "out", "coverage", "vendor"]);
+var LOCALE_RE = /^[a-z]{2,3}([-_][A-Za-z]{2,4})?$/;
+var DISCOVERY_CAPS = { maxFiles: 200, maxFileBytes: 5 * 1024 * 1024, maxKeys: 5e4 };
+function isLocaleName(name) {
+  return LOCALE_RE.test(name);
+}
+function flatten(value, prefix = "", out = /* @__PURE__ */ new Map(), dupes = [], seen = /* @__PURE__ */ new Map()) {
+  if (typeof value === "string") {
+    out.set(prefix, value);
+  } else if (Array.isArray(value)) {
+    value.forEach((v, i) => flatten(v, prefix ? `${prefix}.${i}` : `${i}`, out, dupes, seen));
+  } else if (typeof value === "object" && value !== null) {
+    for (const [k, v] of Object.entries(value)) {
+      const key = prefix ? `${prefix}.${k}` : k;
+      const n2 = seen.get(key) ?? 0;
+      seen.set(key, n2 + 1);
+      if (n2 + 1 > 1) {
+        if (!dupes.includes(key)) dupes.push(key);
+      }
+      flatten(v, key, out, dupes, seen);
+    }
+  } else if (value !== void 0 && value !== null && prefix) {
+    out.set(prefix, String(value));
+  }
+  return { keys: out, duplicateKeys: dupes };
+}
+function findJsonDuplicateKeys(text) {
+  const dupes = [];
+  const stack = [/* @__PURE__ */ new Map()];
+  let i = 0;
+  let inString = false;
+  let escaped = false;
+  let pendingKey = null;
+  while (i < text.length) {
+    const c = text[i];
+    if (inString) {
+      if (escaped) {
+        escaped = false;
+      } else if (c === "\\") {
+        escaped = true;
+      } else if (c === '"') {
+        inString = false;
+      }
+      i++;
+      continue;
+    }
+    if (c === '"') {
+      let j = i + 1;
+      let s = "";
+      while (j < text.length) {
+        const d = text[j];
+        if (d === "\\") {
+          s += text[j + 1] ?? "";
+          j += 2;
+          continue;
+        }
+        if (d === '"') break;
+        s += d;
+        j++;
+      }
+      let k = j + 1;
+      while (k < text.length && /\s/.test(text[k])) k++;
+      if (text[k] === ":") {
+        const top = stack[stack.length - 1];
+        const n2 = top.get(s) ?? 0;
+        top.set(s, n2 + 1);
+        if (n2 + 1 > 1) dupes.push(s);
+        pendingKey = s;
+      }
+      i = j + 1;
+      continue;
+    }
+    if (c === "{") {
+      stack.push(/* @__PURE__ */ new Map());
+      pendingKey = null;
+      i++;
+      continue;
+    }
+    if (c === "}") {
+      stack.pop();
+      pendingKey = null;
+      i++;
+      continue;
+    }
+    if (c === "," || c === ":") {
+      i++;
+      continue;
+    }
+    i++;
+  }
+  void pendingKey;
+  return dupes;
+}
+function parseLocaleText(text, ext) {
+  if (ext === ".yml" || ext === ".yaml") {
+    let raw2;
+    try {
+      raw2 = load(text);
+    } catch (e) {
+      return { error: `invalid YAML \u2014 ${e.message.split("\n")[0]}` };
+    }
+    if (raw2 === void 0 || raw2 === null) raw2 = {};
+    if (typeof raw2 !== "object" || Array.isArray(raw2)) {
+      return { error: "YAML document must be a mapping, not a scalar or array" };
+    }
+    return flatten(raw2);
+  }
+  let raw;
+  try {
+    raw = JSON.parse(text);
+  } catch (e) {
+    return { error: `invalid JSON \u2014 ${e.message.split("\n")[0] ?? ""}`.trim() };
+  }
+  if (typeof raw !== "object" || raw === null || Array.isArray(raw)) {
+    return { error: "JSON document must be an object" };
+  }
+  const dupes = findJsonDuplicateKeys(text);
+  return flatten(raw, "", /* @__PURE__ */ new Map(), dupes);
+}
+function discoverLocales(repoDir) {
+  const invalid = [];
+  let capped = null;
+  const localeFiles = {};
+  const empty = { dirRel: "", layout: "flat", files: [], invalid, localeFiles, capped: null, sourceLocale: null };
+  const candidates = [];
+  const walk = (dir, depth) => {
+    if (depth > 4) return;
+    let names;
+    try {
+      names = (0, import_node_fs3.readdirSync)(dir);
+    } catch {
+      return;
+    }
+    names.sort();
+    for (const name of names) {
+      const full = (0, import_node_path3.join)(dir, name);
+      let st;
+      try {
+        st = (0, import_node_fs3.statSync)(full);
+      } catch {
+        continue;
+      }
+      if (!st.isDirectory()) continue;
+      if (SKIP_DIRS2.has(name) || name.startsWith(".") && name !== ".") continue;
+      if (LOCALE_DIR_NAMES.includes(name)) {
+        const c = inspectCandidate(full);
+        if (c) candidates.push(c);
+      }
+      walk(full, depth + 1);
+    }
+  };
+  const inspectCandidate = (dir) => {
+    const rel = (0, import_node_path3.relative)(repoDir, dir).split("\\").join("/");
+    let entries;
+    try {
+      entries = (0, import_node_fs3.readdirSync)(dir);
+    } catch {
+      return null;
+    }
+    entries.sort();
+    const flatFiles = [];
+    const nsFiles = [];
+    const nsLocaleDirs = /* @__PURE__ */ new Set();
+    for (const e of entries) {
+      const full = (0, import_node_path3.join)(dir, e);
+      let st;
+      try {
+        st = (0, import_node_fs3.statSync)(full);
+      } catch {
+        continue;
+      }
+      if (st.isFile()) {
+        const ext = (0, import_node_path3.extname)(e).toLowerCase();
+        if ((ext === ".json" || ext === ".yml" || ext === ".yaml") && isLocaleName((0, import_node_path3.basename)(e, ext))) {
+          flatFiles.push(full);
+        }
+      } else if (st.isDirectory() && isLocaleName(e)) {
+        let subs;
+        try {
+          subs = (0, import_node_fs3.readdirSync)(full);
+        } catch {
+          continue;
+        }
+        subs.sort();
+        for (const s of subs) {
+          const sext = (0, import_node_path3.extname)(s).toLowerCase();
+          if (sext === ".json" || sext === ".yml" || sext === ".yaml") {
+            nsFiles.push((0, import_node_path3.join)(full, s));
+            nsLocaleDirs.add(e);
+          }
+        }
+      }
+    }
+    if (flatFiles.length >= 2 && nsLocaleDirs.size < 2) {
+      return { dir, rel, layout: "flat", localeFiles: flatFiles };
+    }
+    if (nsLocaleDirs.size >= 2) {
+      return { dir, rel, layout: "namespaced", localeFiles: nsFiles };
+    }
+    if (flatFiles.length >= 2) {
+      return { dir, rel, layout: "flat", localeFiles: flatFiles };
+    }
+    return null;
+  };
+  walk(repoDir, 0);
+  if (candidates.length === 0) return empty;
+  candidates.sort(
+    (a, b) => b.localeFiles.length - a.localeFiles.length || a.rel.length - b.rel.length || a.rel.localeCompare(b.rel)
+  );
+  const chosen = candidates[0];
+  let filesToRead = chosen.localeFiles;
+  if (filesToRead.length > DISCOVERY_CAPS.maxFiles) {
+    capped = capFinding(`more than ${DISCOVERY_CAPS.maxFiles} locale files (${filesToRead.length}); only the first ${DISCOVERY_CAPS.maxFiles} were read`);
+    filesToRead = filesToRead.slice(0, DISCOVERY_CAPS.maxFiles);
+  }
+  const files = [];
+  let totalKeys = 0;
+  for (const abs of filesToRead) {
+    const ext = (0, import_node_path3.extname)(abs).toLowerCase();
+    let locale;
+    let nsPrefix = "";
+    if (chosen.layout === "namespaced") {
+      locale = (0, import_node_path3.basename)(dirnameOf(abs));
+      nsPrefix = (0, import_node_path3.basename)(abs, ext);
+    } else {
+      locale = (0, import_node_path3.basename)(abs, ext);
+    }
+    const relPath = (0, import_node_path3.relative)(repoDir, abs).split("\\").join("/");
+    localeFiles[locale] = relPath;
+    let st;
+    try {
+      st = (0, import_node_fs3.statSync)(abs);
+    } catch {
+      continue;
+    }
+    if (st.size > DISCOVERY_CAPS.maxFileBytes) {
+      if (!capped) capped = capFinding(`${relPath} exceeds ${DISCOVERY_CAPS.maxFileBytes} bytes and was not read`);
+      continue;
+    }
+    let text;
+    try {
+      text = (0, import_node_fs3.readFileSync)(abs, "utf-8");
+    } catch {
+      continue;
+    }
+    const parsed = parseLocaleText(text, ext);
+    if ("error" in parsed) {
+      invalid.push(invalidFileFinding(relPath, locale, parsed.error));
+      continue;
+    }
+    const keys = /* @__PURE__ */ new Map();
+    for (const [k, v] of parsed.keys) keys.set(nsPrefix ? `${nsPrefix}.${k}` : k, v);
+    const duplicateKeys = parsed.duplicateKeys.map((d) => nsPrefix ? `${nsPrefix}.${d}` : d);
+    totalKeys += keys.size;
+    if (totalKeys > DISCOVERY_CAPS.maxKeys) {
+      if (!capped) capped = capFinding(`more than ${DISCOVERY_CAPS.maxKeys} keys across locale files; the scan stopped at ${relPath}`);
+      break;
+    }
+    files.push({ locale, relPath, keys, duplicateKeys });
+  }
+  if (files.length < 2) return { ...empty, invalid, capped, localeFiles };
+  const byLocale = /* @__PURE__ */ new Map();
+  for (const f of files) {
+    if (!byLocale.has(f.locale)) byLocale.set(f.locale, []);
+    byLocale.get(f.locale).push(f);
+  }
+  let sourceLocale = null;
+  if (byLocale.has("en")) {
+    sourceLocale = "en";
+  } else {
+    let best = null;
+    let bestKeys = -1;
+    for (const [loc, fs] of [...byLocale.entries()].sort(([a], [b]) => a.localeCompare(b))) {
+      const n2 = fs.reduce((s, f) => s + f.keys.size, 0);
+      if (n2 > bestKeys) {
+        bestKeys = n2;
+        best = loc;
+      }
+    }
+    sourceLocale = best;
+  }
+  return { dirRel: chosen.rel, layout: chosen.layout, files, invalid, localeFiles, capped, sourceLocale };
+}
+function dirnameOf(p) {
+  const idx = p.lastIndexOf("/");
+  return idx === -1 ? "." : p.slice(0, idx);
+}
+function capFinding(msg) {
+  return {
+    checkId: "locale-scan-capped",
+    title: "Locale scan capped",
+    description: `The locale scan hit a cap: ${msg}.`,
+    fix: "Split the locale files or raise the caps for this repository after review.",
+    severity: "info",
+    kind: "symptom",
+    sourceLocale: "",
+    targetLocale: "",
+    keyPath: "",
+    effort: "low",
+    helpUrl: "https://www.i18next.com/",
+    category: "structure"
+  };
+}
+function invalidFileFinding(relPath, locale, error) {
+  return {
+    checkId: "invalid-locale-file",
+    title: `Invalid locale file: ${relPath}`,
+    description: `${relPath} does not parse (${error}). The file is skipped, so its keys count as missing.`,
+    fix: `Fix the syntax error in ${relPath}.`,
+    severity: "error",
+    kind: "cause",
+    sourceLocale: "",
+    targetLocale: locale,
+    keyPath: "",
+    effort: "low",
+    helpUrl: "https://www.i18next.com/",
+    category: "format"
+  };
+}
+
+// ../engine-i18n/src/checks/keys.ts
+function checkKeys(sourceKeys, targetKeys, ignoredKeys = []) {
+  const ignored = new Set(ignoredKeys);
+  const missingKeys = [];
+  const extraKeys = [];
+  for (const key of sourceKeys.keys()) {
+    if (!ignored.has(key) && !targetKeys.has(key)) {
+      missingKeys.push(key);
+    }
+  }
+  for (const key of targetKeys.keys()) {
+    if (!ignored.has(key) && !sourceKeys.has(key)) {
+      extraKeys.push(key);
+    }
+  }
+  return { missingKeys, extraKeys };
+}
+
+// ../engine-i18n/src/checks/values.ts
+var HTML_TAG_RE = /<\/?[a-zA-Z][^>]*>/g;
+var MIN_UNTRANSLATED_LEN = 4;
+function extractPlaceholders(str2) {
+  const out = /* @__PURE__ */ new Set();
+  parseMessage(str2, 0, out, false);
+  const printfCount = (str2.match(/%s/g) ?? []).length;
+  for (let i = 1; i <= printfCount; i++) out.add(`%s#${i}`);
+  return out;
+}
+var ARG_NAME_RE = /^[A-Za-z_][A-Za-z0-9_.-]*$|^\d+$/;
+var BRANCHED = /* @__PURE__ */ new Set(["plural", "select", "selectordinal"]);
+function parseMessage(str2, i, out, nested) {
+  while (i < str2.length) {
+    const c = str2[i];
+    if (c === "'") {
+      if (str2[i + 1] === "'") {
+        i += 2;
+        continue;
+      }
+      if (str2[i + 1] === "{" || str2[i + 1] === "}" || str2[i + 1] === "#") {
+        const close = str2.indexOf("'", i + 1);
+        i = close === -1 ? str2.length : close + 1;
+        continue;
+      }
+      i++;
+      continue;
+    }
+    if (str2.startsWith("{{", i)) {
+      const close = str2.indexOf("}}", i + 2);
+      if (close === -1) {
+        i += 2;
+        continue;
+      }
+      const name = str2.slice(i + 2, close).split(",")[0].trim();
+      if (name !== "") out.add(name);
+      i = close + 2;
+      continue;
+    }
+    if (c === "{") {
+      i = parseArgument(str2, i + 1, out);
+      continue;
+    }
+    if (c === "}" && nested) return i;
+    i++;
+  }
+  return i;
+}
+function parseArgument(str2, i, out) {
+  const readPart = () => {
+    const start = i;
+    while (i < str2.length && str2[i] !== "," && str2[i] !== "}" && str2[i] !== "{") i++;
+    return str2.slice(start, i).trim();
+  };
+  const name = readPart();
+  if (ARG_NAME_RE.test(name)) out.add(name);
+  if (str2[i] !== ",") return skipToClose(str2, i);
+  i++;
+  const type2 = readPart().toLowerCase();
+  if (str2[i] !== ",") return skipToClose(str2, i);
+  i++;
+  if (!BRANCHED.has(type2)) return skipToClose(str2, i);
+  while (i < str2.length) {
+    while (i < str2.length && /\s/.test(str2[i])) i++;
+    if (str2[i] === "}") return i + 1;
+    while (i < str2.length && !/[\s{}]/.test(str2[i])) i++;
+    while (i < str2.length && /\s/.test(str2[i])) i++;
+    if (str2[i] !== "{") continue;
+    i = parseMessage(str2, i + 1, out, true);
+    if (str2[i] === "}") i++;
+  }
+  return i;
+}
+function skipToClose(str2, i) {
+  let depth = 0;
+  while (i < str2.length) {
+    if (str2[i] === "{") depth++;
+    else if (str2[i] === "}") {
+      if (depth === 0) return i + 1;
+      depth--;
+    }
+    i++;
+  }
+  return i;
+}
+function extractHtmlTags(str2) {
+  return (str2.match(HTML_TAG_RE) ?? []).map((t) => t.toLowerCase()).sort();
+}
+function checkValues(sourceKeys, targetKeys, ignoredKeys = [], lengthRatioThresholds = { min: 0.3, max: 3 }) {
+  const ignored = new Set(ignoredKeys);
+  const result = {
+    untranslatedKeys: [],
+    emptyValueKeys: [],
+    placeholderMismatchKeys: [],
+    lengthRatioKeys: [],
+    htmlMismatchKeys: []
+  };
+  for (const [key, srcVal] of sourceKeys.entries()) {
+    if (ignored.has(key)) continue;
+    const tgtVal = targetKeys.get(key);
+    if (tgtVal === void 0) continue;
+    if (tgtVal.trim() === "") {
+      result.emptyValueKeys.push(key);
+      continue;
+    }
+    if (tgtVal === srcVal && srcVal.length >= MIN_UNTRANSLATED_LEN) {
+      result.untranslatedKeys.push(key);
+    }
+    const srcPh = extractPlaceholders(srcVal);
+    const tgtPh = extractPlaceholders(tgtVal);
+    const mismatch = [...srcPh].some((p) => !tgtPh.has(p)) || [...tgtPh].some((p) => !srcPh.has(p));
+    if (mismatch) result.placeholderMismatchKeys.push(key);
+    if (srcVal.length > 0) {
+      const ratio = tgtVal.length / srcVal.length;
+      if (ratio < lengthRatioThresholds.min || ratio > lengthRatioThresholds.max) {
+        result.lengthRatioKeys.push({ key, ratio });
+      }
+    }
+    const srcTags = extractHtmlTags(srcVal);
+    const tgtTags = extractHtmlTags(tgtVal);
+    if (srcTags.join(",") !== tgtTags.join(",")) {
+      result.htmlMismatchKeys.push(key);
+    }
+  }
+  return result;
+}
+
+// ../engine-i18n/src/checks/pluralRules.ts
+var PLURAL_RULES = {
+  // 2-form (one/other): most Western European languages
+  en: ["one", "other"],
+  de: ["one", "other"],
+  fr: ["one", "other"],
+  es: ["one", "other"],
+  it: ["one", "other"],
+  pt: ["one", "other"],
+  nl: ["one", "other"],
+  sv: ["one", "other"],
+  nb: ["one", "other"],
+  da: ["one", "other"],
+  fi: ["one", "other"],
+  // 3-form (one/few/other): Slavic languages
+  // MD-126: CLDR gives the Slavic languages `many` too (it was missing here)
+  ru: ["one", "few", "many", "other"],
+  pl: ["one", "few", "many", "other"],
+  cs: ["one", "few", "many", "other"],
+  sk: ["one", "few", "many", "other"],
+  uk: ["one", "few", "many", "other"],
+  // 4-form
+  ar: ["zero", "one", "two", "few", "many", "other"],
+  // 1-form (invariant)
+  ja: ["other"],
+  zh: ["other"],
+  ko: ["other"],
+  tr: ["other"],
+  id: ["other"],
+  vi: ["other"]
+};
+var PLURAL_SUFFIXES = ["zero", "one", "two", "few", "many", "other"];
+function getRequiredPluralForms(locale) {
+  const lang = locale.split(/[-_]/)[0].toLowerCase();
+  return PLURAL_RULES[lang] ?? getValidPluralForms(locale);
+}
+function getValidPluralForms(locale, ordinal = false) {
+  try {
+    const tag = locale.replace("_", "-");
+    if (Intl.PluralRules.supportedLocalesOf([tag]).length > 0) {
+      const cats = new Intl.PluralRules(tag, { type: ordinal ? "ordinal" : "cardinal" }).resolvedOptions().pluralCategories;
+      return PLURAL_SUFFIXES.filter((c) => cats.includes(c));
+    }
+  } catch {
+  }
+  if (ordinal) return null;
+  const lang = locale.split(/[-_]/)[0].toLowerCase();
+  return PLURAL_RULES[lang] ?? null;
+}
+function validatePluralKeys(flatKeys, locale) {
+  const requiredForms = getRequiredPluralForms(locale);
+  if (!requiredForms) return [];
+  const pluralKeyPattern = new RegExp(`_(${PLURAL_SUFFIXES.join("|")})$`);
+  const baseKeys = /* @__PURE__ */ new Map();
+  for (const key of flatKeys) {
+    const match = key.match(pluralKeyPattern);
+    if (match) {
+      const base = key.slice(0, -match[0].length);
+      const existing = baseKeys.get(base) ?? [];
+      existing.push(match[1]);
+      baseKeys.set(base, existing);
+    }
+  }
+  const results = [];
+  for (const [base, foundForms] of baseKeys) {
+    const missingForms = requiredForms.filter((f) => !foundForms.includes(f));
+    const valid = getValidPluralForms(locale) ?? requiredForms;
+    const extraForms = foundForms.filter((f) => !requiredForms.includes(f) && !valid.includes(f));
+    if (missingForms.length || extraForms.length) {
+      results.push({ key: base, locale, missingForms, extraForms });
+    }
+  }
+  return results;
+}
+
+// ../engine-i18n/src/checks/index.ts
+var PLURAL_KEY_RE = /^(.+?)(_ordinal)?_(zero|one|two|few|many|other)$/;
+function pluralCategoriesOf(locale, ordinal) {
+  return getValidPluralForms(locale, ordinal);
+}
+function isPluralFormNotUsedBy(key, locale) {
+  const m = PLURAL_KEY_RE.exec(key);
+  if (m === null) return false;
+  const cats = pluralCategoriesOf(locale, m[2] !== void 0);
+  return cats !== null && !cats.includes(m[3]);
+}
+function isPluralFormOfSourceKey(key, locale, sourceKeys) {
+  const m = PLURAL_KEY_RE.exec(key);
+  if (m === null) return false;
+  const cats = pluralCategoriesOf(locale, m[2] !== void 0);
+  if (cats === null || !cats.includes(m[3])) return false;
+  const prefix = `${m[1]}${m[2] ?? ""}_`;
+  return [...sourceKeys.keys()].some((k) => k.startsWith(prefix) && PLURAL_KEY_RE.test(k));
+}
+function compareLocales(source, target, ignoredKeys = []) {
+  const raw = checkKeys(source.keys, target.keys, ignoredKeys);
+  const missingKeys = raw.missingKeys.filter((k) => !isPluralFormNotUsedBy(k, target.locale));
+  const extraKeys = raw.extraKeys.filter((k) => !isPluralFormOfSourceKey(k, target.locale, source.keys));
+  const { untranslatedKeys, emptyValueKeys, placeholderMismatchKeys, lengthRatioKeys, htmlMismatchKeys } = checkValues(source.keys, target.keys, ignoredKeys);
+  const pluralIssues = validatePluralKeys([...target.keys.keys()], target.locale);
+  return {
+    sourceLocale: source.locale,
+    targetLocale: target.locale,
+    missingKeys,
+    extraKeys,
+    untranslatedKeys,
+    emptyValueKeys,
+    placeholderMismatchKeys,
+    lengthRatioKeys,
+    htmlMismatchKeys,
+    duplicateKeysInTarget: target.duplicateKeys,
+    pluralIssues
+  };
+}
+
+// ../engine-i18n/src/findings/mapFindings.ts
+var BASE_URL = "https://i18n-diagnosis.dev/docs/checks";
+function mapFindings2(result, sourceEntries) {
+  const findings = [];
+  const { sourceLocale: src, targetLocale: tgt } = result;
+  for (const key of result.missingKeys) {
+    const srcVal = sourceEntries?.get(key);
+    findings.push({
+      checkId: "missing-key",
+      title: `Missing key in ${tgt}`,
+      description: `Key "${key}" exists in ${src} but is absent from ${tgt}.`,
+      fix: `Add "${key}" to your ${tgt} locale file with an appropriate translation.`,
+      severity: "error",
+      kind: "cause",
+      sourceLocale: src,
+      targetLocale: tgt,
+      keyPath: key,
+      ...srcVal !== void 0 ? { sourceValue: srcVal } : {},
+      effort: "low",
+      helpUrl: `${BASE_URL}/missing-key`,
+      category: "missing"
+    });
+  }
+  for (const key of result.extraKeys) {
+    findings.push({
+      checkId: "extra-key",
+      title: `Orphaned key in ${tgt}`,
+      description: `Key "${key}" exists in ${tgt} but not in source locale ${src} \u2014 likely stale.`,
+      fix: `Remove "${key}" from ${tgt} or add it to ${src} if intentional.`,
+      severity: "warning",
+      kind: "symptom",
+      sourceLocale: src,
+      targetLocale: tgt,
+      keyPath: key,
+      effort: "low",
+      helpUrl: `${BASE_URL}/extra-key`,
+      category: "extra"
+    });
+  }
+  for (const key of result.untranslatedKeys) {
+    const srcVal = sourceEntries?.get(key);
+    findings.push({
+      checkId: "untranslated-value",
+      title: `Untranslated value in ${tgt}`,
+      description: `Key "${key}" has the same value in ${tgt} as in ${src} \u2014 may not be translated.`,
+      fix: `Translate the value for "${key}" into ${tgt}, or add it to ignoredKeys if bilingual.`,
+      severity: "warning",
+      kind: "symptom",
+      sourceLocale: src,
+      targetLocale: tgt,
+      keyPath: key,
+      ...srcVal !== void 0 ? { sourceValue: srcVal, targetValue: srcVal } : {},
+      effort: "medium",
+      helpUrl: `${BASE_URL}/untranslated-value`,
+      category: "untranslated"
+    });
+  }
+  for (const key of result.emptyValueKeys) {
+    const srcVal = sourceEntries?.get(key);
+    findings.push({
+      checkId: "empty-value",
+      title: `Empty translation in ${tgt}`,
+      description: `Key "${key}" has an empty string value in ${tgt}.`,
+      fix: `Provide a translation for "${key}" in ${tgt}.`,
+      severity: "error",
+      kind: "cause",
+      sourceLocale: src,
+      targetLocale: tgt,
+      keyPath: key,
+      ...srcVal !== void 0 ? { sourceValue: srcVal } : {},
+      effort: "low",
+      helpUrl: `${BASE_URL}/empty-value`,
+      category: "missing"
+    });
+  }
+  for (const key of result.placeholderMismatchKeys) {
+    findings.push({
+      checkId: "placeholder-mismatch",
+      title: `Placeholder mismatch in ${tgt}`,
+      description: `Key "${key}" uses different {{placeholders}} in ${tgt} vs ${src}.`,
+      fix: `Ensure all {{variable}} tokens from the ${src} source appear in the ${tgt} translation.`,
+      severity: "error",
+      kind: "cause",
+      sourceLocale: src,
+      targetLocale: tgt,
+      keyPath: key,
+      effort: "low",
+      helpUrl: `${BASE_URL}/placeholder-mismatch`,
+      category: "placeholder"
+    });
+  }
+  for (const { key, ratio } of result.lengthRatioKeys) {
+    findings.push({
+      checkId: "length-ratio",
+      title: `Suspicious length ratio in ${tgt}`,
+      description: `Key "${key}" is ${ratio.toFixed(1)}x the source length \u2014 may indicate machine translation error or truncation.`,
+      fix: `Review the translation of "${key}" in ${tgt} for completeness and accuracy.`,
+      severity: "info",
+      kind: "symptom",
+      sourceLocale: src,
+      targetLocale: tgt,
+      keyPath: key,
+      effort: "medium",
+      helpUrl: `${BASE_URL}/length-ratio`,
+      category: "format"
+    });
+  }
+  for (const key of result.htmlMismatchKeys) {
+    findings.push({
+      checkId: "html-mismatch",
+      title: `HTML tag mismatch in ${tgt}`,
+      description: `Key "${key}" contains different HTML tags in ${tgt} vs ${src}.`,
+      fix: `Ensure the HTML structure in "${key}" matches the source. Missing tags can break layout.`,
+      severity: "error",
+      kind: "cause",
+      sourceLocale: src,
+      targetLocale: tgt,
+      keyPath: key,
+      effort: "low",
+      helpUrl: `${BASE_URL}/html-mismatch`,
+      category: "structure"
+    });
+  }
+  for (const key of result.duplicateKeysInTarget) {
+    findings.push({
+      checkId: "duplicate-key",
+      title: `Duplicate key in ${tgt} locale file`,
+      description: `Key "${key}" appears more than once in the ${tgt} locale file. Only the last value will be used.`,
+      fix: `Remove the duplicate "${key}" entry from ${tgt}.`,
+      severity: "warning",
+      kind: "cause",
+      sourceLocale: src,
+      targetLocale: tgt,
+      keyPath: key,
+      effort: "low",
+      helpUrl: `${BASE_URL}/duplicate-key`,
+      category: "structure"
+    });
+  }
+  for (const issue of result.pluralIssues) {
+    const parts = [];
+    if (issue.missingForms.length > 0) {
+      parts.push(`missing forms: [${issue.missingForms.join(", ")}]`);
+    }
+    if (issue.extraForms.length > 0) {
+      parts.push(`unused forms: [${issue.extraForms.join(", ")}]`);
+    }
+    findings.push({
+      checkId: "plural-invalid",
+      title: `Broken plural key in ${tgt} \u2014 ${parts.join(" and ")}`,
+      description: `Plural key "${issue.key}" ${parts.join(" and ")} (CLDR rules for ${tgt}).`,
+      fix: `Add the missing suffixed keys (${issue.missingForms.map((f) => `${issue.key}_${f}`).join(", ")}) to ${tgt}, or remove forms the locale does not use.`,
+      severity: "warning",
+      kind: "cause",
+      sourceLocale: src,
+      targetLocale: tgt,
+      keyPath: issue.key,
+      effort: "low",
+      helpUrl: "https://unicode.org/cldr/charts/45/supplemental/language_plural_rules.html",
+      category: "pluralization"
+    });
+  }
+  return findings;
+}
+
+// ../engine-i18n/src/scanner/scanRepo.ts
+var OFF_RULES = /* @__PURE__ */ new Set(["length-ratio"]);
+function stripValues(f) {
+  return { ...f, sourceValue: void 0, targetValue: void 0 };
+}
+function scanRepo(repoDir) {
+  const discovered = discoverLocales(repoDir);
+  const findings = [...discovered.invalid];
+  if (discovered.capped) findings.push(discovered.capped);
+  if (discovered.sourceLocale === null || discovered.files.length < 2) {
+    return { findings, localeFiles: discovered.localeFiles, dirRel: discovered.dirRel, sourceLocale: null };
+  }
+  const byLocale = /* @__PURE__ */ new Map();
+  for (const f of discovered.files) {
+    if (!byLocale.has(f.locale)) byLocale.set(f.locale, []);
+    byLocale.get(f.locale).push(f);
+  }
+  const localeFiles = { ...discovered.localeFiles };
+  const parsed = /* @__PURE__ */ new Map();
+  for (const [locale, fs] of byLocale) {
+    const keys = /* @__PURE__ */ new Map();
+    const duplicateKeys = [];
+    for (const f of fs) {
+      for (const [k, v] of f.keys) keys.set(k, v);
+      for (const d of f.duplicateKeys) if (!duplicateKeys.includes(d)) duplicateKeys.push(d);
+    }
+    parsed.set(locale, { locale, filePath: fs[0].relPath, keys, duplicateKeys });
+  }
+  const source = parsed.get(discovered.sourceLocale);
+  for (const [locale, target] of parsed) {
+    if (locale === discovered.sourceLocale) continue;
+    const result = compareLocales(source, target);
+    findings.push(...mapFindings2(result, source.keys));
+  }
+  return {
+    findings: findings.filter((f) => !OFF_RULES.has(f.checkId)).map(stripValues),
+    localeFiles,
+    dirRel: discovered.dirRel,
+    sourceLocale: discovered.sourceLocale
+  };
+}
+
+// ../engine-i18n/src/rules.ts
+var PR_SCAN_CONFIDENCE = {
+  "missing-key": "likely",
+  "placeholder-mismatch": "likely",
+  "plural-invalid": "likely",
+  "invalid-locale-file": "likely",
+  "duplicate-key": "likely",
+  "empty-value": "likely",
+  "untranslated-value": "possible",
+  "html-mismatch": "possible",
+  "extra-key": "likely",
+  "locale-scan-capped": "likely"
+};
+var RULE_CONFIDENCE6 = {
+  "missing-key": "likely",
+  "extra-key": "likely",
+  "untranslated-value": "possible",
+  "empty-value": "likely",
+  "placeholder-mismatch": "likely",
+  "length-ratio": "possible",
+  "html-mismatch": "likely",
+  "duplicate-key": "likely",
+  "plural-invalid": "possible",
+  ...PR_SCAN_CONFIDENCE
+};
+function confidenceFor6(ruleId) {
+  return RULE_CONFIDENCE6[ruleId] ?? "possible";
+}
+
+// ../engine-i18n/src/adapter.ts
+var I18N_ENGINE = "i18n";
+function evidenceFor6(n2, ctx) {
+  const ev = [];
+  const path = ctx.localeFiles[n2.targetLocale];
+  if (path) ev.push({ kind: "file", label: "Locale file", path });
+  if (n2.sourceValue !== void 0) ev.push({ kind: "text", label: `Source (${n2.sourceLocale})`, value: n2.sourceValue });
+  if (n2.targetValue !== void 0) ev.push({ kind: "text", label: `Target (${n2.targetLocale})`, value: n2.targetValue });
+  if (ev.length === 0) ev.push({ kind: "text", label: "Key", value: n2.keyPath });
+  return ev;
+}
+function toFinding6(n2, ctx) {
+  const evidence = evidenceFor6(n2, ctx);
+  if (evidence.length === 0) return null;
+  const fingerprint = fingerprintFinding(I18N_ENGINE, {
+    checkId: n2.checkId,
+    locale: n2.targetLocale,
+    translationKey: n2.keyPath
+  });
+  const helpUrl = n2.helpUrl && n2.helpUrl.startsWith("https:") ? n2.helpUrl : void 0;
+  return {
+    id: `${n2.checkId}:${n2.targetLocale}/${n2.keyPath}`,
+    engine: I18N_ENGINE,
+    ruleId: n2.checkId,
+    fingerprint,
+    pageUrl: null,
+    // MD-111: the locale is this finding's scan unit; a side that could not read that
+    // locale's file reports `unit:locale:<x>` as not scanned, and the diff never calls the
+    // finding resolved there
+    ...n2.targetLocale ? { scanUnit: `locale:${n2.targetLocale}` } : {},
+    severity: mapSeverity(I18N_ENGINE, n2.checkId, n2.severity),
+    nativeSeverity: n2.severity,
+    confidence: confidenceFor6(n2.checkId),
+    kind: n2.kind,
+    metric: null,
+    title: n2.title,
+    explanation: n2.description,
+    evidence,
+    ...n2.fix ? { fix: n2.fix } : {},
+    lessons: [],
+    ...helpUrl ? { helpUrl } : {},
+    effort: n2.effort
+  };
+}
+function toFindings6(natives, ctx) {
+  const out = [];
+  for (const n2 of natives) {
+    const f = toFinding6(n2, ctx);
+    if (f) out.push(f);
+  }
+  return out;
+}
+
+// src/engines/i18n.ts
+var I18N_ENGINE_VERSION = "0.2.0";
+function localeScanUnits(r) {
+  const locales = Object.keys(r.localeFiles).sort();
+  if (locales.length === 0) return [];
+  const broken = new Set(r.findings.filter((f) => f.checkId === "invalid-locale-file").map((f) => f.targetLocale));
+  const intendedSource = locales.includes("en") ? "en" : r.sourceLocale;
+  const sourceBroken = intendedSource !== null && broken.has(intendedSource);
+  return locales.map((l) => ({
+    url: `unit:locale:${l}`,
+    success: !(sourceBroken || broken.has(l)),
+    ...sourceBroken || broken.has(l) ? { failureReason: "other" } : {}
+  }));
+}
+function i18nEngine() {
+  return {
+    id: "i18n",
+    version: I18N_ENGINE_VERSION,
+    input: "repository",
+    timeoutMs: 18e4,
+    mutatesPage: false,
+    async scan(ctx) {
+      const dir = ctx.side.repoDir;
+      if (dir === null) {
+        throw new Error("i18n: no repository directory (the orchestrator should have reported input-unavailable)");
+      }
+      if (ctx.signal.aborted) return { pages: [], findings: [] };
+      const r = scanRepo(dir);
+      const findings = toFindings6(r.findings, {
+        engineVersion: I18N_ENGINE_VERSION,
+        localeFiles: r.localeFiles
+      });
+      ctx.log(`i18n: ${r.dirRel || "no locale dir"} (source ${r.sourceLocale ?? "none"}), ${findings.length} findings`);
+      return { pages: localeScanUnits(r), findings };
+    }
+  };
+}
+
+// src/engines/registry.ts
+function buildRegistry(a11yDeps) {
+  return [
+    { engine: "a11y", definition: a11yEngine(a11yDeps) },
+    { engine: "seo", definition: seoEngine() },
+    { engine: "security", definition: securityEngine() },
+    { engine: "links", definition: linksEngine() },
+    { engine: "bundle", definition: bundleEngine() },
+    { engine: "i18n", definition: i18nEngine() }
+  ];
 }
 
 // src/scanMode.ts
@@ -27298,7 +35214,9 @@ Baseline scan of ${ctx.headSha.slice(0, 7)} recorded: ${artifact.engines.length}
             prUrl: strictHeadOrigin,
             baseSha: strictBaseSha,
             deploymentVerified: strictDeploymentVerified,
-            localBuildFallback: null
+            localBuildFallback: null,
+            workspace,
+            baseTree: prepared.worktreeDir
           });
         } finally {
           await teardownStrictSides(local, { base: prepared.base, head: prepared.head, worktreeDir: prepared.worktreeDir });
@@ -27378,7 +35296,20 @@ Strict merge-base build failed (${localBuildFallback.reason}): ${localBuildFallb
     // resolved from the version marker below
     deploymentVerified: false,
     localBuildFallback,
-    gitGrep: gitGrepPaths
+    gitGrep: gitGrepPaths,
+    workspace,
+    // production-paired has no merge-base tree yet; repository-input engines get one on
+    // demand (created only when such an engine is built and enabled, removed afterwards)
+    baseTreeOnDemand: local !== null && workspace !== null && ctx.mergeBaseSha !== null ? {
+      create: async () => {
+        const dir = `${workspace}/.shipguard-merge-base-engines`;
+        return await local.addWorktree(dir, ctx.mergeBaseSha) ? dir : null;
+      },
+      remove: async (dir) => {
+        await settleWithin(local.removeWorktree(dir).catch(() => {
+        }));
+      }
+    } : null
   });
 }
 function parseBuildTimeout(input, log) {
@@ -27546,6 +35477,52 @@ ${inj.url}`, inj);
       }
     ]
   };
+  if (deps.enginesDeps !== void 0 && deps.axePath !== void 0) {
+    const registry = buildRegistry({ axePath: deps.axePath });
+    let onDemandTree = null;
+    try {
+      const routePaths = config.pages.map((page) => page.path);
+      const staticDir = config.localBuild !== null && "staticDir" in config.localBuild.serve ? config.localBuild.serve.staticDir : null;
+      const headTree = strict.workspace ?? null;
+      let baseTree = strictMode ? strict.baseTree ?? null : null;
+      const wantsRepo = registry.some((e) => e.definition.input === "repository" && preCheck(e.definition, config.engines) === null);
+      if (baseTree === null && wantsRepo && strict.baseTreeOnDemand) {
+        onDemandTree = await strict.baseTreeOnDemand.create();
+        baseTree = onDemandTree;
+      }
+      const sides = engineSides({
+        strictMode,
+        staticDir,
+        headTree,
+        baseTree,
+        headSha: ctx.headSha,
+        baseSha: strict.baseSha,
+        headOrigin: strict.prUrl,
+        baseOrigin: strict.baseUrl,
+        deploymentVerified
+      });
+      const { parts } = await runEngines(registry, sides, config.engines, deps.enginesDeps, routePaths);
+      registry.forEach((entry, i) => {
+        artifact.engines.push({ ...enginePartOf(parts[i]), engine: entry.engine, engineVersion: entry.definition.version });
+      });
+    } catch (e) {
+      deps.log(redactText(cleanReason(`engines: orchestrator failed: ${e instanceof Error ? e.message : String(e)}`)));
+      artifact.engines.splice(1);
+      for (const entry of registry) {
+        const pre = preCheck(entry.definition, config.engines);
+        artifact.engines.push({
+          engine: entry.engine,
+          engineVersion: entry.definition.version,
+          status: pre !== null ? "skipped" : "scan-failed",
+          headPages: [],
+          headFindings: [],
+          ...pre !== null ? { skipReason: pre.skipReason } : { failure: { reason: "crash" } }
+        });
+      }
+    } finally {
+      if (onDemandTree !== null && strict.baseTreeOnDemand) await strict.baseTreeOnDemand.remove(onDemandTree);
+    }
+  }
   const text = pretty(artifact);
   const output = deps.getInput("output") || DEFAULT_OUTPUT;
   try {
@@ -27658,6 +35635,30 @@ function buildBaselineArtifact(ctx, configHash) {
     // no engines on a v1 baseline (page engines aren't enabled; performance needs a preview)
   };
 }
+function enginePartOf(part) {
+  if (part.kind === "completed") {
+    return {
+      status: "completed",
+      headPages: part.headPages,
+      headFindings: part.headFindings,
+      ...part.base !== void 0 ? { base: part.base } : {},
+      environment: part.environment
+    };
+  }
+  if (part.kind === "scan-failed") {
+    return { status: "scan-failed", headPages: [], headFindings: [], failure: part.failure, ...part.environment !== null ? { environment: part.environment } : {} };
+  }
+  return { status: "skipped", headPages: [], headFindings: [], skipReason: part.skipReason, ...part.environment !== null ? { environment: part.environment } : {} };
+}
+function engineSides(o) {
+  const out = (tree) => o.strictMode && o.staticDir !== null && tree !== null ? `${tree}/${o.staticDir}` : null;
+  return {
+    head: { side: "head", sha: o.headSha, origin: o.headOrigin, buildOutputDir: out(o.headTree), repoDir: o.headTree },
+    base: { side: "base", sha: o.baseSha, origin: o.baseOrigin, buildOutputDir: out(o.baseTree), repoDir: o.baseTree },
+    mode: o.strictMode ? "in-job-merge-base" : "production-paired",
+    deploymentVerified: o.strictMode ? true : o.deploymentVerified
+  };
+}
 
 // src/runAction.ts
 var MARKER = "<!-- perf-diagnosis -->";
@@ -27712,9 +35713,9 @@ async function writeReportFile(deps, path, text) {
     deps.log(`Could not write ${path}: ${e instanceof Error ? e.message : String(e)}`);
   }
 }
-async function saveRuns(deps, reportDir, path, side, pairs) {
-  for (let k = 0; k < pairs.length; k++) {
-    const pair = pairs[k];
+async function saveRuns(deps, reportDir, path, side, pairs2) {
+  for (let k = 0; k < pairs2.length; k++) {
+    const pair = pairs2[k];
     await writeReportFile(deps, `${reportDir}/${pageSlug(path)}/${side}-${k + 1}.json`, prettyJson(pair.lhr));
     if (pair.trace !== null && pair.trace !== void 0) {
       await writeReportFile(
@@ -27741,9 +35742,9 @@ var joinUrl2 = (base, path) => base.replace(/\/+$/, "") + path;
 var withoutMarker = (comment) => comment.startsWith(`${MARKER}
 `) ? comment.slice(MARKER.length + 1) : comment;
 function overBudgetSentence(path, f) {
-  const measured = f.evidence.find((e) => e.label === "Measured")?.value;
+  const measured2 = f.evidence.find((e) => e.label === "Measured")?.value;
   const max = f.evidence.find((e) => e.label === "Budget")?.value;
-  return `Over budget: ${f.metric} on ${path} (${measured} > ${max}).`;
+  return `Over budget: ${f.metric} on ${path} (${measured2} > ${max}).`;
 }
 async function runAction(deps) {
   const modePre = deps.getInput("mode");
@@ -27766,7 +35767,11 @@ async function runAction(deps) {
         readFile: deps.readFile,
         writeFile: deps.writeFile,
         runLighthouse: deps.runLighthouse,
-        log: deps.log
+        log: deps.log,
+        // batch 2-0 (validation fix): the engine deps MUST reach the scan — without these two
+        // lines the six areas never ran in the real action (only the tests called runEngines).
+        ...deps.enginesDeps !== void 0 ? { enginesDeps: deps.enginesDeps } : {},
+        ...deps.axePath !== void 0 ? { axePath: deps.axePath } : {}
       },
       deps.scanContext ?? {
         repository: "",
@@ -28098,10 +36103,10 @@ ${TRUNCATED_NOTE}`;
 }
 function buildSummary(outcomes, failReason) {
   const lines = [`## Performance check: ${outcomes.length} page${outcomes.length === 1 ? "" : "s"}`, ""];
-  const measured = outcomes.filter((o) => o.measured);
-  if (measured.length > 0) {
+  const measured2 = outcomes.filter((o) => o.measured);
+  if (measured2.length > 0) {
     lines.push("| Page | Metric | Base median | PR median |", "| --- | --- | --- | --- |");
-    for (const o of measured) {
+    for (const o of measured2) {
       const metrics = FIELD_METRIC_ORDER.filter(
         (m) => m !== "INP" && (o.baseObs.some((b) => b.metric === m) || o.prObs.some((p) => p.metric === m))
       );
@@ -28167,23 +36172,23 @@ async function buildScanContext(ctx, env, baseUrl, versionPath, helpers) {
 // src/main.ts
 async function main() {
   const context2 = github.context;
-  const modeInput = core.getInput("mode");
+  const modeInput = core2.getInput("mode");
   const mode = modeInput === "" ? "pr" : modeInput;
   if (mode !== "pr" && mode !== "deploy" && mode !== "scan") {
-    core.setFailed('mode must be "pr", "deploy" or "scan".');
+    core2.setFailed('mode must be "pr", "deploy" or "scan".');
     return;
   }
   if (mode === "pr" && (context2.eventName !== "pull_request" || !context2.payload.pull_request)) {
-    core.setFailed("This action only runs on pull_request events.");
+    core2.setFailed("This action only runs on pull_request events.");
     return;
   }
-  const octokit = github.getOctokit(core.getInput("github-token"));
+  const octokit = github.getOctokit(core2.getInput("github-token"));
   const issueNumber = context2.payload.pull_request?.number ?? 0;
   const { owner, repo } = context2.repo;
-  const workspace = (0, import_node_path2.resolve)(process.env.GITHUB_WORKSPACE ?? process.cwd());
+  const workspace = (0, import_node_path5.resolve)(process.env.GITHUB_WORKSPACE ?? process.cwd());
   const readInWorkspace = async (p) => {
-    const abs = (0, import_node_path2.resolve)(workspace, p);
-    if (abs !== workspace && !abs.startsWith(workspace + import_node_path2.sep)) return null;
+    const abs = (0, import_node_path5.resolve)(workspace, p);
+    if (abs !== workspace && !abs.startsWith(workspace + import_node_path5.sep)) return null;
     try {
       return await (0, import_promises.readFile)(abs, "utf8");
     } catch {
@@ -28191,22 +36196,22 @@ async function main() {
     }
   };
   const writeInWorkspace = async (p, text) => {
-    const abs = (0, import_node_path2.resolve)(workspace, p);
-    if (abs !== workspace && !abs.startsWith(workspace + import_node_path2.sep)) {
+    const abs = (0, import_node_path5.resolve)(workspace, p);
+    if (abs !== workspace && !abs.startsWith(workspace + import_node_path5.sep)) {
       throw new Error("refusing to write outside the workspace");
     }
-    await (0, import_promises.mkdir)((0, import_node_path.dirname)(abs), { recursive: true });
+    await (0, import_promises.mkdir)((0, import_node_path4.dirname)(abs), { recursive: true });
     await (0, import_promises.writeFile)(abs, text, "utf8");
   };
   const deps = {
-    getInput: (name) => core.getInput(name),
+    getInput: (name) => core2.getInput(name),
     readFile: readInWorkspace,
     writeFile: writeInWorkspace,
     // spec 70: mask the API key before anything can log it, then POST the
     // result with a 15-second timeout when api-url and api-key are both set.
     // The response body comes back too, so a 402's message can be logged
     // (spec 73); it never contains the key.
-    setSecret: (value) => core.setSecret(value),
+    setSecret: (value) => core2.setSecret(value),
     postJson: async (url, headers, body, timeoutMs) => {
       const res = await fetch(url, {
         method: "POST",
@@ -28252,23 +36257,41 @@ async function main() {
         await octokit.rest.issues.updateComment({ owner, repo, comment_id: id, body });
       }
     },
-    log: (msg) => core.info(msg)
+    log: (msg) => core2.info(msg)
   };
   if (mode === "scan") {
     const built = await buildScanContext(
       { eventName: context2.eventName, sha: context2.sha, runId: context2.runId, repo: context2.repo, payload: context2.payload },
       process.env,
-      core.getInput("base-url"),
+      core2.getInput("base-url"),
       VERSION_PATH,
       { mergeBase: (a, b) => gitMergeBase(workspace, a, b), fetchText }
     );
     if (!built.ok) {
-      core.setFailed(built.reason);
+      core2.setFailed(built.reason);
       return;
     }
     deps.scanContext = built.context;
     deps.workspace = workspace;
     deps.gitGrepPaths = (needle) => gitGrepPathsReal(needle, workspace);
+    deps.enginesDeps = {
+      launchBrowser: async () => {
+        const pw = loadPlaywrightCore();
+        return pw.chromium.launch({
+          channel: process.env.CHROME_PATH ? void 0 : "chrome",
+          executablePath: process.env.CHROME_PATH || void 0,
+          headless: true,
+          args: ["--no-sandbox", "--disable-dev-shm-usage"]
+        });
+      },
+      log: (msg) => core2.info(msg),
+      now: () => Date.now(),
+      runnerImage: () => {
+        const os = process.env.ImageOS, ver = process.env.ImageVersion;
+        return os !== void 0 && ver !== void 0 ? `${os}/${ver}` : null;
+      }
+    };
+    deps.axePath = (0, import_node_path5.join)(bundleDir(), "axe.min.js");
     deps.localBuildDeps = {
       runCommand: runShellCommand,
       addWorktree: async (dir, sha) => {
@@ -28288,14 +36311,14 @@ async function main() {
       startStaticServer,
       startCommand: startCommandReal,
       freePort,
-      log: (msg) => core.info(msg)
+      log: (msg) => core2.info(msg)
     };
   }
   const result = await runAction(deps);
-  core.setOutput("passed", String(result.ok));
-  await core.summary.addRaw(result.summary).write();
+  core2.setOutput("passed", String(result.ok));
+  await core2.summary.addRaw(result.summary).write();
   if (!result.ok) {
-    core.setFailed(result.failReason ?? "The performance check failed.");
+    core2.setFailed(result.failReason ?? "The performance check failed.");
   }
 }
 async function gitMergeBase(cwd, a, b) {
@@ -28319,9 +36342,9 @@ async function fetchText(url) {
   }
 }
 async function runLighthouse(url, formFactor) {
-  const dir = await (0, import_promises2.mkdtemp)((0, import_node_path2.join)((0, import_node_os.tmpdir)(), "perf-diagnosis-"));
-  const outPath = (0, import_node_path2.join)(dir, "report.json");
-  const tracePath = (0, import_node_path2.join)(dir, "report-0.trace.json");
+  const dir = await (0, import_promises2.mkdtemp)((0, import_node_path5.join)((0, import_node_os.tmpdir)(), "perf-diagnosis-"));
+  const outPath = (0, import_node_path5.join)(dir, "report.json");
+  const tracePath = (0, import_node_path5.join)(dir, "report-0.trace.json");
   const args = [
     "--yes",
     "lighthouse@13.6.0",
@@ -28368,7 +36391,7 @@ ${errTail.trim()}`));
     });
   }
 }
-main().catch((e) => core.setFailed(e instanceof Error ? e.message : String(e)));
+main().catch((e) => core2.setFailed(e instanceof Error ? e.message : String(e)));
 function runShellCommand(opts) {
   return new Promise((resolve) => {
     const child = (0, import_node_child_process.spawn)("bash", ["-lc", opts.command], {

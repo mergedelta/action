@@ -19,6 +19,10 @@ inputs:
     description: 'Who posts the comment and check (spec 1b-1 amendment A1): "actions" = this job with github-token (today''s behaviour, default); "app" = the ShipGuard App via the backend''s /publish-api/post — the job then makes no GitHub write calls. Not a fallback: with "app" a posting failure fails the job (D5).'
     required: false
     default: 'actions'
+  config:
+    description: 'The repo''s perf.config.json path (task 2-7 item 3): read at the trusted merge-base SHA to resolve the blocking thresholds (TBT/CLS minIncrease). Missing or invalid file → the default policy (every confirmed TBT/CLS regression blocks).'
+    required: false
+    default: 'perf.config.json'
 
 outputs:
   outcome:

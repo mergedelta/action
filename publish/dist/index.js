@@ -4071,12 +4071,12 @@ var require_util2 = __commonJS({
             );
           }
           const { index, kind: kind2, target } = object;
-          const values = target();
-          const len = values.length;
+          const values2 = target();
+          const len = values2.length;
           if (index >= len) {
             return { value: void 0, done: true };
           }
-          const pair = values[index];
+          const pair = values2[index];
           object.index = index + 1;
           return iteratorResult(pair, kind2);
         },
@@ -14822,7 +14822,7 @@ var require_util5 = __commonJS({
     }
     function fieldValues(header) {
       assert(header !== null);
-      const values = [];
+      const values2 = [];
       for (let value of header.split(",")) {
         value = value.trim();
         if (!value.length) {
@@ -14830,9 +14830,9 @@ var require_util5 = __commonJS({
         } else if (!isValidHeaderName(value)) {
           continue;
         }
-        values.push(value);
+        values2.push(value);
       }
-      return values;
+      return values2;
     }
     module2.exports = {
       urlEquals,
@@ -20359,14 +20359,14 @@ var require_dist_node2 = __commonJS({
         function(_, expression, literal) {
           if (expression) {
             let operator = "";
-            const values = [];
+            const values2 = [];
             if (operators.indexOf(expression.charAt(0)) !== -1) {
               operator = expression.charAt(0);
               expression = expression.substr(1);
             }
             expression.split(/,/g).forEach(function(variable) {
               var tmp = /([^:\*]*)(?::(\d+)|(\*))?/.exec(variable);
-              values.push(getValues(context2, operator, tmp[1], tmp[2] || tmp[3]));
+              values2.push(getValues(context2, operator, tmp[1], tmp[2] || tmp[3]));
             });
             if (operator && operator !== "+") {
               var separator = ",";
@@ -20375,9 +20375,9 @@ var require_dist_node2 = __commonJS({
               } else if (operator !== "#") {
                 separator = operator;
               }
-              return (values.length !== 0 ? operator : "") + values.join(separator);
+              return (values2.length !== 0 ? operator : "") + values2.join(separator);
             } else {
-              return values.join(",");
+              return values2.join(",");
             }
           } else {
             return encodeReserved(literal);
@@ -24406,7 +24406,8 @@ var FINDING_KEYS = /* @__PURE__ */ new Set([
   "helpUrl",
   "effort",
   "impactMs",
-  "impactPct"
+  "impactPct",
+  "scanUnit"
 ]);
 var EVIDENCE_KEYS = /* @__PURE__ */ new Set(["kind", "label", "value", "unit", "side", "selector", "url", "path", "line"]);
 var METRICS = /* @__PURE__ */ new Set(["LCP", "INP", "CLS", "FCP", "TTFB", "TBT", "SI"]);
@@ -24454,6 +24455,7 @@ function validateFinding(input, at = "finding") {
   if (f.effort !== void 0 && !["low", "medium", "high"].includes(f.effort)) e("effort", "low | medium | high");
   if (f.impactMs !== void 0 && !(typeof f.impactMs === "number" && Number.isFinite(f.impactMs) && f.impactMs >= 0)) e("impactMs", "finite number \u2265 0");
   if (f.impactPct !== void 0 && !(typeof f.impactPct === "number" && f.impactPct >= 0 && f.impactPct <= 100)) e("impactPct", "0\u2013100");
+  if (f.scanUnit !== void 0 && !(typeof f.scanUnit === "string" && /^[A-Za-z0-9:_./@-]{1,100}$/.test(f.scanUnit))) e("scanUnit", "1\u2013100 chars [A-Za-z0-9:_./@-]");
   if (!Array.isArray(f.lessons) || f.lessons.length > LIMITS.lessons || !f.lessons.every((l) => str(l, LIMITS.lessonLength) && RULE_ID.test(l))) {
     e("lessons", `array of \u2264 ${LIMITS.lessons} slugs`);
   }
@@ -24481,46 +24483,118 @@ function validateFinding(input, at = "finding") {
   return errs;
 }
 
+// ../core/src/engine.ts
+var PERF_BLOCKING_METRICS = ["TBT", "CLS"];
+var ENGINE_MATURITY = {
+  performance: "stable",
+  a11y: "beta",
+  seo: "beta",
+  security: "beta",
+  links: "beta",
+  bundle: "beta",
+  i18n: "beta"
+};
+function mayBlockFor(engine) {
+  if (ENGINE_MATURITY[engine] === "beta") return false;
+  return engine === "performance";
+}
+
 // ../core/src/run.ts
-var ADVISORY_REASON = "advisory mode: findings reported, not blocking";
-function isBlockingFinding(c, blockOn) {
+var SIZE_UNAVAILABLE_REASON = "regression size unavailable";
+function pagePathOf(url) {
+  if (url === null || url === void 0) return "";
+  try {
+    const u = new URL(url);
+    return `${u.pathname}${u.search}`;
+  } catch {
+    return url;
+  }
+}
+function deltaFor(r, f, m) {
+  return r.perfMetricDeltas?.[pagePathOf(f.pageUrl)]?.[m];
+}
+function isBlockingFinding(c, blockOn, r) {
+  if ((r?.engine ?? c.finding.engine) === "performance") {
+    const f = c.finding;
+    if (c.classification !== "new" && c.classification !== "worsened") return false;
+    if (f.ruleId !== "lab-regression") return false;
+    if (f.metric === null || !PERF_BLOCKING_METRICS.includes(f.metric)) return false;
+    if (f.confidence !== "likely") return false;
+    const m = f.metric;
+    const threshold2 = r?.blockingThresholds?.[m];
+    if (threshold2 !== void 0) {
+      const delta = deltaFor(r ?? {}, f, m);
+      if (delta === void 0) return false;
+      if (delta.headMedian - delta.baseMedian < threshold2) return false;
+    }
+    return true;
+  }
   return (c.classification === "new" || c.classification === "worsened") && c.finding.confidence === "likely" && blockOn.includes(c.finding.severity);
 }
 function engineOutcome(r) {
   const reasons = [];
   const comparable = r.status === "compared" && r.baseline.validity === "valid";
-  const canFail = comparable && r.mayBlock && !r.baseline.stale && !r.baseline.deploymentUnverified;
-  const blocking = r.findings.filter((c) => isBlockingFinding(c, r.blockOn));
-  const failedBudgets = r.budgets.filter((b) => b.blocking && !b.passed);
+  const maturity = ENGINE_MATURITY[r.engine];
+  const maturityMayBlock = maturity === "beta" ? false : r.mayBlock;
+  const canFail = comparable && maturityMayBlock && !r.baseline.stale && !r.baseline.deploymentUnverified;
+  const blocking = r.findings.filter((c) => isBlockingFinding(c, r.blockOn, r));
+  const failedBudgets = r.budgets.filter((b) => !b.passed);
   const injections = r.previewInjections ?? [];
   const likeForLike = injections.length === 0;
-  if (canFail && likeForLike && (blocking.length > 0 || failedBudgets.length > 0)) {
-    if (blocking.length) reasons.push(`${blocking.length} new or worsened blocking finding(s)`);
-    if (failedBudgets.length) reasons.push(`${failedBudgets.length} blocking budget(s) exceeded`);
-    return { engine: r.engine, contribution: "fail", state: "regression", reasons };
+  const neuOrWorse = r.findings.filter((c) => c.classification === "new" || c.classification === "worsened");
+  const needsReview = [];
+  if (r.engine === "performance") {
+    for (const c of neuOrWorse) {
+      const f = c.finding;
+      if (f.ruleId !== "lab-regression" || f.metric === null) continue;
+      if (!PERF_BLOCKING_METRICS.includes(f.metric)) continue;
+      const m = f.metric;
+      const threshold2 = r.blockingThresholds?.[m];
+      if (f.confidence === "possible") needsReview.push({ metric: m, sizeUnavailable: false });
+      else if (threshold2 !== void 0 && deltaFor(r, f, m) === void 0) needsReview.push({ metric: m, sizeUnavailable: true });
+    }
+  }
+  if (canFail && likeForLike && blocking.length > 0) {
+    reasons.push(`${blocking.length} new or worsened blocking finding(s)`);
+    return { engine: r.engine, contribution: "fail", state: "regression", maturity, reasons, needsReview };
   }
   if (!comparable) reasons.push(`status: ${r.status}${r.baseline.validity !== "valid" ? `, baseline ${r.baseline.validity}` : ""}`);
   if (comparable && r.baseline.stale) reasons.push("baseline is stale (age)");
   if (comparable && r.baseline.deploymentUnverified) reasons.push("base deployment could not be confirmed as the compared commit");
-  if (comparable && !r.mayBlock && (blocking.length || failedBudgets.length)) reasons.push(ADVISORY_REASON);
+  if (comparable && neuOrWorse.length > 0) {
+    reasons.push(advisoryCountReason(neuOrWorse.length));
+  }
+  if (comparable && failedBudgets.length > 0) {
+    reasons.push(budgetCountReason(failedBudgets.length));
+  }
   if (injections.length) {
     for (const name of [...new Set(injections.map((i) => i.name))]) {
       reasons.push(`preview injects ${name}: comparison not like-for-like`);
     }
   }
-  if (r.headPages.some((p) => !p.success)) reasons.push("some pages were not scanned");
-  if (r.basePages.some((p) => !p.success)) reasons.push("some base pages were not scanned");
+  if (r.headPages.some((p) => !p.success && !p.url.startsWith("unit:"))) reasons.push("some pages were not scanned");
+  if (r.basePages.some((p) => !p.success && !p.url.startsWith("unit:"))) reasons.push("some base pages were not scanned");
   if (r.inconclusive.length) reasons.push(`${r.inconclusive.length} metric(s) inconclusive`);
-  const uncertain = r.findings.filter(
-    (c) => (c.classification === "new" || c.classification === "worsened") && c.finding.confidence === "possible" && r.blockOn.includes(c.finding.severity)
-  );
-  if (uncertain.length) reasons.push(`${uncertain.length} possible blocking finding(s) need review`);
+  if (needsReview.some((n) => !n.sizeUnavailable)) {
+    reasons.push(possibleReasonFor(needsReview));
+  }
+  if (needsReview.some((n) => n.sizeUnavailable)) reasons.push(SIZE_UNAVAILABLE_REASON);
   if (r.findings.some((c) => c.classification === "false-resolved" || c.classification === "not-comparable")) {
     reasons.push("some findings could not be compared");
   }
   const contribution = reasons.length ? "neutral" : "pass";
-  const state = r.status !== "compared" ? r.status : contribution === "pass" ? "passed" : reasons.every((x) => x === ADVISORY_REASON) ? "advisory" : "not-conclusive";
-  return { engine: r.engine, contribution, state, reasons };
+  const state = r.status !== "compared" ? r.status : contribution === "pass" ? "passed" : reasons.some((x) => x !== advisoryCountReason(neuOrWorse.length) && x !== budgetCountReason(failedBudgets.length) && x !== possibleReasonFor(needsReview) && x !== SIZE_UNAVAILABLE_REASON) ? "not-conclusive" : needsReview.length > 0 ? "needs-review" : "advisory";
+  return { engine: r.engine, contribution, state, maturity, reasons, needsReview };
+}
+function advisoryCountReason(n) {
+  return `${n} new or worsened finding(s), not blocking`;
+}
+function budgetCountReason(n) {
+  return `${n} budget(s) over (not blocking)`;
+}
+function possibleReasonFor(needsReview) {
+  const n = needsReview.filter((x) => !x.sizeUnavailable).length;
+  return `${n} possible regression(s) need review`;
 }
 function checkOutcome(results, opts) {
   const engines = results.map(engineOutcome);
@@ -24528,18 +24602,93 @@ function checkOutcome(results, opts) {
     return { conclusion: "neutral", engines, summary: "Unverified: this PR changes MergeDelta workflows or config. Results are for information only." };
   }
   if (engines.length === 0) return { conclusion: "neutral", engines, summary: "No MergeDelta engines ran." };
+  const shown = results.filter((r) => r.status !== "skipped" || r.skipReason === "needs-local-build" || r.skipReason === void 0);
+  const outcomeOf = (r) => engines.find((e) => e.engine === r.engine);
   const failing = engines.filter((e) => e.contribution === "fail");
-  if (failing.length) return { conclusion: "failure", engines, summary: `Regressions in: ${failing.map((e) => e.engine).join(", ")}.` };
-  const neutral = engines.filter((e) => e.contribution === "neutral");
-  if (neutral.length) {
-    const advisory = neutral.filter((e) => e.state === "advisory").map((e) => e.engine);
-    const incomplete = neutral.filter((e) => e.state !== "advisory").map((e) => e.engine);
-    const parts = ["No confirmed blocking regressions."];
-    if (advisory.length) parts.push(`${capitalize(advisory.join(", "))} ${advisory.length > 1 ? "are" : "is"} advisory until calibration is complete.`);
-    if (incomplete.length) parts.push(`Not fully compared: ${incomplete.join(", ")}.`);
-    return { conclusion: "neutral", engines, summary: parts.join(" ") };
+  if (failing.length) {
+    return { conclusion: "failure", engines, summary: failureSummary(results, engines) };
   }
-  return { conclusion: "success", engines, summary: "No regressions. Every enabled engine completed a valid comparison." };
+  if (!results.some((r) => r.status === "compared")) {
+    return { conclusion: "neutral", engines, summary: "Comparison unavailable: no engine completed a comparison." };
+  }
+  const incomplete = shown.filter((r) => isIncomplete(r, outcomeOf(r)));
+  if (incomplete.length) {
+    return { conclusion: "neutral", engines, summary: summaryLines(results, engines, { partial: true, needsReview: true, advisory: true }).join(" ") };
+  }
+  if (engines.some((e) => e.needsReview.length > 0)) {
+    return { conclusion: "neutral", engines, summary: summaryLines(results, engines, { needsReview: true, advisory: true }).join(" ") };
+  }
+  const anyNewOrWorsened = shown.some((r) => r.findings.some((c) => c.classification === "new" || c.classification === "worsened")) || shown.some((r) => r.status === "compared" && r.budgets.some((b) => !b.passed));
+  if (anyNewOrWorsened) {
+    return { conclusion: "neutral", engines, summary: summaryLines(results, engines, { advisory: true }).join(" ") };
+  }
+  return { conclusion: "success", engines, summary: "No regressions detected. Every enabled engine completed a valid comparison." };
+}
+function isIncomplete(r, o) {
+  if (r.status === "skipped") return r.skipReason === "needs-local-build";
+  return ["scan-failed", "no-baseline", "baseline-pending", "incompatible", "inconclusive"].includes(r.status) || o.state === "not-conclusive";
+}
+function failureSummary(results, engines) {
+  const parts = [];
+  const failing = engines.filter((e) => e.contribution === "fail");
+  for (const e of failing) {
+    const r = results.find((x) => x.engine === e.engine);
+    const metrics = [...new Set(r.findings.filter((c) => isBlockingFinding(c, r.blockOn, r)).map((c) => c.finding.metric).filter((m) => m !== null))];
+    parts.push(`Blocking: ${ENGINE_LABEL_OF[e.engine] ?? e.engine}${metrics.length ? ` (${metrics.join(", ")})` : ""}.`);
+  }
+  parts.push(...summaryLines(results, engines, { belowFailure: true }));
+  return parts.join(" ");
+}
+function summaryLines(results, engines, mode) {
+  const shown = results.filter((r) => r.status !== "skipped" || r.skipReason === "needs-local-build" || r.skipReason === void 0);
+  const outcomeOf = (r) => engines.find((e) => e.engine === r.engine);
+  const parts = [];
+  if (!mode.belowFailure) parts.push("No confirmed blocking regressions.");
+  if (mode.partial || mode.belowFailure) {
+    const failedEngines = engines.filter((e) => e.state === "scan-failed").map((e) => ENGINE_LABEL_OF[e.engine] ?? e.engine);
+    const notCompared = shown.filter((r) => ["no-baseline", "baseline-pending", "incompatible"].includes(r.status)).map((r) => ENGINE_LABEL_OF[r.engine] ?? r.engine);
+    const notConclusive = shown.filter((r) => outcomeOf(r).state === "not-conclusive" && !["scan-failed", "no-baseline", "baseline-pending", "incompatible"].includes(r.status)).map((r) => ENGINE_LABEL_OF[r.engine] ?? r.engine);
+    const partialNames = [.../* @__PURE__ */ new Set([...failedEngines, ...notCompared, ...notConclusive])];
+    if (partialNames.length) parts.push(`Partial results: ${partialNames.join(", ")} did not complete.`);
+    const needsBuild = shown.filter((r) => r.status === "skipped" && r.skipReason === "needs-local-build").map((r) => ENGINE_LABEL_OF[r.engine] ?? r.engine);
+    if (needsBuild.length) parts.push(`Not compared: ${needsBuild.join(", ")} (needs a local build).`);
+  }
+  if (mode.needsReview || mode.belowFailure) {
+    const lines = [];
+    for (const r of shown) {
+      const o = outcomeOf(r);
+      if (o.needsReview.length === 0) continue;
+      const metrics = [...new Set(o.needsReview.map((n) => n.metric).filter((m) => m !== null))];
+      if (metrics.length) lines.push(`${o.needsReview.length} possible regression in ${ENGINE_LABEL_OF[r.engine] ?? r.engine} (${metrics.join(", ")})`);
+    }
+    if (lines.length) parts.push(`Needs review: ${lines.join("; ")}.`);
+  }
+  if (mode.advisory || mode.belowFailure) {
+    const bits2 = [];
+    let perfMetrics = [];
+    for (const r of shown) {
+      if (r.status !== "compared") continue;
+      const o = outcomeOf(r);
+      const reviewMetrics = new Set(o.needsReview.map((n) => n.metric).filter((m) => m !== null));
+      const neu = r.findings.filter((c) => (c.classification === "new" || c.classification === "worsened") && !(o.contribution === "fail" && isBlockingFinding(c, r.blockOn, r)) && !(r.engine === "performance" && c.finding.ruleId === "lab-regression" && c.finding.metric !== null && reviewMetrics.has(c.finding.metric)));
+      if (neu.length === 0) continue;
+      const label = ENGINE_LABEL_OF[r.engine] ?? r.engine;
+      if (r.engine === "performance") {
+        const lab = neu.filter((c) => c.finding.ruleId === "lab-regression");
+        perfMetrics = [...new Set(lab.map((c) => c.finding.metric).filter((m) => m !== null))];
+        const other = neu.length - lab.length;
+        const otherText = `${other} other finding${other === 1 ? "" : "s"}`;
+        bits2.push(perfMetrics.length ? `${label} (${perfMetrics.join(", ")}${other > 0 ? `; ${otherText}` : ""})` : `${label} (${otherText})`);
+      } else {
+        bits2.push(`${label}${o.maturity === "beta" ? " \xB7 Beta" : ""} (${neu.length})`);
+      }
+    }
+    if (bits2.length) parts.push(`Not blocking: ${bits2.join(", ")}.`);
+    if (perfMetrics.some((m) => m === "FCP" || m === "SI" || m === "LCP")) {
+      parts.push("FCP, Speed Index and LCP are advisory until a fast-page calibration is approved.");
+    }
+  }
+  return parts;
 }
 var ARTIFACT_SCHEMA_VERSION = 1;
 var ARTIFACT_LIMITS = {
@@ -24568,6 +24717,8 @@ var BASE_MODES = /* @__PURE__ */ new Set(["strict-paired", "production-paired", 
 var LAB = /* @__PURE__ */ new Set(["LCP", "INP", "CLS", "FCP", "TTFB", "TBT", "SI"]);
 var INVALID_REASONS = /* @__PURE__ */ new Set(["runtime-error", "wrong-url", "http-status", "missing-metric"]);
 var LOCAL_BUILD_FALLBACKS = /* @__PURE__ */ new Set(["no-merge-base", "install-failed", "build-failed", "serve-failed", "timeout"]);
+var ENGINE_FAILURE_REASONS = /* @__PURE__ */ new Set(["timeout", "crash", "browser-unavailable", "input-unavailable", "budget-exhausted", "browser-mismatch"]);
+var ENGINE_SKIP_REASONS = /* @__PURE__ */ new Set(["disabled", "not-built", "needs-local-build"]);
 function isObj2(v) {
   return typeof v === "object" && v !== null && !Array.isArray(v);
 }
@@ -24616,11 +24767,40 @@ function checkEngine(part, at, errs) {
     errs.push({ path: at, message: "must be an object" });
     return;
   }
-  unknownKeys(part, ["engine", "engineVersion", "status", "headPages", "headFindings", "base", "perf"], at, errs);
+  unknownKeys(part, ["engine", "engineVersion", "status", "headPages", "headFindings", "base", "failure", "skipReason", "environment", "perf"], at, errs);
   if (typeof part.engineVersion !== "string" || part.engineVersion.length === 0 || part.engineVersion.length > 40) errs.push({ path: `${at}.engineVersion`, message: "1\u201340 chars" });
   if (!["completed", "scan-failed", "skipped"].includes(part.status)) errs.push({ path: `${at}.status`, message: "completed | scan-failed | skipped" });
   checkPages(part.headPages, `${at}.headPages`, errs);
   checkFindings(part.headFindings, `${at}.headFindings`, errs);
+  if (part.failure !== void 0) {
+    if (part.status !== "scan-failed") errs.push({ path: `${at}.failure`, message: "only allowed on scan-failed parts" });
+    if (!isObj2(part.failure)) errs.push({ path: `${at}.failure`, message: "must be an object" });
+    else {
+      unknownKeys(part.failure, ["reason"], `${at}.failure`, errs);
+      if (!ENGINE_FAILURE_REASONS.has(part.failure.reason)) errs.push({ path: `${at}.failure.reason`, message: "timeout | crash | browser-unavailable | input-unavailable | budget-exhausted | browser-mismatch" });
+    }
+  }
+  if (part.skipReason !== void 0) {
+    if (part.status !== "skipped") errs.push({ path: `${at}.skipReason`, message: "only allowed on skipped parts" });
+    if (!ENGINE_SKIP_REASONS.has(part.skipReason)) errs.push({ path: `${at}.skipReason`, message: "disabled | not-built | needs-local-build" });
+  }
+  if (part.environment !== void 0) {
+    const env = part.environment, ea = `${at}.environment`;
+    if (!isObj2(env)) errs.push({ path: ea, message: "must be an object" });
+    else {
+      unknownKeys(env, ["browser", "runnerImage"], ea, errs);
+      const b = env.browser;
+      if (!isObj2(b)) errs.push({ path: `${ea}.browser`, message: "must be an object" });
+      else {
+        unknownKeys(b, ["name", "version"], `${ea}.browser`, errs);
+        if (b.name !== "chrome") errs.push({ path: `${ea}.browser.name`, message: "'chrome' only" });
+        if (typeof b.version !== "string" || !/^[0-9A-Za-z.]{1,40}$/.test(b.version)) errs.push({ path: `${ea}.browser.version`, message: "short version string" });
+      }
+      if (!(env.runnerImage === null || typeof env.runnerImage === "string" && env.runnerImage.length > 0 && env.runnerImage.length <= 100 && /^[A-Za-z0-9._\/ -]+$/.test(env.runnerImage))) {
+        errs.push({ path: `${ea}.runnerImage`, message: "short string or null" });
+      }
+    }
+  }
   if (part.base !== void 0) {
     const b = part.base, ba = `${at}.base`;
     if (!isObj2(b)) errs.push({ path: ba, message: "must be an object" });
@@ -24767,9 +24947,15 @@ function checkArtifactIdentity(a, trusted) {
   if (a.run.runId !== trusted.runId) errs.push({ path: "artifact.run.runId", message: "does not match the workflow run" });
   return errs;
 }
-function capitalize(s) {
-  return s.charAt(0).toUpperCase() + s.slice(1);
-}
+var ENGINE_LABEL_OF = {
+  performance: "Performance",
+  a11y: "Accessibility",
+  security: "Security",
+  seo: "SEO",
+  links: "Links",
+  bundle: "Bundle",
+  i18n: "i18n"
+};
 
 // ../core/src/fingerprint.ts
 function normaliseUrl(raw) {
@@ -24785,6 +24971,14 @@ function normaliseUrl(raw) {
     return u.toString();
   } catch {
     return raw.toLowerCase().trim();
+  }
+}
+function pageKey(raw) {
+  try {
+    const u = new URL(normaliseUrl(raw));
+    return `${u.pathname}${u.search}`;
+  } catch {
+    return normaliseUrl(raw);
   }
 }
 
@@ -24804,7 +24998,7 @@ function diffFindings(input) {
   for (const f of input.baselineFindings) baselineByFp.set(f.fingerprint, f);
   const baseScan = indexPages(input.basePages);
   const headScan = indexPages(input.headPages);
-  const pagesNotScanned = input.headPages.filter((r) => !r.success).map((r) => r.url);
+  const pagesNotScanned = input.headPages.filter((r) => !r.success && !isScanUnit(r.url)).map((r) => r.url);
   const suppressionByFp = /* @__PURE__ */ new Map();
   for (const s of input.suppressions) {
     if (!isSuppressionActive(s, input)) continue;
@@ -24825,7 +25019,7 @@ function diffFindings(input) {
     }
     const base = baselineByFp.get(fp);
     if (base === void 0) {
-      if (pageWasScanned(head.pageUrl, baseScan, input.basePages.length)) {
+      if (pageWasScanned(head.pageUrl, baseScan, input.basePages.length, head.scanUnit)) {
         newFindings.push({ fingerprint: fp, classification: "new", finding: head });
       } else {
         notComparableFindings.push({ fingerprint: fp, classification: "not-comparable", finding: head });
@@ -24840,7 +25034,7 @@ function diffFindings(input) {
   }
   for (const [fp, base] of baselineByFp) {
     if (headByFp.has(fp)) continue;
-    if (pageWasScanned(base.pageUrl, headScan, input.headPages.length)) {
+    if (pageWasScanned(base.pageUrl, headScan, input.headPages.length, base.scanUnit)) {
       resolvedFindings.push({ fingerprint: fp, classification: "resolved", finding: base });
     } else {
       falseResolvedFindings.push({ fingerprint: fp, classification: "false-resolved", finding: base });
@@ -24865,14 +25059,18 @@ function diffFindings(input) {
 }
 function indexPages(pages) {
   const m = /* @__PURE__ */ new Map();
-  for (const r of pages) m.set(normaliseUrl(r.url), r.success);
+  for (const r of pages) m.set(isScanUnit(r.url) ? r.url : pageKey(r.url), r.success);
   return m;
 }
-function pageWasScanned(pageUrl, scanByPage, scanResultCount) {
+function isScanUnit(url) {
+  return url.startsWith("unit:");
+}
+function pageWasScanned(pageUrl, scanByPage, scanResultCount, scanUnit) {
+  if (scanUnit !== void 0 && scanByPage.get(`unit:${scanUnit}`) === false) return false;
   const p = normalisePageUrl(pageUrl);
   if (p === null) return true;
   if (scanResultCount === 0) return true;
-  const success = scanByPage.get(normaliseUrl(p));
+  const success = scanByPage.get(pageKey(p));
   if (success === void 0) return false;
   return success;
 }
@@ -24909,6 +25107,7 @@ var COMMENT_LIMIT = 65536;
 var COMMENT_BUDGET = COMMENT_LIMIT - 1e3;
 var WARNING_SECTIONS = 10;
 var REST_LINES = 50;
+var BETA_LINES_PER_AREA = 15;
 var ENGINE_ORDER = ["performance", "a11y", "security", "seo", "links", "bundle", "i18n"];
 var ENGINE_LABEL = {
   performance: "\u26A1 Performance",
@@ -25050,34 +25249,67 @@ function productionIsMergeBase(r) {
 }
 var STATE_CELL = {
   regression: "\u274C Regression",
-  passed: "\u2705 No regressions",
+  // task 2-7 item 4.3: a cell can never contradict the headline — "No new findings", not
+  // "No regressions" (the headline reserves "No regressions detected" for row 7 alone)
+  passed: "\u2705 No new findings",
   advisory: "\u26A0\uFE0F Advisory, not blocking",
+  "needs-review": "\u26AA Needs review",
   "not-conclusive": "\u26AA Compared, not conclusive",
   "no-baseline": "\u26AA No baseline",
   "baseline-pending": "\u26AA Baseline pending",
   incompatible: "\u26AA Baseline incompatible",
-  inconclusive: "\u26AA Inconclusive",
+  inconclusive: "\u26AA Not conclusive",
   "scan-failed": "\u26AA Scan did not complete",
   skipped: "\u26AA Skipped"
 };
+var FAILURE_CELL = {
+  timeout: "\u26AA Timed out",
+  crash: "\u26AA Failed: crash",
+  "browser-unavailable": "\u26AA Failed: browser unavailable",
+  "input-unavailable": "\u26AA Failed: input unavailable",
+  "budget-exhausted": "\u26AA Failed: time budget exhausted",
+  "browser-mismatch": "\u26AA Failed: browser mismatch"
+};
+var SKIP_CELL = {
+  "needs-local-build": "\u26AA Needs localBuild"
+};
 function statusCell(r, outcome) {
   const o = outcome.engines.find((e) => e.engine === r.engine);
-  return STATE_CELL[o?.state ?? (r.status === "compared" ? "not-conclusive" : r.status)];
+  const state = o?.state ?? (r.status === "compared" ? "not-conclusive" : r.status);
+  if (state === "scan-failed" && r.failureReason !== void 0) return FAILURE_CELL[r.failureReason];
+  if (state === "skipped" && r.skipReason !== void 0 && SKIP_CELL[r.skipReason] !== void 0) return SKIP_CELL[r.skipReason];
+  return STATE_CELL[state];
+}
+function areaCell(r, outcome) {
+  const o = outcome.engines.find((e) => e.engine === r.engine);
+  return o?.maturity === "beta" ? `${ENGINE_LABEL[r.engine]} \xB7 Beta` : ENGINE_LABEL[r.engine];
 }
 function counts(r) {
   const n = (k) => r.findings.filter((c) => c.classification === k).length;
   return { neu: n("new") + n("worsened"), res: n("resolved"), current: r.findings.filter((c) => c.classification !== "resolved" && c.classification !== "false-resolved").length };
 }
 function headlineText(results, outcome, unverified) {
+  if (unverified) return "\u26AA MergeDelta \xB7 Unverified run";
+  if (outcome.conclusion === "failure") return "\u274C MergeDelta \xB7 Regression detected \u2014 check failed";
+  if (outcome.conclusion === "success") return "\u2705 MergeDelta \xB7 No regressions detected";
   const anyCompared = results.some((r) => r.status === "compared");
-  const neutral = outcome.engines.filter((e) => e.contribution === "neutral");
-  return unverified ? "\u26AA MergeDelta \xB7 Unverified run" : outcome.conclusion === "failure" ? "\u274C MergeDelta \xB7 Regressions found" : outcome.conclusion === "success" ? "\u2705 MergeDelta \xB7 No regressions" : neutral.length > 0 && neutral.every((e) => e.state === "advisory") ? "\u26A0\uFE0F MergeDelta \xB7 Advisory findings, not blocking" : anyCompared ? "\u26AA MergeDelta \xB7 No confirmed regressions" : "\u26AA MergeDelta \xB7 Comparison unavailable";
+  if (!anyCompared) return "\u26AA MergeDelta \xB7 Comparison unavailable";
+  const engines = outcome.engines.filter((e) => results.some((r) => r.engine === e.engine && (r.status !== "skipped" || r.skipReason === "needs-local-build" || r.skipReason === void 0)));
+  const needsBuild = results.some((r) => r.status === "skipped" && r.skipReason === "needs-local-build");
+  if (needsBuild || engines.some((e) => e.state === "not-conclusive" || ["no-baseline", "baseline-pending", "incompatible", "inconclusive", "scan-failed"].includes(e.state))) {
+    return "\u26AA MergeDelta \xB7 Partial results \u2014 some checks incomplete";
+  }
+  if (engines.some((e) => e.needsReview.length > 0)) return "\u26AA MergeDelta \xB7 Needs review \u2014 possible regressions";
+  return "\u26A0\uFE0F MergeDelta \xB7 Regressions detected \u2014 advisory";
 }
 function renderComment(results, outcome, ctx) {
-  const shown = results.filter((r) => r.status !== "skipped").sort((a, b) => ENGINE_ORDER.indexOf(a.engine) - ENGINE_ORDER.indexOf(b.engine));
+  const shown = results.filter((r) => r.status !== "skipped" || r.skipReason === "needs-local-build").sort((a, b) => ENGINE_ORDER.indexOf(a.engine) - ENGINE_ORDER.indexOf(b.engine));
   const anyCompared = shown.some((r) => r.status === "compared");
+  const incomplete = shown.filter((r) => r.status === "scan-failed");
   const headline = headlineText(results, outcome, ctx.unverified);
-  const head = [MARKER, `## ${headline}`, "", esc(outcome.summary, 400)];
+  const partialPrefix = incomplete.length > 0 && !ctx.unverified && !outcome.summary.includes("Partial results:") ? `Partial results: ${incomplete.map((r) => ENGINE_LABEL[r.engine].replace(/^\S+\s+/, "")).join(", ")} did not complete. ` : "";
+  const summary2 = `${partialPrefix}${outcome.summary}`;
+  const head = [MARKER, `## ${headline}`, "", esc(summary2, 500)];
   const banners = [];
   if (ctx.unverified) banners.push("> \u26A0\uFE0F This PR changes MergeDelta workflows or config, so these results can't be trusted to pass or block. A maintainer should review the workflow change.");
   if (shown.length && shown.every((r) => r.status === "no-baseline")) banners.push("> \u{1F535} No baseline exists for this PR's merge-base yet. Findings below are what the scan found, not a comparison, and never block merging.");
@@ -25095,7 +25327,7 @@ function renderComment(results, outcome, ctx) {
     ...shown.map((r) => {
       const c = counts(r);
       const compared = r.status === "compared";
-      return `| ${ENGINE_LABEL[r.engine]} | ${statusCell(r, outcome)} | ${baselineCell(r)} | ${compared ? c.neu : `\u2014 (${c.current} found)`} | ${compared && r.engine !== "performance" ? c.res : "\u2014"} |`;
+      return `| ${areaCell(r, outcome)} | ${statusCell(r, outcome)} | ${baselineCell(r)} | ${compared ? c.neu : `\u2014 (${c.current} found)`} | ${compared && r.engine !== "performance" ? c.res : "\u2014"} |`;
     })
   ];
   const fallbackNotes = [];
@@ -25103,9 +25335,14 @@ function renderComment(results, outcome, ctx) {
     if (r.localBuildFallback === void 0 || r.engine !== "performance") continue;
     fallbackNotes.push(`> \u{1F7E1} Strict merge-base build failed (${r.localBuildFallback.reason}); compared against production instead.`);
   }
+  const betaAreas = shown.filter((r) => outcome.engines.find((e) => e.engine === r.engine)?.maturity === "beta");
+  const betaFindings = betaAreas.flatMap(
+    (r) => r.findings.filter((c) => r.status === "compared" ? c.classification === "new" || c.classification === "worsened" : c.classification !== "resolved" && c.classification !== "false-resolved").map((c) => ({ c, engine: r.engine }))
+  );
+  const perfAreas = shown.filter((r) => r.engine === "performance");
   const pool = [];
   const informational = shown.filter((r) => r.status !== "compared");
-  for (const r of shown) {
+  for (const r of perfAreas) {
     r.findings.forEach((c, i) => {
       const main2 = r.status === "compared" ? c.classification === "new" || c.classification === "worsened" : c.classification !== "resolved" && c.classification !== "false-resolved";
       if (main2) pool.push({ c, engineIndex: i });
@@ -25145,6 +25382,32 @@ function renderComment(results, outcome, ctx) {
   }
   rest.push(...infos);
   const tail = [];
+  const betaBlocks = [];
+  const betaDropped = /* @__PURE__ */ new Map();
+  for (const r of betaAreas) {
+    const items = betaFindings.filter((b) => b.engine === r.engine).map((b) => b.c);
+    const shownBeta = items.slice(0, BETA_LINES_PER_AREA);
+    const dropped = items.length - shownBeta.length;
+    if (dropped > 0) betaDropped.set(r.engine, dropped);
+    if (shownBeta.length === 0) continue;
+    const critical = shownBeta.filter((c) => c.finding.severity === "critical").length;
+    const warnings2 = shownBeta.filter((c) => c.finding.severity === "warning").length;
+    const summaryBits = [`${shownBeta.length} new`];
+    if (critical > 0) summaryBits.push(`${critical} critical`);
+    if (warnings2 > 0) summaryBits.push(`${warnings2} warning${warnings2 === 1 ? "" : "s"}`);
+    betaBlocks.push([
+      "<details>",
+      `<summary>${ENGINE_LABEL[r.engine]} \xB7 Beta: ${summaryBits.join(", ")}</summary>`,
+      "",
+      ...shownBeta.map(restLine),
+      "",
+      `\u2026 _Beta area \u2014 advisory, never blocks. ${link("Full report", ctx.reportUrl ?? ctx.runUrl)}._`,
+      "</details>"
+    ].join("\n"));
+  }
+  for (const [engine, dropped] of betaDropped) {
+    betaBlocks.push(`<sub>${ENGINE_LABEL[engine]} \xB7 Beta: ${dropped} more finding${dropped === 1 ? "" : "s"} in the ${link("full report", ctx.reportUrl ?? ctx.runUrl)}.</sub>`);
+  }
   if (hiddenCriticals) tail.push(`**${hiddenCriticals} more critical finding${hiddenCriticals === 1 ? "" : "s"} didn't fit in this comment** \u2014 ${link("full report", ctx.reportUrl ?? ctx.runUrl)}.`);
   if (rest.length) {
     const lines = rest.slice(0, REST_LINES).map(restLine);
@@ -25166,13 +25429,35 @@ function renderComment(results, outcome, ctx) {
   const budgets = shown.flatMap((r) => r.budgets);
   if (budgets.length) {
     const over = budgets.filter((b) => !b.passed);
-    const failing = shown.some((r) => outcome.engines.find((e) => e.engine === r.engine)?.contribution === "fail" && r.budgets.some((b) => b.blocking && !b.passed));
-    tail.push(over.length ? failing ? `Budgets: \u274C ${over.length} over budget` : `Budgets: \u26A0\uFE0F ${over.length} over budget (not blocking)` : "Budgets: \u2705 all within budget");
+    tail.push(over.length ? `Budgets: \u26A0\uFE0F ${over.length} over budget (not blocking)` : "Budgets: \u2705 all within budget");
   }
   const reportLink = ctx.reportUrl ? `${link("Dashboard", ctx.reportUrl)} \xB7 ` : "";
   const pageNote = pages.length === 1 ? `Page ${code(displayUrl(pages[0]), 120)} \xB7 ` : "";
   tail.push(`<sub>${pageNote}${reportLink}${link("Full report", ctx.runUrl)} \xB7 MergeDelta \xB7 ${code(ctx.headSha.slice(0, 7))}</sub>`);
-  const body = [head.join("\n"), ...banners, table.join("\n"), ...fallbackNotes, ...sections, ...tail].join("\n\n") + "\n";
+  let bodyBlocks = [head.join("\n"), ...banners, table.join("\n"), ...fallbackNotes, ...sections, ...betaBlocks, ...tail];
+  let body = bodyBlocks.join("\n\n") + "\n";
+  if (body.length > COMMENT_LIMIT && betaBlocks.length > 0) {
+    const order = [...betaBlocks.keys()].sort((a, b) => betaBlocks[b].length - betaBlocks[a].length);
+    const cut = [...betaBlocks];
+    for (const idx of order) {
+      cut[idx] = cut[idx].split("\n").slice(0, BETA_LINES_PER_AREA).join("\n");
+      const candidate = [head.join("\n"), ...banners, table.join("\n"), ...fallbackNotes, ...sections, ...cut, ...tail].join("\n\n") + "\n";
+      if (candidate.length <= COMMENT_LIMIT) {
+        bodyBlocks = [head.join("\n"), ...banners, table.join("\n"), ...fallbackNotes, ...sections, ...cut, ...tail];
+        body = candidate;
+        break;
+      }
+    }
+    if (body.length > COMMENT_LIMIT) {
+      const remaining = [...betaBlocks];
+      while (remaining.length > 0 && body.length > COMMENT_LIMIT) {
+        remaining.pop();
+        body = [head.join("\n"), ...banners, table.join("\n"), ...fallbackNotes, ...sections, ...remaining, ...tail].join("\n\n") + "\n";
+      }
+    }
+  }
+  bodyBlocks = [head.join("\n"), ...banners, table.join("\n"), ...fallbackNotes, ...sections, ...body.includes("\n\n<details>") ? betaBlocks.slice(0, betaBlocks.length) : [], ...tail];
+  body = [head.join("\n"), ...banners, table.join("\n"), ...fallbackNotes, ...sections, ...betaBlocks, ...tail].join("\n\n") + "\n";
   return body.length <= COMMENT_LIMIT ? body : body.slice(0, body.lastIndexOf("\n", COMMENT_BUDGET)) + `
 
 _Comment shortened to fit GitHub's limit \u2014 ${link("full report", ctx.runUrl)}._
@@ -25182,12 +25467,14 @@ var CHECK_NAME = "MergeDelta";
 var CHECK_TITLE_LIMIT = 255;
 var CHECK_SUMMARY_LIMIT = 65535;
 function checkRunOutput(results, outcome, unverified) {
-  const shown = results.filter((r) => r.status !== "skipped");
+  const shown = results.filter((r) => r.status !== "skipped" || r.skipReason === "needs-local-build");
   const title = headlineText(shown, outcome, unverified).replace(/^\S+\s+/, "").slice(0, CHECK_TITLE_LIMIT);
   const lines = [outcome.summary, ""];
   for (const e of outcome.engines) {
+    if (!shown.some((r) => r.engine === e.engine)) continue;
     const label = ENGINE_LABEL[e.engine].replace(/^\S+\s+/, "");
-    lines.push(`- ${label}: ${e.contribution === "fail" ? "failure" : e.contribution === "pass" ? "success" : "neutral"}${e.reasons.length ? ` \u2014 ${e.reasons.join("; ")}` : ""}`);
+    const state = `${e.contribution === "fail" ? "failure" : e.contribution === "pass" ? "success" : "neutral"}${e.reasons.length ? ` \u2014 ${e.reasons.join("; ")}` : ""}`;
+    lines.push(e.maturity === "beta" ? `- ${label}: ${state} (Beta, advisory)` : `- ${label}: ${state}`);
   }
   let summary2 = lines.join("\n");
   if (summary2.length > CHECK_SUMMARY_LIMIT) summary2 = summary2.slice(0, CHECK_SUMMARY_LIMIT - 1) + "\u2026";
@@ -25245,6 +25532,378 @@ function decideTrust(ev, gh, claim) {
     return { accept: true, kind: "pr", prNumber: pr.number, unverified: true, unverifiedReason: `PR changes ${touched.slice(0, 3).join(", ")}${touched.length > 3 ? "\u2026" : ""}`, mayWriteSnapshot: false };
   }
   return { accept: true, kind: "pr", prNumber: pr.number, unverified: false, mayWriteSnapshot: false };
+}
+
+// ../core/src/redact.ts
+var TEXT_PATTERNS = [
+  // GitHub tokens: classic prefixes and fine-grained PATs (40+ alphanumeric_-)
+  ["github-token", /\b(?:ghp|gho|ghu|ghr|ghs|ghv)_[A-Za-z0-9]{16,}\b/g],
+  ["github-token", /\bgithub_pat_[A-Za-z0-9_]{22,}\b/g],
+  // AWS access key ids (AKIA/ASIA + 16 upper alnum)
+  ["aws-key", /\b(?:AKIA|ASIA)[0-9A-Z]{16}\b/g],
+  // Stripe secret / restricted keys
+  ["stripe-key", /\b(?:sk|rk)_live_[A-Za-z0-9]{16,}\b/g],
+  // Slack tokens
+  ["slack-token", /\bxox[abprs]-[A-Za-z0-9-]{10,}\b/g],
+  // JWTs: three base64url segments, the first starting eyJ (decoded starts with '{"')
+  ["jwt", /\beyJ[A-Za-z0-9_-]{6,}\.[A-Za-z0-9_-]{6,}\.[A-Za-z0-9_-]{6,}\b/g],
+  // PEM private key blocks (BEGIN ... PRIVATE KEY ... END, DOTALL)
+  ["private-key", /-----BEGIN [A-Z0-9 ]*PRIVATE KEY-----[\s\S]*?-----END [A-Z0-9 ]*PRIVATE KEY-----/g],
+  // generic query/assignment secrets: password=…, secret=…, token=… (word boundary before)
+  ["secret", /\b(password|passwd|secret|token|apikey|api_key|access_key)\s*[=:]\s*([^\s&'"]{8,})/gi],
+  // URL userinfo: https://user:pass@host — the whole userinfo is the secret
+  ["userinfo", /\bhttps?:\/\/[A-Za-z0-9._~%-]+:[^\s@/]+@/g]
+];
+var NOT_SECRETS = [
+  // 40-hex git SHA (could match nothing above, kept as an explicit guard for query values)
+  /^[0-9a-f]{40}$/,
+  // CSS hash in a URL query, e.g. ?v=a1b2c3d4 (short hex)
+  /^[0-9a-f]{6,12}$/,
+  // UUIDs
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+];
+function looksLikeHash(value) {
+  const v = value.trim();
+  return NOT_SECRETS.some((re) => re.test(v));
+}
+function redactText(input) {
+  if (typeof input !== "string" || input === "") return input;
+  let out = input;
+  for (const [kind, re] of TEXT_PATTERNS) {
+    if (kind === "secret") {
+      out = out.replace(re, (m, key, value) => looksLikeHash(value) ? m : `${key}=[redacted:secret]`);
+    } else {
+      out = out.replace(re, `[redacted:${kind}]`);
+    }
+  }
+  return out;
+}
+function redactCookieEvidence(e) {
+  const label = `${e.label} ${e.value ?? ""} ${e.selector ?? ""}`.toLowerCase();
+  const raw = typeof e.value === "string" ? e.value : "";
+  const isCookie = /\bcookie\b/.test(label) || /^[^=;\s]{1,100}=[^;]*(?:;\s*[^=;\s]{1,100}=[^;]*)*$/.test(raw) && raw.includes(";");
+  if (!isCookie) return e;
+  const parts = raw.split(";").map((p) => p.trim()).filter((p) => p !== "");
+  const kept = parts.map((p) => {
+    const eq = p.indexOf("=");
+    if (eq === -1) return p;
+    const name = p.slice(0, eq).trim();
+    const value = p.slice(eq + 1).trim();
+    const flagLike = /^(path|domain|max-age|expires|samesite|version|priority|partitioned)$/i.test(name);
+    const valueIsPolicy = /^(strict|lax|none|\d+|[a-z0-9._-]{0,100}\.[a-z]{2,10}(\/[a-z0-9._-]{0,50})?)$/i.test(value);
+    return flagLike || valueIsPolicy ? p : `${name}=[redacted:cookie]`;
+  });
+  return { ...e, value: kept.join("; ") };
+}
+function redactHeaderEvidence(e) {
+  const label = `${e.label}`.toLowerCase();
+  if (!/\bheader\b/.test(label)) return e;
+  if (typeof e.value !== "string") return e;
+  return { ...e, value: redactText(e.value).slice(0, 300) };
+}
+function redactEvidence(e) {
+  const next = redactHeaderEvidence(redactCookieEvidence(e));
+  const value = typeof next.value === "string" ? redactText(next.value) : next.value;
+  const selector = next.selector !== void 0 ? redactText(next.selector) : void 0;
+  const url = next.url !== void 0 ? redactText(next.url) : void 0;
+  const label = redactText(next.label);
+  return { ...next, label, ...value !== next.value ? { value } : {}, ...selector !== void 0 ? { selector } : {}, ...url !== void 0 ? { url } : {} };
+}
+function redactFinding(f) {
+  return {
+    ...f,
+    title: redactText(f.title),
+    explanation: redactText(f.explanation),
+    ...f.fix !== void 0 ? { fix: redactText(f.fix) } : {},
+    evidence: f.evidence.map(redactEvidence)
+  };
+}
+function redactFindings(fs) {
+  return fs.map(redactFinding);
+}
+
+// ../core/src/measure.ts
+var LAB_METRICS = ["LCP", "FCP", "TBT", "CLS", "SI", "TTFB"];
+var ABS_MIN = { LCP: 100, FCP: 100, TBT: 50, CLS: 0.02, SI: 150, TTFB: 50 };
+var REL_MIN = 0.1;
+var MIN_RUNS = 3;
+function threshold(metric, baseMedian) {
+  return Math.max(ABS_MIN[metric], REL_MIN * baseMedian);
+}
+function median(xs) {
+  const s = [...xs].sort((a, b) => a - b);
+  const m = Math.floor(s.length / 2);
+  return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+}
+function values(runs, m) {
+  return runs.filter((r) => r.valid).map((r) => r.metrics[m]).filter((v) => typeof v === "number");
+}
+function decideMetric(metric, base, head, minRuns = MIN_RUNS) {
+  const b = values(base, metric), h = values(head, metric);
+  const runs = { base: b.length, head: h.length };
+  if (b.length < minRuns || h.length < minRuns) {
+    return { metric, verdict: "inconclusive", reason: "too-few-runs", baseMedian: null, headMedian: null, threshold: null, headRunsWorse: 0, runs, spread: null };
+  }
+  const bm = median(b), hm = median(h), t = threshold(metric, bm);
+  const k = h.filter((x) => x - bm > t).length;
+  const spread = { base: Math.max(...b) - Math.min(...b), head: Math.max(...h) - Math.min(...h) };
+  const common = { metric, baseMedian: bm, headMedian: hm, threshold: t, headRunsWorse: k, runs, spread };
+  if (k === h.length) return { ...common, verdict: "regression", reason: "all-runs-worse" };
+  if (k <= Math.floor(h.length / 3)) return { ...common, verdict: "pass", reason: k === 0 ? "within-threshold" : "outlier-tolerated" };
+  return { ...common, verdict: "inconclusive", reason: "runs-disagree" };
+}
+
+// ../../src/config/parseConfig.ts
+var MAX_PAGES = 20;
+var DEFAULT_LESSONS = "https://webperformancelearn.com/lessons";
+var KNOWN_KEYS = ["version", "pages", "runs", "formFactor", "budgetFile", "failOn", "comment", "lessonBaseUrl", "localBuild", "engines", "blocking"];
+var ENGINE_IDS = ["a11y", "seo", "security", "links", "bundle", "i18n"];
+var BLOCKING_METRIC_IDS = ["TBT", "CLS"];
+var BLOCKING_METRIC_CAPS = { TBT: 1e4, CLS: 1 };
+function parseConfig(text) {
+  let json;
+  try {
+    json = JSON.parse(text);
+  } catch (e) {
+    return {
+      config: null,
+      errors: [{ path: "", message: `Invalid JSON: ${e instanceof Error ? e.message : String(e)}` }]
+    };
+  }
+  const errors = [];
+  if (typeof json !== "object" || json === null || Array.isArray(json)) {
+    return { config: null, errors: [{ path: "", message: "The config must be a JSON object." }] };
+  }
+  const c = json;
+  if (c.version !== 1) errors.push({ path: "/version", message: "version must be 1." });
+  const pages = [];
+  if (!Array.isArray(c.pages) || c.pages.length < 1 || c.pages.length > MAX_PAGES) {
+    errors.push({ path: "/pages", message: "pages must be an array of 1 to 20 page entries." });
+  } else {
+    const seenPaths = /* @__PURE__ */ new Set();
+    c.pages.forEach((p, i) => {
+      const at = `/pages/${i}`;
+      if (typeof p !== "object" || p === null || Array.isArray(p)) {
+        errors.push({ path: at, message: "Page entries must be objects." });
+        return;
+      }
+      const entry = p;
+      for (const key of Object.keys(entry)) {
+        if (key !== "path" && key !== "pageGroup") {
+          errors.push({ path: `${at}/${key}`, message: `Unknown key "${key}".` });
+        }
+      }
+      const pathOk = typeof entry.path === "string" && entry.path.startsWith("/");
+      if (!pathOk) {
+        errors.push({ path: `${at}/path`, message: 'path must be a string starting with "/".' });
+      } else if (seenPaths.has(entry.path)) {
+        errors.push({ path: `${at}/path`, message: `Duplicate path "${entry.path}".` });
+      } else {
+        seenPaths.add(entry.path);
+      }
+      const groupOk = typeof entry.pageGroup === "string" && entry.pageGroup.length >= 1;
+      if (!groupOk) {
+        errors.push({ path: `${at}/pageGroup`, message: "pageGroup must be a non-empty string." });
+      }
+      if (pathOk && groupOk) pages.push({ path: entry.path, pageGroup: entry.pageGroup });
+    });
+  }
+  let runs = null;
+  if ("runs" in c) {
+    const v = c.runs;
+    if (typeof v === "number" && Number.isInteger(v) && v >= 1 && v <= 9) runs = v;
+    else errors.push({ path: "/runs", message: "runs must be a whole number from 1 to 9." });
+  }
+  let formFactor = null;
+  if ("formFactor" in c) {
+    const v = c.formFactor;
+    if (v === "mobile" || v === "desktop") formFactor = v;
+    else errors.push({ path: "/formFactor", message: 'formFactor must be "mobile" or "desktop".' });
+  }
+  let budgetFile = null;
+  if ("budgetFile" in c) {
+    const v = c.budgetFile;
+    if (v === null) budgetFile = null;
+    else if (typeof v !== "string" || v.length < 1) errors.push({ path: "/budgetFile", message: "budgetFile must be null or a non-empty string." });
+    else if (/^[\\/]|^[a-zA-Z]:/.test(v) || v.split(/[\\/]/).includes(".."))
+      errors.push({ path: "/budgetFile", message: 'budgetFile must be a path inside the repository (no leading "/" and no "..").' });
+    else budgetFile = v;
+  }
+  let failOn = null;
+  if ("failOn" in c) {
+    const v = c.failOn;
+    if (v === "budget" || v === "critical" || v === "never") failOn = v;
+    else errors.push({ path: "/failOn", message: 'failOn must be "budget", "critical" or "never".' });
+  }
+  let comment = null;
+  if ("comment" in c) {
+    const v = c.comment;
+    if (v === "always" || v === "on-findings") comment = v;
+    else errors.push({ path: "/comment", message: 'comment must be "always" or "on-findings".' });
+  }
+  let lessonBaseUrl = null;
+  if ("lessonBaseUrl" in c) {
+    const v = c.lessonBaseUrl;
+    if (typeof v === "string" && /^https?:\/\//.test(v) && URL.canParse(v)) lessonBaseUrl = v;
+    else errors.push({ path: "/lessonBaseUrl", message: "lessonBaseUrl must be an http(s) URL." });
+  }
+  let localBuild = null;
+  if ("localBuild" in c && c.localBuild !== null) {
+    const v = c.localBuild;
+    if (typeof v !== "object" || Array.isArray(v)) {
+      errors.push({ path: "/localBuild", message: "localBuild must be an object with install, build and serve." });
+    } else {
+      const lb = v;
+      for (const key of Object.keys(lb)) {
+        if (key !== "install" && key !== "build" && key !== "serve") {
+          errors.push({ path: `/localBuild/${key}`, message: `Unknown key "${key}".` });
+        }
+      }
+      const commandField = (value, at, name) => {
+        if (value === void 0 || value === null) return null;
+        if (typeof value !== "string" || value.length === 0 || value.length > 500) {
+          errors.push({ path: at, message: `${name} must be a non-empty string of at most 500 characters.` });
+          return void 0;
+        }
+        return value;
+      };
+      const install = commandField(lb.install, "/localBuild/install", "install");
+      const build = commandField(lb.build, "/localBuild/build", "build");
+      const serve = lb.serve;
+      let serveParsed = void 0;
+      if (serve === void 0) {
+        errors.push({ path: "/localBuild/serve", message: "serve is required: { staticDir } or { start, readyPath }." });
+      } else if (typeof serve !== "object" || serve === null || Array.isArray(serve)) {
+        errors.push({ path: "/localBuild/serve", message: "serve must be { staticDir } or { start, readyPath }." });
+      } else {
+        const sv = serve;
+        const hasStatic = "staticDir" in sv;
+        const hasStart = "start" in sv;
+        if (hasStatic && hasStart) {
+          errors.push({ path: "/localBuild/serve", message: "serve cannot have both staticDir and start." });
+        } else if (hasStatic) {
+          for (const key of Object.keys(sv)) {
+            if (key !== "staticDir") errors.push({ path: `/localBuild/serve/${key}`, message: `Unknown key "${key}".` });
+          }
+          if (typeof sv.staticDir !== "string" || sv.staticDir.length === 0 || sv.staticDir.length > 200) {
+            errors.push({ path: "/localBuild/serve/staticDir", message: "staticDir must be a non-empty string of at most 200 characters." });
+          } else if (sv.staticDir.startsWith("/") || /^[a-zA-Z]:/.test(sv.staticDir) || sv.staticDir.split(/[\\/]/).includes("..")) {
+            errors.push({ path: "/localBuild/serve/staticDir", message: 'staticDir must be a directory inside the tree (no leading "/" and no "..").' });
+          } else {
+            serveParsed = { staticDir: sv.staticDir };
+          }
+        } else if (hasStart) {
+          for (const key of Object.keys(sv)) {
+            if (key !== "start" && key !== "readyPath") errors.push({ path: `/localBuild/serve/${key}`, message: `Unknown key "${key}".` });
+          }
+          const start = commandField(sv.start, "/localBuild/serve/start", "start");
+          const readyRaw = sv.readyPath;
+          if (typeof readyRaw !== "string" || !readyRaw.startsWith("/") || readyRaw.length > 200) {
+            errors.push({ path: "/localBuild/serve/readyPath", message: 'readyPath must be a path string starting with "/" (at most 200 characters).' });
+          }
+          if (start !== void 0 && start !== null && typeof readyRaw === "string" && readyRaw.startsWith("/") && readyRaw.length <= 200) {
+            serveParsed = { start, readyPath: readyRaw };
+          }
+        } else {
+          errors.push({ path: "/localBuild/serve", message: "serve must have staticDir or start." });
+        }
+      }
+      if (install !== void 0 && build !== void 0 && serveParsed != null) {
+        localBuild = { install: install ?? null, build: build ?? null, serve: serveParsed };
+      }
+    }
+  }
+  const engines = { enabled: {}, totalBudgetMinutes: 12 };
+  if ("engines" in c && c.engines !== null && c.engines !== void 0) {
+    const v = c.engines;
+    if (typeof v !== "object" || Array.isArray(v)) {
+      errors.push({ path: "/engines", message: "engines must be an object with per-engine { enabled } and totalBudgetMinutes." });
+    } else {
+      const en = v;
+      for (const key of Object.keys(en)) {
+        if (key === "totalBudgetMinutes") continue;
+        if (!ENGINE_IDS.includes(key)) {
+          errors.push({ path: `/engines/${key}`, message: `Unknown engine "${key}".` });
+          continue;
+        }
+        const val = en[key];
+        if (typeof val !== "object" || val === null || Array.isArray(val)) {
+          errors.push({ path: `/engines/${key}`, message: 'must be an object with "enabled".' });
+        } else {
+          const entry = val;
+          for (const k of Object.keys(entry)) {
+            if (k !== "enabled") errors.push({ path: `/engines/${key}/${k}`, message: `Unknown key "${k}" (only "enabled"; blocking is decided by maturity, never by repo config).` });
+          }
+          if (entry.enabled !== void 0 && typeof entry.enabled !== "boolean") {
+            errors.push({ path: `/engines/${key}/enabled`, message: "enabled must be a boolean." });
+          } else if (entry.enabled !== void 0) {
+            engines.enabled[key] = entry.enabled;
+          }
+        }
+      }
+      const budget = en.totalBudgetMinutes;
+      if (budget !== void 0) {
+        if (typeof budget !== "number" || !Number.isInteger(budget) || budget < 3 || budget > 30) {
+          errors.push({ path: "/engines/totalBudgetMinutes", message: "totalBudgetMinutes must be a whole number from 3 to 30." });
+        } else {
+          engines.totalBudgetMinutes = budget;
+        }
+      }
+    }
+  }
+  let blocking = null;
+  if ("blocking" in c && c.blocking !== null && c.blocking !== void 0) {
+    const v = c.blocking;
+    if (typeof v !== "object" || Array.isArray(v)) {
+      errors.push({ path: "/blocking", message: "blocking must be an object of metric \u2192 { minIncrease }." });
+    } else {
+      const bl = v;
+      const parsed = {};
+      for (const key of Object.keys(bl)) {
+        if (!BLOCKING_METRIC_IDS.includes(key)) {
+          errors.push({ path: `/blocking/${key}`, message: `${key} is not approved to block (calibration 1-5); only TBT and CLS may be configured` });
+          continue;
+        }
+        const metric = key;
+        const entry = bl[key];
+        if (typeof entry !== "object" || entry === null || Array.isArray(entry)) {
+          errors.push({ path: `/blocking/${key}`, message: 'blocking entries must be objects with "minIncrease".' });
+          continue;
+        }
+        const e = entry;
+        for (const k of Object.keys(e)) {
+          if (k !== "minIncrease") errors.push({ path: `/blocking/${key}/${k}`, message: `Unknown key "${k}".` });
+        }
+        const mi = e.minIncrease;
+        if (typeof mi !== "number" || !Number.isFinite(mi) || mi < 0 || mi > BLOCKING_METRIC_CAPS[metric]) {
+          errors.push({ path: `/blocking/${key}/minIncrease`, message: `minIncrease must be a finite number from 0 to ${BLOCKING_METRIC_CAPS[metric]}${metric === "TBT" ? " (ms)" : ""}.` });
+        } else {
+          parsed[metric] = mi;
+        }
+      }
+      if (errors.length === 0) blocking = parsed;
+    }
+  }
+  for (const key of Object.keys(c)) {
+    if (!KNOWN_KEYS.includes(key)) errors.push({ path: `/${key}`, message: `Unknown key "${key}".` });
+  }
+  if (errors.length > 0) return { config: null, errors };
+  return {
+    config: {
+      version: 1,
+      pages,
+      runs: runs ?? 3,
+      formFactor: formFactor ?? "mobile",
+      budgetFile,
+      failOn: failOn ?? "budget",
+      comment: comment ?? "always",
+      lessonBaseUrl: lessonBaseUrl ?? DEFAULT_LESSONS,
+      localBuild,
+      engines,
+      blocking
+    },
+    errors: []
+  };
 }
 
 // src/publish.ts
@@ -25332,15 +25991,37 @@ async function runPublish(ev, deps) {
   }
   const unverified = decision.kind === "pr" && decision.unverified;
   const unverifiedReason = decision.kind === "pr" ? decision.unverifiedReason ?? null : null;
+  const trustedMergeBaseSha = gh.pull !== null ? await deps.github.mergeBaseOf(gh.pull.base.ref, headSha).catch(() => null) : null;
+  const blockingPolicy = await resolveBlockingPolicy(deps, trustedMergeBaseSha);
   const results = [];
   for (const part of artifact_.engines) {
     if (part.status === "scan-failed") {
       results.push(engineResultOf(part.engine, part.engineVersion, "scan-failed", [], part, baselineMissing(artifact_)));
       continue;
     }
+    if (part.status === "skipped") {
+      results.push(engineResultOf(part.engine, part.engineVersion, "skipped", [], part, baselineMissing(artifact_)));
+      continue;
+    }
     if (part.engine === "performance") {
-      const trustedMergeBase = gh.pull !== null ? await deps.github.mergeBaseOf(gh.pull.base.ref, headSha).catch(() => null) : null;
-      results.push(performanceResult(part, part.engineVersion, trustedMergeBase));
+      const trustedMergeBase = trustedMergeBaseSha;
+      results.push(performanceResult(part, part.engineVersion, trustedMergeBase, blockingPolicy.thresholds));
+      continue;
+    }
+    if (part.base !== void 0 && (part.base.mode === "in-job-merge-base" || part.base.mode === "production-paired")) {
+      const inJob = diffFindings({
+        baselineFindings: redactFindings(part.base.findings),
+        headFindings: redactFindings(part.headFindings),
+        basePages: part.base.pages,
+        headPages: part.headPages,
+        suppressions: suppressionsOf(context2.suppressions),
+        engine: part.engine,
+        branch: ev.run.head_branch ?? "",
+        prNumber: claimedPr,
+        now: /* @__PURE__ */ new Date("2026-11-11T12:00:00.000Z")
+      });
+      const mergeBase = trustedMergeBaseSha;
+      results.push(engineResultOf(part.engine, part.engineVersion, "compared", toClassified(inJob), part, inJobBaselineOf(artifact_, part.base, mergeBase)));
       continue;
     }
     const snapshot = context2.snapshots[part.engine] ?? null;
@@ -25351,7 +26032,7 @@ async function runPublish(ev, deps) {
     const baseFindings = snapshot.findings ?? [];
     const diff = diffFindings({
       baselineFindings: baseFindings,
-      headFindings: part.headFindings,
+      headFindings: redactFindings(part.headFindings),
       basePages: snapshot.pages ?? [],
       headPages: part.headPages,
       suppressions: context2.suppressions.map((s) => ({
@@ -25375,6 +26056,9 @@ async function runPublish(ev, deps) {
     results.push(engineResultOf(part.engine, part.engineVersion, "compared", toClassified(diff), part, baselineOf(artifact_, snapshot)));
   }
   const outcome = checkOutcome(results, { unverified });
+  if (blockingPolicy.note !== null && !unverified) {
+    outcome.summary = `${outcome.summary} ${blockingPolicy.note}`;
+  }
   const comment = renderComment(results, outcome, {
     headSha,
     runUrl: ev.runUrl,
@@ -25404,10 +26088,21 @@ async function runPublish(ev, deps) {
         engine: r.engine,
         status: r.status,
         state: o.state,
+        maturity: o.maturity,
+        // batch 2-0 Item 7: the maturity, from ENGINE_MATURITY
         reasons: o.reasons,
         mayBlock: r.mayBlock,
         blockOn: r.blockOn,
         comparison: r.baseline.mode,
+        engineVersion: r.engineVersion,
+        ...r.failureReason !== void 0 ? { failure: { reason: r.failureReason } } : {},
+        // Item 7: enum only
+        ...r.skipReason !== void 0 ? { skipReason: r.skipReason } : {},
+        // Item 7: enum only
+        ...r.environment !== void 0 ? { environment: r.environment } : {},
+        // addendum A3
+        new: r.findings.filter((c) => c.classification === "new" || c.classification === "worsened").length,
+        resolved: r.findings.filter((c) => c.classification === "resolved").length,
         baseline: {
           mode: r.baseline.mode,
           validity: r.baseline.validity,
@@ -25493,7 +26188,7 @@ async function runPublish(ev, deps) {
           githubRunId: runId,
           findings: part.headFindings,
           pages: part.headPages,
-          pageFailures: part.headPages.filter((p) => !p.success).length
+          pageFailures: part.headPages.filter((p) => !p.success && !p.url.startsWith("unit:")).length
         }
       });
       snapshotWritten = snapshotWritten || res.status === 201;
@@ -25617,6 +26312,59 @@ function baselineOf(a, snapshot) {
     deploymentUnverified: false
   };
 }
+function suppressionsOf(stored) {
+  return stored.map((s) => ({
+    id: `${s.engine}:${s.fingerprint}`,
+    engine: s.engine,
+    fingerprint: s.fingerprint,
+    reason: s.reason,
+    suppressedBy: "owner",
+    suppressedAt: "1970-01-01T00:00:00.000Z",
+    expiresAt: null,
+    revokedAt: null,
+    scope: s.scope,
+    branch: null,
+    prNumber: null
+  }));
+}
+function inJobBaselineOf(a, base, trustedMergeBase) {
+  const exact = base.mode === "in-job-merge-base";
+  const sha = base.sha ?? null;
+  return {
+    mode: exact ? "in-job-merge-base" : "production-paired",
+    validity: exact || base.deploymentVerified === true ? "valid" : "missing",
+    baseSha: sha,
+    mergeBaseSha: trustedMergeBase !== null && /^[0-9a-f]{40}$/.test(trustedMergeBase) ? trustedMergeBase : a.run.mergeBaseSha ?? "",
+    label: exact ? `merge-base build ${(sha ?? "").slice(0, 7)}` : `production${sha !== null ? ` @ ${sha.slice(0, 7)}` : " (version unverified)"}`,
+    capturedAt: null,
+    stale: false,
+    ageDays: null,
+    divergenceCommits: null,
+    deploymentUnverified: !exact && base.deploymentVerified !== true
+  };
+}
+async function resolveBlockingPolicy(deps, trustedMergeBase) {
+  const CONFIG_PATH = deps.configPath ?? "perf.config.json";
+  const readRepoFile = deps.readRepoFile;
+  const UNREADABLE = "Repository blocking settings could not be read at the merge-base; the default policy applied.";
+  if (readRepoFile === void 0 || trustedMergeBase === null || !/^[0-9a-f]{40}$/.test(trustedMergeBase)) {
+    return { thresholds: {}, note: null };
+  }
+  if (!isSafeRepoPath(CONFIG_PATH)) return { thresholds: {}, note: UNREADABLE };
+  let text;
+  try {
+    text = await readRepoFile(CONFIG_PATH, trustedMergeBase);
+  } catch {
+    return { thresholds: {}, note: UNREADABLE };
+  }
+  if (text === null) return { thresholds: {}, note: null };
+  const { config } = parseConfig(text);
+  if (config === null) return { thresholds: {}, note: UNREADABLE };
+  return { thresholds: config.blocking ?? {}, note: null };
+}
+function isSafeRepoPath(p) {
+  return p.length > 0 && p.length <= 255 && !p.startsWith("/") && !p.includes("\\") && !p.includes("://") && p.split("/").every((seg) => seg !== "" && seg !== "." && seg !== "..");
+}
 function engineResultOf(engine, engineVersion, status, findings, part, baseline) {
   return {
     engine,
@@ -25628,11 +26376,18 @@ function engineResultOf(engine, engineVersion, status, findings, part, baseline)
     findings,
     inconclusive: [],
     budgets: [],
-    mayBlock: engine !== "performance",
+    ...part.failure !== void 0 ? { failureReason: part.failure.reason } : {},
+    ...part.skipReason !== void 0 ? { skipReason: part.skipReason } : {},
+    ...part.environment !== void 0 ? { environment: part.environment } : {},
+    // batch 2-0 Item 1: ENGINE_MATURITY decides (mayBlockFor); the old
+    // `engine !== 'performance'` rule is gone. Task 2-7 item 1: calibration 1-5 is
+    // approved, so mayBlockFor('performance') is now true; per-metric blocking is
+    // decided by isBlockingFinding (PERF_BLOCKING_METRICS), never here.
+    mayBlock: mayBlockFor(engine),
     blockOn: ["critical"]
   };
 }
-function performanceResult(part, engineVersion, trustedMergeBase) {
+function performanceResult(part, engineVersion, trustedMergeBase, blockingThresholds = {}) {
   const findings = part.headFindings.map((f) => ({
     classification: "new",
     finding: f
@@ -25668,10 +26423,35 @@ function performanceResult(part, engineVersion, trustedMergeBase) {
     ...part.perf?.localBuildFallback !== void 0 ? { localBuildFallback: part.perf.localBuildFallback } : {},
     // batch 1-2 item 2 (0b-3 A3): the LCP phase table, base vs PR, from the run measurements.
     ...lcpBreakdownOf(part) !== void 0 ? { lcpBreakdown: lcpBreakdownOf(part) } : {},
-    mayBlock: false,
-    // 0b-6 §7: performance may not block until calibration is approved
+    // Task 2-7 item 2: the calibrated rule's own medians per metric, from the artifact's
+    // valid perf.measurements (decideMetric, called as-is — never changed). Empty for
+    // metrics with no valid runs on both sides; those stay without a delta (needs-review
+    // only when a threshold is set for them).
+    ...Object.keys(perfMetricDeltasOf(part)).length > 0 ? { perfMetricDeltas: perfMetricDeltasOf(part) } : {},
+    // Task 2-7 item 3: the repo significance thresholds, resolved at the trusted merge-base.
+    ...Object.keys(blockingThresholds).length > 0 ? { blockingThresholds } : {},
+    // Task 2-7 item 1: calibration 1-5 approved 2026-11-16 — performance may block
+    // for TBT/CLS only (isBlockingFinding + PERF_BLOCKING_METRICS decide which findings).
+    mayBlock: true,
     blockOn: ["critical"]
   };
+}
+function perfMetricDeltasOf(part) {
+  const ms = part.perf?.measurements ?? [];
+  const pages = [...new Set(ms.map((m) => pagePathOf(m.url)))];
+  const out = {};
+  for (const page of pages) {
+    const runsOf = (side) => ms.filter((m) => m.side === side && pagePathOf(m.url) === page).map((m) => ({ valid: m.valid, invalidReason: m.invalidReason, metrics: m.metrics }));
+    const base = runsOf("base");
+    const head = runsOf("head");
+    const perPage = {};
+    for (const metric of LAB_METRICS) {
+      const d = decideMetric(metric, base, head);
+      if (d.baseMedian !== null && d.headMedian !== null) perPage[metric] = { baseMedian: d.baseMedian, headMedian: d.headMedian };
+    }
+    if (Object.keys(perPage).length > 0) out[page] = perPage;
+  }
+  return out;
 }
 function lcpBreakdownOf(part) {
   const ms = part.perf?.measurements ?? [];
@@ -25679,8 +26459,8 @@ function lcpBreakdownOf(part) {
   const base = perSide("base");
   const head = perSide("head");
   if (base.length === 0 && head.length === 0) return void 0;
-  const MIN_RUNS = 3;
-  if (base.length < MIN_RUNS || head.length < MIN_RUNS) {
+  const MIN_RUNS2 = 3;
+  if (base.length < MIN_RUNS2 || head.length < MIN_RUNS2) {
     return { pageUrl: pageUrlOf(part), selector: base[0]?.selector ?? head[0]?.selector ?? "", phases: [], dominantPhase: null, notComparableReason: "too-few-runs" };
   }
   const selector = base[0].selector;
@@ -25903,6 +26683,24 @@ ${runUrl}`.slice(0, 65536) }
     },
     // in-memory unzip with an expanded-size limit (unzip.ts); never touches disk or env files
     unzipArtifact: async (bytes) => readArtifactZip(bytes),
+    // task 2-7 item 3: read the repo config at the TRUSTED merge-base SHA through the
+    // contents API (the job already has contents: read). The pipeline never reads the
+    // head's copy — a PR must not be able to loosen its own blocking thresholds.
+    readRepoFile: async (path, ref) => {
+      let data;
+      try {
+        ({ data } = await octokit.rest.repos.getContent({ owner, repo, path, ref }));
+      } catch (e) {
+        if (e.status === 404) return null;
+        throw e;
+      }
+      if (Array.isArray(data) || data.type !== "file" || data.encoding !== "base64" || data.content === void 0) {
+        throw new Error("the config path is not a readable file (directory, symlink or over 1 MB)");
+      }
+      return Buffer.from(data.content, "base64").toString("utf8");
+    },
+    // MD-138: the action's `config` input names the file (default perf.config.json)
+    configPath: core.getInput("config") || "perf.config.json",
     getIngestKey: () => INGEST_KEY === "" ? null : INGEST_KEY,
     ...POSTER === "app" ? { poster: "app" } : {},
     log: (msg) => core.info(msg),
