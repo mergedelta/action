@@ -25968,6 +25968,9 @@ var PostFailedError = class extends Error {
     this.name = "PostFailedError";
   }
 };
+function prClosedOrMoved(res) {
+  return res.status === 409 && res.error === "pr-head-moved";
+}
 async function runPublish(ev, deps) {
   const headSha = ev.run.head_sha;
   const runId = ev.run.id;
@@ -26202,10 +26205,14 @@ async function runPublish(ev, deps) {
           runUrl: ev.runUrl
         }
       });
-      if (res.status < 200 || res.status >= 300) {
+      if (prClosedOrMoved(res)) {
+        deps.log("The PR was closed, merged or pushed to after the scan: the result is stored, but the comment and check were not posted.");
+        commentAction = "none";
+      } else if (res.status < 200 || res.status >= 300) {
         throw new PostFailedError(`/publish-api/post answered ${res.status} \u2014 the comment and check were not posted as the MergeDelta App (poster: app).`);
+      } else {
+        commentAction = res.commentAction ?? "edited";
       }
-      commentAction = res.commentAction ?? "edited";
     } else {
       const existing = await deps.github.listComments(decision.prNumber);
       const action = decideCommentAction(existing.map((c) => ({ id: c.id, author: c.author, body: c.body })), comment, BOT_LOGINS);
@@ -26323,6 +26330,10 @@ ${summary2}
         runUrl: ev.runUrl
       }
     });
+    if (prClosedOrMoved(res)) {
+      deps.log("The PR was closed, merged or pushed to after the scan: the scan-did-not-complete notice was not posted.");
+      return { outcome: "scan-failed", commentAction: "none", checkConclusion: "neutral", checkTitle: title, runRecorded: false, snapshotWritten: false };
+    }
     if (res.status < 200 || res.status >= 300) {
       throw new PostFailedError(`/publish-api/post answered ${res.status} for the scan-did-not-complete notice (poster: app).`);
     }
@@ -26746,7 +26757,15 @@ ${runUrl}`.slice(0, 65536) }
               } catch {
               }
             }
-            return { status: res.status, commentAction };
+            let error2;
+            if (res.status >= 300) {
+              try {
+                const body = await res.clone().json();
+                if (typeof body.error === "string") error2 = body.error.slice(0, 100);
+              } catch {
+              }
+            }
+            return { status: res.status, commentAction, ...error2 !== void 0 ? { error: error2 } : {} };
           } catch {
             return { status: 0 };
           }
