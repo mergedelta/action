@@ -25223,6 +25223,42 @@ function lcpEvidenceFor(c, tables) {
 
 ${t}`;
 }
+var CAUSE_FALLBACK_AUDITS = {
+  TBT: "the long tasks",
+  CLS: "the layout shifts",
+  FCP: "the render-blocking requests",
+  SI: "the render-blocking requests",
+  LCP: "the LCP breakdown"
+};
+function causeFallbackLines(r) {
+  const out = /* @__PURE__ */ new Map();
+  if (r.engine !== "performance") return out;
+  for (const c of r.findings) {
+    const f = c.finding;
+    if (f.metric === null) continue;
+    const audits = CAUSE_FALLBACK_AUDITS[f.metric];
+    if (audits === void 0) continue;
+    const merged = f.evidence.some(
+      (e) => e.label === "Also found by" && typeof e.value === "string" && e.value.split(", ").includes(`lab-regression:${f.metric}`)
+    );
+    if (f.ruleId !== "lab-regression" && !merged) continue;
+    if (f.confidence !== "likely") continue;
+    const explained = r.findings.some(
+      (o) => o.finding.kind === "cause" && o.finding.metric === f.metric && o.finding.pageUrl === f.pageUrl
+    );
+    if (explained) continue;
+    out.set(f.id, `No specific cause found in the lab evidence. To look yourself, compare ${audits} in a Chrome DevTools Performance recording of this page on both branches.`);
+  }
+  return out;
+}
+function causeFallbackFor(c, lines) {
+  const line = lines.get(c.finding.id);
+  if (line === void 0) return "";
+  lines.delete(c.finding.id);
+  return `
+
+_${line}_`;
+}
 function formatMs(v) {
   const rounded = Math.round(v);
   return rounded.toLocaleString("en-US");
@@ -25364,8 +25400,13 @@ function renderComment(results, outcome, ctx) {
     const t = lcpBreakdownTable(r);
     if (t !== null) lcpTables.set(r.lcpBreakdown.pageUrl, t);
   }
+  const causeFallbacks = /* @__PURE__ */ new Map();
+  for (const r of shown) {
+    if (r.engine !== "performance") continue;
+    for (const [id, line] of causeFallbackLines(r)) causeFallbacks.set(id, line);
+  }
   for (const c of criticals) {
-    const s = findingSection(c, ctx.lessonBaseUrl, showPage) + lcpEvidenceFor(c, lcpTables);
+    const s = findingSection(c, ctx.lessonBaseUrl, showPage) + causeFallbackFor(c, causeFallbacks) + lcpEvidenceFor(c, lcpTables);
     if (used + s.length + 2 <= COMMENT_BUDGET) {
       sections.push(s);
       used += s.length + 2;
@@ -25373,7 +25414,7 @@ function renderComment(results, outcome, ctx) {
   }
   let warningSections = 0;
   for (const c of warnings) {
-    const s = findingSection(c, ctx.lessonBaseUrl, showPage) + lcpEvidenceFor(c, lcpTables);
+    const s = findingSection(c, ctx.lessonBaseUrl, showPage) + causeFallbackFor(c, causeFallbacks) + lcpEvidenceFor(c, lcpTables);
     if (warningSections < WARNING_SECTIONS && used + s.length + 2 <= COMMENT_BUDGET) {
       sections.push(s);
       used += s.length + 2;

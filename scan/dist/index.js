@@ -2509,7 +2509,7 @@ var require_parseParams = __commonJS({
     var STATE_VALUE = 1;
     var STATE_CHARSET = 2;
     var STATE_LANG = 3;
-    function parseParams(str2) {
+    function parseParams(str3) {
       const res = [];
       let state = STATE_KEY;
       let charset = "";
@@ -2517,9 +2517,9 @@ var require_parseParams = __commonJS({
       let escaping = false;
       let p = 0;
       let tmp = "";
-      const len = str2.length;
+      const len = str3.length;
       for (var i = 0; i < len; ++i) {
-        const char = str2[i];
+        const char = str3[i];
         if (char === "\\" && inquote) {
           if (escaping) {
             escaping = false;
@@ -3048,29 +3048,29 @@ var require_Decoder = __commonJS({
     function Decoder() {
       this.buffer = void 0;
     }
-    Decoder.prototype.write = function(str2) {
-      str2 = str2.replace(RE_PLUS, " ");
+    Decoder.prototype.write = function(str3) {
+      str3 = str3.replace(RE_PLUS, " ");
       let res = "";
       let i = 0;
       let p = 0;
-      const len = str2.length;
+      const len = str3.length;
       for (; i < len; ++i) {
         if (this.buffer !== void 0) {
-          if (!HEX[str2.charCodeAt(i)]) {
+          if (!HEX[str3.charCodeAt(i)]) {
             res += "%" + this.buffer;
             this.buffer = void 0;
             --i;
           } else {
-            this.buffer += str2[i];
+            this.buffer += str3[i];
             ++p;
             if (this.buffer.length === 2) {
               res += String.fromCharCode(parseInt(this.buffer, 16));
               this.buffer = void 0;
             }
           }
-        } else if (str2[i] === "%") {
+        } else if (str3[i] === "%") {
           if (i > p) {
-            res += str2.substring(p, i);
+            res += str3.substring(p, i);
             p = i;
           }
           this.buffer = "";
@@ -3078,7 +3078,7 @@ var require_Decoder = __commonJS({
         }
       }
       if (p < len && this.buffer === void 0) {
-        res += str2.substring(p);
+        res += str3.substring(p);
       }
       return res;
     };
@@ -4864,30 +4864,30 @@ var require_dataURL = __commonJS({
     function isHTTPWhiteSpace(char) {
       return char === "\r" || char === "\n" || char === "	" || char === " ";
     }
-    function removeHTTPWhitespace(str2, leading = true, trailing = true) {
+    function removeHTTPWhitespace(str3, leading = true, trailing = true) {
       let lead = 0;
-      let trail = str2.length - 1;
+      let trail = str3.length - 1;
       if (leading) {
-        for (; lead < str2.length && isHTTPWhiteSpace(str2[lead]); lead++) ;
+        for (; lead < str3.length && isHTTPWhiteSpace(str3[lead]); lead++) ;
       }
       if (trailing) {
-        for (; trail > 0 && isHTTPWhiteSpace(str2[trail]); trail--) ;
+        for (; trail > 0 && isHTTPWhiteSpace(str3[trail]); trail--) ;
       }
-      return str2.slice(lead, trail + 1);
+      return str3.slice(lead, trail + 1);
     }
     function isASCIIWhitespace(char) {
       return char === "\r" || char === "\n" || char === "	" || char === "\f" || char === " ";
     }
-    function removeASCIIWhitespace(str2, leading = true, trailing = true) {
+    function removeASCIIWhitespace(str3, leading = true, trailing = true) {
       let lead = 0;
-      let trail = str2.length - 1;
+      let trail = str3.length - 1;
       if (leading) {
-        for (; lead < str2.length && isASCIIWhitespace(str2[lead]); lead++) ;
+        for (; lead < str3.length && isASCIIWhitespace(str3[lead]); lead++) ;
       }
       if (trailing) {
-        for (; trail > 0 && isASCIIWhitespace(str2[trail]); trail--) ;
+        for (; trail > 0 && isASCIIWhitespace(str3[trail]); trail--) ;
       }
-      return str2.slice(lead, trail + 1);
+      return str3.slice(lead, trail + 1);
     }
     module2.exports = {
       dataURLProcessor,
@@ -5321,7 +5321,7 @@ var require_body = __commonJS({
         const boundary = `----formdata-undici-0${`${random(1e11)}`.padStart(11, "0")}`;
         const prefix = `--${boundary}\r
 Content-Disposition: form-data`;
-        const escape = (str2) => str2.replace(/\n/g, "%0A").replace(/\r/g, "%0D").replace(/"/g, "%22");
+        const escape = (str3) => str3.replace(/\n/g, "%0A").replace(/\r/g, "%0D").replace(/"/g, "%22");
         const normalizeLinefeeds = (value) => value.replace(/\r?\n|\r/g, "\r\n");
         const blobParts = [];
         const rn = new Uint8Array([13, 10]);
@@ -15824,8 +15824,8 @@ var require_cookies = __commonJS({
       webidl.argumentLengthCheck(arguments, 2, { header: "setCookie" });
       webidl.brandCheck(headers, Headers, { strict: false });
       cookie = webidl.converters.Cookie(cookie);
-      const str2 = stringify(cookie);
-      if (str2) {
+      const str3 = stringify(cookie);
+      if (str3) {
         headers.append("Set-Cookie", stringify(cookie));
       }
     }
@@ -17839,8 +17839,8 @@ var require_lib = __commonJS({
       _performExponentialBackoff(retryNumber) {
         return __awaiter(this, void 0, void 0, function* () {
           retryNumber = Math.min(ExponentialBackoffCeiling, retryNumber);
-          const ms = ExponentialBackoffTimeSlice * Math.pow(2, retryNumber);
-          return new Promise((resolve) => setTimeout(() => resolve(), ms));
+          const ms2 = ExponentialBackoffTimeSlice * Math.pow(2, retryNumber);
+          return new Promise((resolve) => setTimeout(() => resolve(), ms2));
         });
       }
       _processResponse(res, options) {
@@ -19015,8 +19015,8 @@ var require_toolrunner = __commonJS({
         }
         return this.args;
       }
-      _endsWith(str2, end) {
-        return str2.endsWith(end);
+      _endsWith(str3, end) {
+        return str3.endsWith(end);
       }
       _isCmdFile() {
         const upperToolPath = this.toolPath.toUpperCase();
@@ -20260,16 +20260,16 @@ var require_dist_node2 = __commonJS({
       }
       return result;
     }
-    function encodeReserved(str2) {
-      return str2.split(/(%[0-9A-Fa-f]{2})/g).map(function(part) {
+    function encodeReserved(str3) {
+      return str3.split(/(%[0-9A-Fa-f]{2})/g).map(function(part) {
         if (!/%[0-9A-Fa-f]/.test(part)) {
           part = encodeURI(part).replace(/%5B/g, "[").replace(/%5D/g, "]");
         }
         return part;
       }).join("");
     }
-    function encodeUnreserved(str2) {
-      return encodeURIComponent(str2).replace(/[!'()*]/g, function(c) {
+    function encodeUnreserved(str3) {
+      return encodeURIComponent(str3).replace(/[!'()*]/g, function(c) {
         return "%" + c.charCodeAt(0).toString(16).toUpperCase();
       });
     }
@@ -25292,11 +25292,11 @@ function parseLighthouse(json2) {
     if (mode === "notApplicable" || mode === "error" || mode === "manual") continue;
     const d = a.details && typeof a.details === "object" ? a.details : {};
     const items = Array.isArray(d.items) ? d.items : [];
-    const ms = {};
+    const ms2 = {};
     if (a.metricSavings && typeof a.metricSavings === "object") {
       for (const k in a.metricSavings) {
         const v = num(a.metricSavings[k]);
-        if (v) ms[k] = v;
+        if (v) ms2[k] = v;
       }
     }
     audits.push({
@@ -25309,7 +25309,7 @@ function parseLighthouse(json2) {
       group: group[id] || "",
       savingsMs: num(d.overallSavingsMs),
       savingsBytes: num(d.overallSavingsBytes),
-      metricSavings: ms,
+      metricSavings: ms2,
       items: items.map(label).filter(Boolean).slice(0, 4),
       count: items.length
     });
@@ -26139,6 +26139,8 @@ var TIERS = [
       "trace-lcp-lazy",
       "lcp-fetchpriority-lost",
       "lcp-element-changed",
+      "lcp-resource-heavier",
+      // task 2-8 CR-5: the LCP resource itself got heavier
       "lh-audit:lcp-discovery-insight",
       "lh-audit:prioritize-lcp-image"
     ]
@@ -26148,6 +26150,8 @@ var TIERS = [
     rules: [
       "lh-audit:render-blocking-insight",
       "lh-audit:render-blocking-resources",
+      "render-blocking-script-added",
+      // task 2-8 CR-4
       "har-slow-server",
       "lh-audit:server-response-time",
       "lh-audit:document-latency-insight",
@@ -26155,8 +26159,12 @@ var TIERS = [
       "lh-audit:redirects",
       "third-party-new",
       // third-party-new:* — any subject
-      "third-party-heavier"
+      "third-party-heavier",
       // third-party-heavier:* — any subject
+      "long-task-added",
+      // task 2-8 CR-6a
+      "layout-shift-added"
+      // task 2-8 CR-6b
     ]
   },
   {
@@ -26307,10 +26315,270 @@ ${lines}
   return blocks.join("\n\n") + "\n";
 }
 
+// ../../src/causes/causeRules.ts
+var kb = (b) => (b / 1024).toFixed(b < 10240 ? 1 : 0) + " KB";
+var ms = (v) => `${Math.round(v) || 0} ms`;
+var score = (v) => String(Number(v.toFixed(3)) || 0);
+var GREW_FACTOR = 1.25;
+var GREW_MIN_BYTES = 10 * 1024;
+var HEAVIER_FACTOR = 1.25;
+var HEAVIER_MIN_BYTES = 20 * 1024;
+var LONG_TASK_MIN_MS = 50;
+var SHIFT_MIN_SCORE = 0.02;
+var LIKELY_SHARE = 0.25;
+var TOP_N = 2;
+function median3(values2) {
+  if (values2.length === 0) return null;
+  const s = values2.slice().sort((a, b) => a - b);
+  const mid = s.length >> 1;
+  return s.length % 2 ? s[mid] : (s[mid - 1] + s[mid]) / 2;
+}
+function confirmedOf(regressions) {
+  return regressions.filter(
+    (f) => f.ruleId === "lab-regression" && f.confidence === "likely" && f.metric !== null
+  );
+}
+function evidenceNumber(f, prefix) {
+  const e = f.evidence.find((ev) => ev.label.startsWith(prefix) && ev.value !== void 0);
+  if (e === void 0) return null;
+  const n2 = Number(String(e.value).replace(/ ms$/, ""));
+  return Number.isFinite(n2) ? n2 : null;
+}
+function regressionDelta(f) {
+  const b = evidenceNumber(f, "Base branch");
+  const h4 = evidenceNumber(f, "This PR");
+  if (b === null || h4 === null) return null;
+  return h4 - b;
+}
+var deltaText = (m, d) => m === "CLS" ? `+${score(d)}` : `+${Math.round(d)} ms`;
+function firstConfirmed(regressions, metrics) {
+  for (const m of LAB_METRIC_ORDER) {
+    if (!metrics.includes(m)) continue;
+    const f = regressions.find((r) => r.metric === m);
+    if (f !== void 0) return f;
+  }
+  return null;
+}
+var contributes = (likely) => likely ? "is likely contributing to" : "may be contributing to";
+var beforeAfter = (from, to) => `${from} \u2192 ${to}`;
+function sideStat(signals, pick, value) {
+  const values2 = [];
+  let presentRuns = 0;
+  for (const s of signals) {
+    const t = pick(s);
+    if (t === null || t === void 0) continue;
+    presentRuns += 1;
+    const v = value(t);
+    if (v !== null) values2.push(v);
+  }
+  return { presentRuns, median: median3(values2), values: values2 };
+}
+var isPresent = (stat, totalRuns) => stat.presentRuns * 2 > totalRuns;
+var valueOf = (stat) => stat.median ?? 0;
+function cr4(regressions, base, head) {
+  const confirmed = firstConfirmed(regressions, ["LCP", "FCP", "SI"]);
+  if (confirmed === null || confirmed.metric === null) return [];
+  const metric = confirmed.metric;
+  const delta = regressionDelta(confirmed) ?? 0;
+  const identities = /* @__PURE__ */ new Set([
+    ...head.flatMap((s) => s.renderBlocking.map((r) => r.identity)),
+    ...base.flatMap((s) => s.renderBlocking.map((r) => r.identity))
+  ]);
+  const findings = [];
+  for (const identity of identities) {
+    const headStat = sideStat(head, (s) => s.renderBlocking.find((r) => r.identity === identity), (r) => r.wastedMs);
+    const headSizes = sideStat(head, (s) => s.renderBlocking.find((r) => r.identity === identity), (r) => r.transferSize);
+    const baseStat = sideStat(base, (s) => s.renderBlocking.find((r) => r.identity === identity), (r) => r.wastedMs);
+    const baseSizes = sideStat(base, (s) => s.renderBlocking.find((r) => r.identity === identity), (r) => r.transferSize);
+    if (!isPresent(headStat, head.length)) continue;
+    const scriptVotes = head.filter((s) => s.renderBlocking.find((r) => r.identity === identity)?.isScript ?? false).length;
+    if (scriptVotes * 2 <= headStat.presentRuns) continue;
+    const headUrl = head.flatMap((s) => s.renderBlocking.filter((r) => r.identity === identity).map((r) => r.url))[0] ?? identity;
+    const newOnHead = !isPresent(baseStat, base.length);
+    const headSize = headSizes.median;
+    const baseSize = baseSizes.median;
+    const grew = !newOnHead && headSize !== null && baseSize !== null && headSize >= GREW_FACTOR * baseSize && headSize - baseSize >= GREW_MIN_BYTES;
+    if (!newOnHead && !grew) continue;
+    const likely = newOnHead && valueOf(headStat) >= LONG_TASK_MIN_MS;
+    const wasted = { base: valueOf(baseStat), head: valueOf(headStat) };
+    const size = { base: baseSize ?? 0, head: headSize ?? 0 };
+    findings.push({
+      id: `render-blocking-script-added:${identity}`,
+      ruleId: "render-blocking-script-added",
+      severity: likely ? "warning" : "info",
+      confidence: likely ? "likely" : "possible",
+      metric,
+      kind: "cause",
+      title: newOnHead ? `A new render-blocking script was added: ${identity}` : `A render-blocking script grew: ${identity}`,
+      explanation: newOnHead ? `This script loads synchronously in the document, so the browser waits for it before it can paint. It was not render-blocking on the base branch and ${contributes(likely)} the ${metric} regression (${deltaText(metric, delta)}): it blocks rendering for a median of ${ms(wasted.head)} on this PR.` : `This script is render-blocking on both sides, but on this PR it downloads ${kb(size.head)} instead of ${kb(size.base)}, so first paint waits longer. It ${contributes(likely)} the ${metric} regression (${deltaText(metric, delta)}).`,
+      evidence: [
+        { kind: "script", label: "Script", url: headUrl },
+        { kind: "metric", label: "Render-blocking time", value: beforeAfter(ms(wasted.base), ms(wasted.head)) },
+        { kind: "metric", label: "Transfer size", value: beforeAfter(kb(size.base), kb(size.head)) },
+        { kind: "metric", label: `${metric} regression`, value: deltaText(metric, delta) }
+      ],
+      fix: "Load the script with defer or async, or move it to the end of <body>. If it must run before first paint, inline the small critical part.",
+      lessons: ["crp", "ttfb-fcp"]
+    });
+  }
+  return findings;
+}
+function dominantLcp(signals) {
+  const withLcp = signals.filter((s) => s.lcp !== null);
+  if (withLcp.length === 0) return null;
+  const counts = /* @__PURE__ */ new Map();
+  for (const s of withLcp) counts.set(s.lcp.selector, (counts.get(s.lcp.selector) ?? 0) + 1);
+  let best = null;
+  for (const [selector2, count] of counts) {
+    if (best === null || count > best.count || count === best.count && selector2 < best.selector) best = { selector: selector2, count };
+  }
+  if (best === null || best.count * 2 <= withLcp.length) return null;
+  const selector = best.selector;
+  const stat = sideStat(withLcp, (s) => s.lcp.selector === selector ? s.lcp : null, (l) => l.transferSize);
+  return { selector, stat };
+}
+function cr5(regressions, base, head) {
+  const confirmed = regressions.find((r) => r.metric === "LCP");
+  if (confirmed === void 0) return [];
+  const delta = regressionDelta(confirmed) ?? 0;
+  const domHead = dominantLcp(head);
+  const domBase = dominantLcp(base);
+  if (domHead === null || domBase === null || domHead.selector !== domBase.selector) return [];
+  const imageMajority = (signals) => {
+    const runs = signals.filter((s) => s.lcp?.selector === domHead.selector);
+    const images = runs.filter((s) => s.lcp?.isImage === true).length;
+    return images * 2 > runs.length;
+  };
+  if (!imageMajority(head) || !imageMajority(base)) return [];
+  const baseSize = domBase.stat.median;
+  const headSize = domHead.stat.median;
+  if (baseSize === null || headSize === null) return [];
+  if (!(headSize >= HEAVIER_FACTOR * baseSize && headSize - baseSize >= HEAVIER_MIN_BYTES)) return [];
+  const holds = (v) => v >= HEAVIER_FACTOR * baseSize && v - baseSize >= HEAVIER_MIN_BYTES;
+  const likely = domHead.stat.values.length > 0 && domHead.stat.values.every(holds);
+  const headImage = head.find((s) => s.lcp?.selector === domHead.selector && s.lcp?.url !== null)?.lcp ?? null;
+  return [
+    {
+      id: `lcp-resource-heavier:${domHead.selector}`,
+      ruleId: "lcp-resource-heavier",
+      severity: likely ? "warning" : "info",
+      confidence: likely ? "likely" : "possible",
+      metric: "LCP",
+      kind: "cause",
+      title: `The LCP image got heavier: ${headImage?.identity ?? domHead.selector}`,
+      explanation: `The largest element on the page is the same image on both sides, but on this PR its file is ${kb(headSize)} instead of ${kb(baseSize)}, so it finishes loading later. It ${contributes(likely)} the LCP regression (${deltaText("LCP", delta)}).`,
+      evidence: [
+        { kind: "element", label: "LCP element", selector: domHead.selector },
+        ...headImage?.url !== void 0 && headImage?.url !== null ? [{ kind: "request", label: "Image", url: headImage.url }] : [],
+        { kind: "metric", label: "Image size", value: beforeAfter(kb(baseSize), kb(headSize)) },
+        { kind: "metric", label: "LCP regression", value: deltaText("LCP", delta) }
+      ],
+      fix: 'Compress or resize the image (a modern format, srcset/sizes for the rendered size), and keep fetchpriority="high".',
+      lessons: ["lcp", "lcp-breakdown"]
+    }
+  ];
+}
+function cr6a(regressions, base, head) {
+  const confirmed = regressions.find((r) => r.metric === "TBT");
+  if (confirmed === void 0) return [];
+  const delta = regressionDelta(confirmed) ?? 0;
+  const identities = /* @__PURE__ */ new Set([
+    ...head.flatMap((s) => s.longTasks.map((t) => t.identity)),
+    ...base.flatMap((s) => s.longTasks.map((t) => t.identity))
+  ]);
+  const candidates = [];
+  for (const identity of identities) {
+    const pick = (s) => s.longTasks.find((t) => t.identity === identity) ?? null;
+    const headBlocking = sideStat(head, pick, (t) => t.blockingMs);
+    const baseBlocking = sideStat(base, pick, (t) => t.blockingMs);
+    const headCount = sideStat(head, pick, (t) => t.count);
+    const baseCount = sideStat(base, pick, (t) => t.count);
+    if (!isPresent(headBlocking, head.length)) continue;
+    const grew = valueOf(headBlocking) - valueOf(baseBlocking);
+    if (grew < LONG_TASK_MIN_MS) continue;
+    const url = head.flatMap((s) => s.longTasks.filter((t) => t.identity === identity).map((t) => t.url ?? identity))[0] ?? identity;
+    candidates.push({
+      identity,
+      url,
+      blocking: { base: valueOf(baseBlocking), head: valueOf(headBlocking) },
+      count: { base: Math.round(valueOf(baseCount)), head: Math.round(valueOf(headCount)) },
+      delta: grew
+    });
+  }
+  return candidates.sort((a, b) => b.delta - a.delta || (a.identity < b.identity ? -1 : 1)).slice(0, TOP_N).map((c) => {
+    const likely = delta > 0 && c.delta >= LIKELY_SHARE * delta;
+    return {
+      id: `long-task-added:${c.identity}`,
+      ruleId: "long-task-added",
+      severity: likely ? "warning" : "info",
+      confidence: likely ? "likely" : "possible",
+      metric: "TBT",
+      kind: "cause",
+      title: `A script's long tasks grew: ${c.identity}`,
+      explanation: `On this PR the main thread is blocked by long tasks in this script for a median of ${ms(c.blocking.head)} per run, up from ${ms(c.blocking.base)} on the base branch. It ${contributes(likely)} the TBT regression (${deltaText("TBT", delta)}).`,
+      evidence: [
+        { kind: "script", label: "Script", url: c.url },
+        { kind: "metric", label: "Blocking time", value: beforeAfter(ms(c.blocking.base), ms(c.blocking.head)) },
+        { kind: "metric", label: "Long tasks", value: beforeAfter(String(c.count.base), String(c.count.head)) },
+        { kind: "metric", label: "TBT regression", value: deltaText("TBT", delta) }
+      ],
+      lessons: ["long-tasks", "js-cost"]
+    };
+  });
+}
+function cr6b(regressions, base, head) {
+  const confirmed = regressions.find((r) => r.metric === "CLS");
+  if (confirmed === void 0) return [];
+  const delta = regressionDelta(confirmed) ?? 0;
+  const selectors = /* @__PURE__ */ new Set([
+    ...head.flatMap((s) => s.layoutShifts.map((l) => l.selector)),
+    ...base.flatMap((s) => s.layoutShifts.map((l) => l.selector))
+  ]);
+  const candidates = [];
+  for (const selector of selectors) {
+    const pick = (s) => s.layoutShifts.find((l) => l.selector === selector) ?? null;
+    const headScore = sideStat(head, pick, (l) => l.score);
+    const baseScore = sideStat(base, pick, (l) => l.score);
+    if (!isPresent(headScore, head.length)) continue;
+    const grew = valueOf(headScore) - valueOf(baseScore);
+    if (grew < SHIFT_MIN_SCORE) continue;
+    candidates.push({ selector, base: valueOf(baseScore), head: valueOf(headScore), delta: grew });
+  }
+  return candidates.sort((a, b) => b.delta - a.delta || (a.selector < b.selector ? -1 : 1)).slice(0, TOP_N).map((c) => {
+    const likely = delta > 0 && c.delta >= LIKELY_SHARE * delta;
+    return {
+      id: `layout-shift-added:${c.selector}`,
+      ruleId: "layout-shift-added",
+      severity: likely ? "warning" : "info",
+      confidence: likely ? "likely" : "possible",
+      metric: "CLS",
+      kind: "cause",
+      title: `An element's layout shifts grew: ${c.selector}`,
+      explanation: `This element shifts the page when late content loads. Its shifts add up to a median score of ${score(c.head)} per run on this PR, up from ${score(c.base)} on the base branch. It ${contributes(likely)} the CLS regression (${deltaText("CLS", delta)}).`,
+      evidence: [
+        { kind: "element", label: "Shifting element", selector: c.selector },
+        { kind: "metric", label: "Shift score", value: beforeAfter(score(c.base), score(c.head)) },
+        { kind: "metric", label: "CLS regression", value: deltaText("CLS", delta) }
+      ],
+      fix: "Reserve space for content that loads late (a fixed height or aspect-ratio, a placeholder), or insert banners without pushing existing content down.",
+      lessons: ["cls"]
+    };
+  });
+}
+function causeRules(regressions, base, head) {
+  const confirmed = confirmedOf(regressions);
+  if (confirmed.length === 0 || base.length === 0 || head.length === 0) return [];
+  return [...cr4(confirmed, base, head), ...cr5(confirmed, base, head), ...cr6a(confirmed, base, head), ...cr6b(confirmed, base, head)];
+}
+
 // ../../src/pipeline/analyzePr.ts
 function analyzePr(input) {
   const { baseline, current, pageGroup, lessonBaseUrl } = input;
   const findings = [...compareRuns(baseline, current), ...watchLcpElement(baseline, current)];
+  if (input.causeSignals !== void 0) {
+    const regressions = findings.filter((f) => f.ruleId === "lab-regression" && f.confidence === "likely");
+    findings.push(...causeRules(regressions, input.causeSignals.base, input.causeSignals.head));
+  }
   let budget = null;
   if (input.budget) {
     budget = checkBudgets(input.budget, medianObservations(current, pageGroup));
@@ -26416,7 +26684,7 @@ function parseTrace(json2, options) {
     }
   }
   if (!isFinite(t0)) t0 = mainEvents.length ? Math.min(...mainEvents.map((e) => e.ts)) : 0;
-  const ms = (ts) => (ts - t0) / 1e3;
+  const ms2 = (ts) => (ts - t0) / 1e3;
   mainEvents.sort((a, b) => a.ts - b.ts || b.dur - a.dur);
   const tasks = [];
   const stack = [];
@@ -26453,8 +26721,8 @@ function parseTrace(json2, options) {
     const inheritedUrl = parent ? parent.url : "";
     if (isTask) {
       curTask = {
-        start: ms(e.ts),
-        end: ms(e.ts + e.dur),
+        start: ms2(e.ts),
+        end: ms2(e.ts + e.dur),
         dur: e.dur / 1e3,
         cats: {},
         scripts: /* @__PURE__ */ new Map(),
@@ -26464,8 +26732,8 @@ function parseTrace(json2, options) {
       tasks.push(curTask);
     } else if (!parent && e.dur > 0) {
       curTask = {
-        start: ms(e.ts),
-        end: ms(e.ts + e.dur),
+        start: ms2(e.ts),
+        end: ms2(e.ts + e.dur),
         dur: e.dur / 1e3,
         cats: {},
         scripts: /* @__PURE__ */ new Map(),
@@ -26519,10 +26787,10 @@ function parseTrace(json2, options) {
     if (e.pid !== mpid) continue;
     const d = e.args && (e.args.data || e.args) || {};
     if (e.name === "firstContentfulPaint" && fcp === null && e.ts >= t0) {
-      fcp = ms(e.ts);
+      fcp = ms2(e.ts);
     } else if (e.name === "largestContentfulPaint::Candidate" && e.ts >= t0 && d.isMainFrame !== false) {
       lcps.push({
-        t: ms(e.ts),
+        t: ms2(e.ts),
         size: d.size || 0,
         type: d.type || "",
         node: d.nodeName || "",
@@ -26532,7 +26800,7 @@ function parseTrace(json2, options) {
     } else if (e.name === "LayoutShift" && e.ts >= t0) {
       const sd = d.data || d;
       shifts.push({
-        t: ms(e.ts),
+        t: ms2(e.ts),
         score: sd.weighted_score_delta != null ? sd.weighted_score_delta : sd.score || 0,
         input: !!sd.had_recent_input
       });
@@ -26542,7 +26810,7 @@ function parseTrace(json2, options) {
         d.requestId,
         Object.assign(r, {
           url: d.url,
-          start: ms(e.ts),
+          start: ms2(e.ts),
           prio: d.priority || "",
           method: d.requestMethod || "GET",
           initiator: d.initiator ? d.initiator.type || "" : ""
@@ -26553,7 +26821,7 @@ function parseTrace(json2, options) {
       reqs.set(
         d.requestId,
         Object.assign(r, {
-          resp: ms(e.ts),
+          resp: ms2(e.ts),
           mime: d.mimeType || "",
           status: d.statusCode,
           cached: !!d.fromCache,
@@ -26565,7 +26833,7 @@ function parseTrace(json2, options) {
       reqs.set(
         d.requestId,
         Object.assign(r, {
-          end: ms(d.finishTime ? d.finishTime * 1e6 : e.ts),
+          end: ms2(d.finishTime ? d.finishTime * 1e6 : e.ts),
           bytes: d.encodedDataLength || 0
         })
       );
@@ -26573,7 +26841,7 @@ function parseTrace(json2, options) {
       const ed = e.args && e.args.data || {};
       if (ed.interactionId) {
         const rec = {
-          t: ms(e.ts),
+          t: ms2(e.ts),
           type: ed.type || "",
           dur: ed.duration || 0,
           ts: ed.timeStamp,
@@ -26893,8 +27161,8 @@ function traceRules(s) {
 
 // ../../src/thirdparty/thirdPartyDrift.ts
 var whyOf = (codeChanged) => codeChanged ? "This change also touched your own code, so check whether it comes from the vendor or from how the tag is loaded." : "Your own code did not change, so the vendor\u2019s script itself changed.";
-var kb = (x) => `${Math.round(x / 1024)} KB`;
-function median3(values2) {
+var kb2 = (x) => `${Math.round(x / 1024)} KB`;
+function median4(values2) {
   const s = values2.slice().sort((a, b) => a - b);
   const mid = s.length >> 1;
   return s.length % 2 ? s[mid] : (s[mid - 1] + s[mid]) / 2;
@@ -26915,9 +27183,9 @@ function statsOf(runs, vendors) {
     }
     m.set(vendor, {
       present,
-      scriptMs: median3(scriptMs),
-      bytes: median3(bytes),
-      longTasks: median3(longTasks)
+      scriptMs: median4(scriptMs),
+      bytes: median4(bytes),
+      longTasks: median4(longTasks)
     });
   }
   return m;
@@ -26935,7 +27203,7 @@ function thirdPartyDrift(baseline, current, options = {}) {
   const confidence = codeChanged ? "possible" : "likely";
   const evidenceOf = (bs, cs) => [
     { kind: "metric", label: "Main-thread time", value: `${formatMs(bs.scriptMs)} \u2192 ${formatMs(cs.scriptMs)}` },
-    { kind: "metric", label: "Transferred", value: `${kb(bs.bytes)} \u2192 ${kb(cs.bytes)}` },
+    { kind: "metric", label: "Transferred", value: `${kb2(bs.bytes)} \u2192 ${kb2(cs.bytes)}` },
     { kind: "metric", label: "Long tasks", value: `${bs.longTasks} \u2192 ${cs.longTasks}` }
   ];
   const out = [];
@@ -26951,7 +27219,7 @@ function thirdPartyDrift(baseline, current, options = {}) {
           confidence,
           metric: "TBT",
           title: `New third party: ${vendor}`,
-          explanation: `${vendor} now loads on this page (${formatMs(cs.scriptMs)} of main-thread time, ${kb(cs.bytes)}). ${why}`,
+          explanation: `${vendor} now loads on this page (${formatMs(cs.scriptMs)} of main-thread time, ${kb2(cs.bytes)}). ${why}`,
           evidence: evidenceOf(bs, cs),
           fix: "Check that this tag is wanted; if it is, load it async, after user interaction, or behind a facade.",
           lessons: ["third-party-cost", "tag-governance"]
@@ -26971,7 +27239,7 @@ function thirdPartyDrift(baseline, current, options = {}) {
           severity: dScript >= 200 ? "warning" : "info",
           confidence,
           metric: "TBT",
-          title: scriptUp ? `${vendor} got heavier: ${formatMs(bs.scriptMs)} \u2192 ${formatMs(cs.scriptMs)} of main-thread time` : `${vendor} got heavier: ${kb(bs.bytes)} \u2192 ${kb(cs.bytes)} transferred`,
+          title: scriptUp ? `${vendor} got heavier: ${formatMs(bs.scriptMs)} \u2192 ${formatMs(cs.scriptMs)} of main-thread time` : `${vendor} got heavier: ${kb2(bs.bytes)} \u2192 ${kb2(cs.bytes)} transferred`,
           explanation: `${vendor} costs more than before. ${why}`,
           evidence: evidenceOf(bs, cs),
           fix: "Review or pin the vendor\u2019s version, load the tag after user interaction or behind a facade, and raise the regression with the vendor.",
@@ -27016,10 +27284,10 @@ function vendorCosts(s, pageUrl) {
     }
     return c;
   };
-  for (const [url, ms] of s.scripts) {
+  for (const [url, ms2] of s.scripts) {
     const vendor = vendorOf(url);
     if (vendor === null) continue;
-    touch(vendor).scriptMs += ms;
+    touch(vendor).scriptMs += ms2;
   }
   for (const r of s.requests) {
     const vendor = vendorOf(r.url);
@@ -27097,6 +27365,138 @@ function traceExtraFindings(base, pr) {
 
 // src/scanMode.ts
 var import_node_crypto2 = require("node:crypto");
+
+// ../../src/causes/causeSignals.ts
+var num2 = (x) => typeof x === "number" && Number.isFinite(x) ? x : null;
+var str = (x) => typeof x === "string" && x !== "" ? x : null;
+function auditsOf(lhr) {
+  if (lhr === null || typeof lhr !== "object") return null;
+  const audits = lhr.audits;
+  if (audits === null || typeof audits !== "object" || Array.isArray(audits)) return null;
+  return audits;
+}
+function itemsOf(audit) {
+  if (audit === null || typeof audit !== "object") return null;
+  const details = audit.details;
+  if (details === null || typeof details !== "object" || !Array.isArray(details.items)) return null;
+  return details.items;
+}
+function resourceIdentity(url, pageUrl) {
+  let u;
+  let page;
+  try {
+    u = new URL(url);
+    page = new URL(pageUrl);
+  } catch {
+    return url;
+  }
+  if (u.origin === page.origin) return `${u.pathname}${u.search}`;
+  return `${u.protocol}//${u.host.toLowerCase()}${u.pathname}${u.search}`;
+}
+function pageUrlOf(lhr) {
+  for (const key of ["finalUrl", "finalDisplayedUrl", "requestedUrl"]) {
+    const v = str(lhr[key]);
+    if (v !== null) return v;
+  }
+  return null;
+}
+function tagOf(snippet2) {
+  const m = /^<([a-zA-Z][a-zA-Z0-9-]*)/.exec(snippet2.trim());
+  return m === null ? null : m[1].toLowerCase();
+}
+function attrOf(snippet2, attr3) {
+  const m = new RegExp(`\\b${attr3}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`, "i").exec(snippet2);
+  if (m === null) return null;
+  return m[1] ?? m[2] ?? m[3] ?? null;
+}
+function imageUrlOf(snippet2, pageUrl) {
+  const src = attrOf(snippet2, "src");
+  if (src === null || src === "" || src.startsWith("data:")) return null;
+  try {
+    return new URL(src, pageUrl).toString();
+  } catch {
+    return null;
+  }
+}
+function causeSignalsOf(lhr, pageUrl) {
+  const audits = auditsOf(lhr);
+  if (audits === null) {
+    return { renderBlocking: [], lcp: null, longTasks: [], unattributable: null, layoutShifts: [] };
+  }
+  const ownUrl = pageUrlOf(lhr) ?? pageUrl;
+  const requests = /* @__PURE__ */ new Map();
+  for (const it of itemsOf(audits["network-requests"]) ?? []) {
+    const url = str(it?.url);
+    if (url === null) continue;
+    requests.set(resourceIdentity(url, pageUrl), {
+      resourceType: str(it.resourceType),
+      transferSize: num2(it.transferSize),
+      url
+    });
+  }
+  const renderBlocking = [];
+  for (const it of itemsOf(audits["render-blocking-insight"]) ?? []) {
+    const url = str(it?.url);
+    if (url === null) continue;
+    const identity = resourceIdentity(url, pageUrl);
+    const request = requests.get(identity) ?? null;
+    renderBlocking.push({
+      identity,
+      url,
+      isScript: request?.resourceType === "Script",
+      transferSize: request?.transferSize ?? null,
+      wastedMs: num2(it.wastedMs)
+    });
+  }
+  const node = (itemsOf(audits["lcp-breakdown-insight"]) ?? []).find((it) => it?.type === "node" && str(it.selector) !== null) ?? (itemsOf(audits["lcp-discovery-insight"]) ?? []).find((it) => it?.type === "node" && str(it.selector) !== null);
+  let lcp = null;
+  if (node !== void 0) {
+    const snippet2 = typeof node.snippet === "string" ? node.snippet : "";
+    const url = imageUrlOf(snippet2, ownUrl);
+    const request = url === null ? null : requests.get(resourceIdentity(url, pageUrl)) ?? null;
+    lcp = {
+      selector: str(node.selector),
+      isImage: tagOf(snippet2) === "img",
+      url,
+      identity: url === null ? null : resourceIdentity(url, pageUrl),
+      transferSize: request?.transferSize ?? null
+    };
+  }
+  const tasks = /* @__PURE__ */ new Map();
+  let unattributableBlocking = 0;
+  let unattributableCount = 0;
+  for (const it of itemsOf(audits["long-tasks"]) ?? []) {
+    const duration = num2(it?.duration);
+    if (duration === null) continue;
+    const blocking = Math.max(0, duration - 50);
+    if (str(it?.url) === "Unattributable") {
+      unattributableBlocking += blocking;
+      unattributableCount += 1;
+      continue;
+    }
+    const url = str(it?.url);
+    if (url === null) continue;
+    const identity = resourceIdentity(url, pageUrl);
+    const entry = tasks.get(identity) ?? { identity, url, blockingMs: 0, count: 0 };
+    entry.blockingMs += blocking;
+    entry.count += 1;
+    tasks.set(identity, entry);
+  }
+  const shifts = /* @__PURE__ */ new Map();
+  for (const it of itemsOf(audits["layout-shifts"]) ?? []) {
+    const selector = str(it?.node?.selector);
+    const score2 = num2(it?.score);
+    if (selector === null || score2 === null) continue;
+    shifts.set(selector, (shifts.get(selector) ?? 0) + score2);
+  }
+  return {
+    renderBlocking,
+    lcp,
+    longTasks: [...tasks.values()],
+    unattributable: unattributableCount > 0 ? { blockingMs: unattributableBlocking, count: unattributableCount } : null,
+    layoutShifts: [...shifts.entries()].map(([selector, score2]) => ({ selector, score: score2 }))
+  };
+}
 
 // ../core/src/severity.ts
 var DEFAULT_SEVERITY = {
@@ -27518,12 +27918,12 @@ function redactFindings(fs) {
 
 // src/engines/settle.ts
 var CLOSE_LIMIT_MS = 5e3;
-async function settleWithin(p, ms = CLOSE_LIMIT_MS) {
+async function settleWithin(p, ms2 = CLOSE_LIMIT_MS) {
   let timer;
   await Promise.race([
     p.then(() => void 0, () => void 0),
     new Promise((r) => {
-      timer = setTimeout(r, ms);
+      timer = setTimeout(r, ms2);
     })
   ]);
   clearTimeout(timer);
@@ -28582,7 +28982,7 @@ function findDuplicates(pages, keyOf, checkId) {
 }
 
 // ../engine-seo/src/scanner/parseRenderedHtml.ts
-function attrOf(tag, name) {
+function attrOf2(tag, name) {
   const re = new RegExp(`${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s"'>]+))`, "i");
   const m = re.exec(tag);
   const v = m?.[1] ?? m?.[2] ?? m?.[3];
@@ -28636,10 +29036,10 @@ function parseHead(rawHtml) {
   const metaTags = html.match(/<meta\b[^>]*>/gi) ?? [];
   const metaByName = (name) => {
     for (const tag of metaTags) {
-      const isName = attrOf(tag, "name")?.toLowerCase() === name.toLowerCase();
-      const isProperty = attrOf(tag, "property")?.toLowerCase() === name.toLowerCase();
+      const isName = attrOf2(tag, "name")?.toLowerCase() === name.toLowerCase();
+      const isProperty = attrOf2(tag, "property")?.toLowerCase() === name.toLowerCase();
       if (isName || isProperty) {
-        const c = attrOf(tag, "content");
+        const c = attrOf2(tag, "content");
         return c === null ? null : decodeEntities(c);
       }
     }
@@ -28647,23 +29047,23 @@ function parseHead(rawHtml) {
   };
   const titleMatch = /<title\b[^>]*>([\s\S]*?)<\/title>/i.exec(html);
   const canonicalTag = (html.match(/<link\b[^>]*>/gi) ?? []).find(
-    (t) => attrOf(t, "rel")?.toLowerCase() === "canonical"
+    (t) => attrOf2(t, "rel")?.toLowerCase() === "canonical"
   );
   const hreflangTags = (html.match(/<link\b[^>]*>/gi) ?? []).filter(
-    (t) => attrOf(t, "rel")?.toLowerCase() === "alternate" && attrOf(t, "hreflang") !== null
+    (t) => attrOf2(t, "rel")?.toLowerCase() === "alternate" && attrOf2(t, "hreflang") !== null
   );
   return {
     title: titleMatch ? stripTags(titleMatch[1]) || null : null,
     metaDescription: metaByName("description"),
     robots: metaByName("robots"),
-    canonicalHref: canonicalTag ? attrOf(canonicalTag, "href") : null,
+    canonicalHref: canonicalTag ? attrOf2(canonicalTag, "href") : null,
     ogTitle: metaByName("og:title"),
     ogDescription: metaByName("og:description"),
     ogImage: metaByName("og:image"),
     twitterCard: metaByName("twitter:card"),
     hreflang: hreflangTags.map((t) => ({
-      href: attrOf(t, "href") ?? "",
-      hreflang: attrOf(t, "hreflang") ?? ""
+      href: attrOf2(t, "href") ?? "",
+      hreflang: attrOf2(t, "hreflang") ?? ""
     })),
     rawJsonLd: (html.match(
       /<script\b[^>]*type\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi
@@ -28970,10 +29370,10 @@ function toFindings2(natives, ctx) {
 
 // src/engines/seo.ts
 var SNAPSHOT_TIMEOUT_MS = 1e3;
-function withinMs(p, ms) {
+function withinMs(p, ms2) {
   let t;
   return Promise.race([p, new Promise((_, rej) => {
-    t = setTimeout(() => rej(new Error("snapshot timeout")), ms);
+    t = setTimeout(() => rej(new Error("snapshot timeout")), ms2);
   })]).finally(() => clearTimeout(t));
 }
 function isSnapshot(d) {
@@ -30310,8 +30710,8 @@ function downgradeExternal(f) {
   if (soft || networkish) return { ...base, severity: "info" };
   return { ...base, severity: f.severity === "critical" ? "warning" : f.severity };
 }
-function deadline(ms, parent) {
-  const signals = [AbortSignal.timeout(Math.max(0, ms))];
+function deadline(ms2, parent) {
+  const signals = [AbortSignal.timeout(Math.max(0, ms2))];
   if (parent !== void 0) signals.push(parent);
   return AbortSignal.any(signals);
 }
@@ -30853,7 +31253,7 @@ var DEV_MARKERS = [
   { re: /\bvue\.(?:global|esm-browser|runtime\.global|runtime\.esm-browser)\.js\b|You are running a development build of Vue|You are running Vue in development mode/, label: "a Vue development build" },
   { re: /"production"\s*!==?\s*(process\.env\.NODE_ENV|__DEV__)/, label: "a development-only guard (production check left in)" }
 ];
-function kb2(bytes) {
+function kb3(bytes) {
   return `${(bytes / 1024).toFixed(1)} KB`;
 }
 function bandSeverity(gzipBytes, budgetKb) {
@@ -30878,8 +31278,8 @@ function bandChecks(m, readFile2) {
     if (sev === null) continue;
     findings.push({
       checkId: "chunk-over-budget",
-      title: `Chunk "${chunk}" is over budget (${kb2(gzip2)} gzip > ${BUDGETS.chunkKb} KB)`,
-      description: `The chunk "${chunk}" measures ${kb2(gzip2)} gzipped (raw ${kb2(raw)}, brotli q5 ${kb2(brotli)}), over the ${BUDGETS.chunkKb} KB gzip budget${sev === "critical" ? " and at or beyond twice the budget" : ""}.`,
+      title: `Chunk "${chunk}" is over budget (${kb3(gzip2)} gzip > ${BUDGETS.chunkKb} KB)`,
+      description: `The chunk "${chunk}" measures ${kb3(gzip2)} gzipped (raw ${kb3(raw)}, brotli q5 ${kb3(brotli)}), over the ${BUDGETS.chunkKb} KB gzip budget${sev === "critical" ? " and at or beyond twice the budget" : ""}.`,
       fix: sev === "critical" ? `Split "${chunk}" further (dynamic imports), or raise its budget deliberately after review.` : `Trim "${chunk}" (code-split, tree-shake, or replace heavy imports) to get under ${BUDGETS.chunkKb} KB gzip.`,
       impact: sev === "critical" ? "critical" : "medium",
       kind: "cause",
@@ -30895,8 +31295,8 @@ function bandChecks(m, readFile2) {
   if (totalSev !== null) {
     findings.push({
       checkId: "total-js-over-budget",
-      title: `Total JS is over budget (${kb2(m.totalJsGzip)} gzip > ${BUDGETS.totalJsKb} KB)`,
-      description: `All shipped JavaScript measures ${kb2(m.totalJsGzip)} gzipped across ${m.files.filter((f) => f.kind === "js").length} files, over the ${BUDGETS.totalJsKb} KB gzip budget${totalSev === "critical" ? " and at or beyond twice the budget" : ""}.`,
+      title: `Total JS is over budget (${kb3(m.totalJsGzip)} gzip > ${BUDGETS.totalJsKb} KB)`,
+      description: `All shipped JavaScript measures ${kb3(m.totalJsGzip)} gzipped across ${m.files.filter((f) => f.kind === "js").length} files, over the ${BUDGETS.totalJsKb} KB gzip budget${totalSev === "critical" ? " and at or beyond twice the budget" : ""}.`,
       fix: "Audit the largest chunks; drop unused dependencies; move code to lazy chunks.",
       impact: totalSev === "critical" ? "critical" : "medium",
       kind: "cause",
@@ -30912,8 +31312,8 @@ function bandChecks(m, readFile2) {
     if (initSev !== null) {
       findings.push({
         checkId: "initial-js-over-budget",
-        title: `Initial JS is over budget (${kb2(m.initialJsGzip)} gzip > ${BUDGETS.initialJsKb} KB)`,
-        description: `Initial JS (the entry chunks and their static imports, from the manifest) measures ${kb2(m.initialJsGzip)} gzipped, over the ${BUDGETS.initialJsKb} KB gzip budget.`,
+        title: `Initial JS is over budget (${kb3(m.initialJsGzip)} gzip > ${BUDGETS.initialJsKb} KB)`,
+        description: `Initial JS (the entry chunks and their static imports, from the manifest) measures ${kb3(m.initialJsGzip)} gzipped, over the ${BUDGETS.initialJsKb} KB gzip budget.`,
         fix: "Move non-critical code out of the entry chunks into lazy-loaded ones.",
         impact: initSev === "critical" ? "critical" : "medium",
         kind: "cause",
@@ -30929,8 +31329,8 @@ function bandChecks(m, readFile2) {
   if (cssSev !== null) {
     findings.push({
       checkId: "css-over-budget",
-      title: `Total CSS is over budget (${kb2(m.totalCssGzip)} gzip > ${BUDGETS.cssKb} KB)`,
-      description: `All shipped CSS measures ${kb2(m.totalCssGzip)} gzipped, over the ${BUDGETS.cssKb} KB gzip budget.`,
+      title: `Total CSS is over budget (${kb3(m.totalCssGzip)} gzip > ${BUDGETS.cssKb} KB)`,
+      description: `All shipped CSS measures ${kb3(m.totalCssGzip)} gzipped, over the ${BUDGETS.cssKb} KB gzip budget.`,
       fix: "Purge unused CSS; split per-route stylesheets; audit large framework imports.",
       impact: cssSev === "critical" ? "critical" : "medium",
       kind: "cause",
@@ -30946,7 +31346,7 @@ function bandChecks(m, readFile2) {
     findings.push({
       checkId: "source-maps-in-prod",
       title: `${m.mapFiles.length} source map file(s) shipped in the build output`,
-      description: `Source maps (${kb2(totalMapBytes)} total) are in the output, publicly exposing source code.`,
+      description: `Source maps (${kb3(totalMapBytes)} total) are in the output, publicly exposing source code.`,
       fix: "Set sourcemap: false in production builds, or use hidden source maps kept out of the output.",
       impact: "high",
       kind: "cause",
@@ -31442,19 +31842,19 @@ function requireSchema() {
   schema = Schema2;
   return schema;
 }
-var str;
+var str2;
 var hasRequiredStr;
 function requireStr() {
-  if (hasRequiredStr) return str;
+  if (hasRequiredStr) return str2;
   hasRequiredStr = 1;
   const Type2 = requireType();
-  str = new Type2("tag:yaml.org,2002:str", {
+  str2 = new Type2("tag:yaml.org,2002:str", {
     kind: "scalar",
     construct: function(data) {
       return data !== null ? data : "";
     }
   });
-  return str;
+  return str2;
 }
 var seq;
 var hasRequiredSeq;
@@ -33627,10 +34027,10 @@ function requireDumper() {
   function generateNextLine(state, level) {
     return "\n" + common2.repeat(" ", state.indent * level);
   }
-  function testImplicitResolving(state, str2) {
+  function testImplicitResolving(state, str22) {
     for (let index = 0, length = state.implicitTypes.length; index < length; index += 1) {
       const type2 = state.implicitTypes[index];
-      if (type2.resolve(str2)) {
+      if (type2.resolve(str22)) {
         return true;
       }
     }
@@ -34530,44 +34930,44 @@ function checkKeys(sourceKeys, targetKeys, ignoredKeys = []) {
 // ../engine-i18n/src/checks/values.ts
 var HTML_TAG_RE = /<\/?[a-zA-Z][^>]*>/g;
 var MIN_UNTRANSLATED_LEN = 4;
-function extractPlaceholders(str2) {
+function extractPlaceholders(str3) {
   const out = /* @__PURE__ */ new Set();
-  parseMessage(str2, 0, out, false);
-  const printfCount = (str2.match(/%s/g) ?? []).length;
+  parseMessage(str3, 0, out, false);
+  const printfCount = (str3.match(/%s/g) ?? []).length;
   for (let i = 1; i <= printfCount; i++) out.add(`%s#${i}`);
   return out;
 }
 var ARG_NAME_RE = /^[A-Za-z_][A-Za-z0-9_.-]*$|^\d+$/;
 var BRANCHED = /* @__PURE__ */ new Set(["plural", "select", "selectordinal"]);
-function parseMessage(str2, i, out, nested) {
-  while (i < str2.length) {
-    const c = str2[i];
+function parseMessage(str3, i, out, nested) {
+  while (i < str3.length) {
+    const c = str3[i];
     if (c === "'") {
-      if (str2[i + 1] === "'") {
+      if (str3[i + 1] === "'") {
         i += 2;
         continue;
       }
-      if (str2[i + 1] === "{" || str2[i + 1] === "}" || str2[i + 1] === "#") {
-        const close = str2.indexOf("'", i + 1);
-        i = close === -1 ? str2.length : close + 1;
+      if (str3[i + 1] === "{" || str3[i + 1] === "}" || str3[i + 1] === "#") {
+        const close = str3.indexOf("'", i + 1);
+        i = close === -1 ? str3.length : close + 1;
         continue;
       }
       i++;
       continue;
     }
-    if (str2.startsWith("{{", i)) {
-      const close = str2.indexOf("}}", i + 2);
+    if (str3.startsWith("{{", i)) {
+      const close = str3.indexOf("}}", i + 2);
       if (close === -1) {
         i += 2;
         continue;
       }
-      const name = str2.slice(i + 2, close).split(",")[0].trim();
+      const name = str3.slice(i + 2, close).split(",")[0].trim();
       if (name !== "") out.add(name);
       i = close + 2;
       continue;
     }
     if (c === "{") {
-      i = parseArgument(str2, i + 1, out);
+      i = parseArgument(str3, i + 1, out);
       continue;
     }
     if (c === "}" && nested) return i;
@@ -34575,36 +34975,36 @@ function parseMessage(str2, i, out, nested) {
   }
   return i;
 }
-function parseArgument(str2, i, out) {
+function parseArgument(str3, i, out) {
   const readPart = () => {
     const start = i;
-    while (i < str2.length && str2[i] !== "," && str2[i] !== "}" && str2[i] !== "{") i++;
-    return str2.slice(start, i).trim();
+    while (i < str3.length && str3[i] !== "," && str3[i] !== "}" && str3[i] !== "{") i++;
+    return str3.slice(start, i).trim();
   };
   const name = readPart();
   if (ARG_NAME_RE.test(name)) out.add(name);
-  if (str2[i] !== ",") return skipToClose(str2, i);
+  if (str3[i] !== ",") return skipToClose(str3, i);
   i++;
   const type2 = readPart().toLowerCase();
-  if (str2[i] !== ",") return skipToClose(str2, i);
+  if (str3[i] !== ",") return skipToClose(str3, i);
   i++;
-  if (!BRANCHED.has(type2)) return skipToClose(str2, i);
-  while (i < str2.length) {
-    while (i < str2.length && /\s/.test(str2[i])) i++;
-    if (str2[i] === "}") return i + 1;
-    while (i < str2.length && !/[\s{}]/.test(str2[i])) i++;
-    while (i < str2.length && /\s/.test(str2[i])) i++;
-    if (str2[i] !== "{") continue;
-    i = parseMessage(str2, i + 1, out, true);
-    if (str2[i] === "}") i++;
+  if (!BRANCHED.has(type2)) return skipToClose(str3, i);
+  while (i < str3.length) {
+    while (i < str3.length && /\s/.test(str3[i])) i++;
+    if (str3[i] === "}") return i + 1;
+    while (i < str3.length && !/[\s{}]/.test(str3[i])) i++;
+    while (i < str3.length && /\s/.test(str3[i])) i++;
+    if (str3[i] !== "{") continue;
+    i = parseMessage(str3, i + 1, out, true);
+    if (str3[i] === "}") i++;
   }
   return i;
 }
-function skipToClose(str2, i) {
+function skipToClose(str3, i) {
   let depth = 0;
-  while (i < str2.length) {
-    if (str2[i] === "{") depth++;
-    else if (str2[i] === "}") {
+  while (i < str3.length) {
+    if (str3[i] === "{") depth++;
+    else if (str3[i] === "}") {
       if (depth === 0) return i + 1;
       depth--;
     }
@@ -34612,8 +35012,8 @@ function skipToClose(str2, i) {
   }
   return i;
 }
-function extractHtmlTags(str2) {
-  return (str2.match(HTML_TAG_RE) ?? []).map((t) => t.toLowerCase()).sort();
+function extractHtmlTags(str3) {
+  return (str3.match(HTML_TAG_RE) ?? []).map((t) => t.toLowerCase()).sort();
 }
 function checkValues(sourceKeys, targetKeys, ignoredKeys = [], lengthRatioThresholds = { min: 0.3, max: 3 }) {
   const ignored = new Set(ignoredKeys);
@@ -35134,6 +35534,10 @@ function lighthouseVersionOf(report) {
   const lhr = "lhr" in r && typeof r.lhr === "object" ? r.lhr : r;
   return typeof lhr.lighthouseVersion === "string" ? lhr.lighthouseVersion : "";
 }
+function validLhrs(measured2, failed) {
+  const invalid = new Set(failed.map((f) => f.index));
+  return measured2.filter((_, i) => !invalid.has(i)).map((r) => r.lhr);
+}
 async function runScanMode(deps, ctx, local = null, workspace = null, buildTimeoutInput = "", gitGrepPaths = null) {
   const fail2 = (reason) => ({ ok: false, failReason: reason, artifact: null, summary: `## MergeDelta scan
 
@@ -35383,7 +35787,11 @@ ${inj.url}`, inj);
       current: headCollected.runs,
       budget,
       pageGroup: page.pageGroup,
-      lessonBaseUrl: config.lessonBaseUrl
+      lessonBaseUrl: config.lessonBaseUrl,
+      causeSignals: {
+        base: validLhrs(baseRuns, baseCollected.failed).map((lhr) => causeSignalsOf(lhr, basePageUrl)),
+        head: validLhrs(headRuns, headCollected.failed).map((lhr) => causeSignalsOf(lhr, prPageUrl))
+      }
     });
     analyses.push({
       path: page.path,
