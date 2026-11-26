@@ -25807,7 +25807,7 @@ function parseConfig(text) {
     } else {
       const lb = v;
       for (const key of Object.keys(lb)) {
-        if (key !== "install" && key !== "build" && key !== "serve") {
+        if (key !== "install" && key !== "build" && key !== "serve" && key !== "bundleDir") {
           errors.push({ path: `/localBuild/${key}`, message: `Unknown key "${key}".` });
         }
       }
@@ -25821,6 +25821,11 @@ function parseConfig(text) {
       };
       const install = commandField(lb.install, "/localBuild/install", "install");
       const build = commandField(lb.build, "/localBuild/build", "build");
+      const bundleDir = lb.bundleDir;
+      const validBundleDir = typeof bundleDir === "string" && bundleDir.trim() === bundleDir && bundleDir.length > 0 && bundleDir.length <= 200 && !/[\\:\x00-\x1f]/.test(bundleDir) && !bundleDir.startsWith("/") && bundleDir.split("/").every((part) => part !== "" && part !== "." && part !== "..");
+      if (bundleDir !== void 0 && !validBundleDir) {
+        errors.push({ path: "/localBuild/bundleDir", message: "bundleDir must be a relative directory inside the tree (at most 200 characters)." });
+      }
       const serve = lb.serve;
       let serveParsed = void 0;
       if (serve === void 0) {
@@ -25861,7 +25866,7 @@ function parseConfig(text) {
         }
       }
       if (install !== void 0 && build !== void 0 && serveParsed != null) {
-        localBuild = { install: install ?? null, build: build ?? null, serve: serveParsed };
+        localBuild = { install: install ?? null, build: build ?? null, serve: serveParsed, ...validBundleDir ? { bundleDir } : {} };
       }
     }
   }

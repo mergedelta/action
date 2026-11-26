@@ -24783,9 +24783,9 @@ var require_p_limit = __commonJS({
 // src/main.ts
 var core2 = __toESM(require_core());
 var github = __toESM(require_github());
-var import_promises = require("node:fs/promises");
 var import_promises2 = require("node:fs/promises");
-var import_node_path4 = require("node:path");
+var import_promises3 = require("node:fs/promises");
+var import_node_path5 = require("node:path");
 
 // src/engines/runtime.ts
 var import_node_module = require("node:module");
@@ -24805,7 +24805,7 @@ function loadPlaywrightCore(dir = bundleDir()) {
 // src/main.ts
 var import_node_child_process = require("node:child_process");
 var import_node_os = require("node:os");
-var import_node_path5 = require("node:path");
+var import_node_path6 = require("node:path");
 
 // ../../src/config/parseConfig.ts
 var MAX_PAGES = 20;
@@ -24909,7 +24909,7 @@ function parseConfig(text) {
     } else {
       const lb = v;
       for (const key of Object.keys(lb)) {
-        if (key !== "install" && key !== "build" && key !== "serve") {
+        if (key !== "install" && key !== "build" && key !== "serve" && key !== "bundleDir") {
           errors.push({ path: `/localBuild/${key}`, message: `Unknown key "${key}".` });
         }
       }
@@ -24923,6 +24923,11 @@ function parseConfig(text) {
       };
       const install = commandField(lb.install, "/localBuild/install", "install");
       const build = commandField(lb.build, "/localBuild/build", "build");
+      const bundleDir2 = lb.bundleDir;
+      const validBundleDir = typeof bundleDir2 === "string" && bundleDir2.trim() === bundleDir2 && bundleDir2.length > 0 && bundleDir2.length <= 200 && !/[\\:\x00-\x1f]/.test(bundleDir2) && !bundleDir2.startsWith("/") && bundleDir2.split("/").every((part) => part !== "" && part !== "." && part !== "..");
+      if (bundleDir2 !== void 0 && !validBundleDir) {
+        errors.push({ path: "/localBuild/bundleDir", message: "bundleDir must be a relative directory inside the tree (at most 200 characters)." });
+      }
       const serve = lb.serve;
       let serveParsed = void 0;
       if (serve === void 0) {
@@ -24963,7 +24968,7 @@ function parseConfig(text) {
         }
       }
       if (install !== void 0 && build !== void 0 && serveParsed != null) {
-        localBuild = { install: install ?? null, build: build ?? null, serve: serveParsed };
+        localBuild = { install: install ?? null, build: build ?? null, serve: serveParsed, ...validBundleDir ? { bundleDir: bundleDir2 } : {} };
       }
     }
   }
@@ -26373,8 +26378,8 @@ function sideStat(signals, pick, value) {
   }
   return { presentRuns, median: median3(values2), values: values2 };
 }
-var isPresent = (stat, totalRuns) => stat.presentRuns * 2 > totalRuns;
-var valueOf = (stat) => stat.median ?? 0;
+var isPresent = (stat2, totalRuns) => stat2.presentRuns * 2 > totalRuns;
+var valueOf = (stat2) => stat2.median ?? 0;
 function cr4(regressions, base, head) {
   const confirmed = firstConfirmed(regressions, ["LCP", "FCP", "SI"]);
   if (confirmed === null || confirmed.metric === null) return [];
@@ -26437,8 +26442,8 @@ function dominantLcp(signals) {
   }
   if (best === null || best.count * 2 <= withLcp.length) return null;
   const selector = best.selector;
-  const stat = sideStat(withLcp, (s) => s.lcp.selector === selector ? s.lcp : null, (l) => l.transferSize);
-  return { selector, stat };
+  const stat2 = sideStat(withLcp, (s) => s.lcp.selector === selector ? s.lcp : null, (l) => l.transferSize);
+  return { selector, stat: stat2 };
 }
 function cr5(regressions, base, head) {
   const confirmed = regressions.find((r) => r.metric === "LCP");
@@ -31058,6 +31063,10 @@ function linksEngine() {
   };
 }
 
+// src/engines/bundle.ts
+var import_promises = require("node:fs/promises");
+var import_node_path3 = require("node:path");
+
 // ../engine-bundle/src/analyzer/measureOutput.ts
 var import_node_fs2 = require("node:fs");
 var import_node_path2 = require("node:path");
@@ -31519,8 +31528,16 @@ function bundleEngine() {
         throw new Error("bundle: no build output directory (the orchestrator should have skipped this engine)");
       }
       if (ctx.signal.aborted) return { pages: [], findings: [] };
-      const m = await measureOutputAsync(dir, ctx.signal);
-      const natives = bandChecks(m, (path) => readOutputFile(dir, path));
+      const output = await (0, import_promises.realpath)(dir);
+      if (ctx.side.repoDir !== null) {
+        const fromTree = (0, import_node_path3.relative)(await (0, import_promises.realpath)(ctx.side.repoDir), output);
+        if ((0, import_node_path3.isAbsolute)(fromTree) || fromTree === ".." || fromTree.startsWith(`..${import_node_path3.sep}`)) {
+          throw new Error("bundle: build output directory must be inside the checkout");
+        }
+      }
+      if (!(await (0, import_promises.stat)(output)).isDirectory()) throw new Error("bundle: build output path is not a directory");
+      const m = await measureOutputAsync(output, ctx.signal);
+      const natives = bandChecks(m, (path) => readOutputFile(output, path));
       const findings = toFindings5(natives, { engineVersion: BUNDLE_ENGINE_VERSION });
       ctx.log(`bundle: ${m.files.length} files measured, ${findings.length} findings (manifest: ${m.hasManifest})`);
       return { pages: [], findings };
@@ -31530,7 +31547,7 @@ function bundleEngine() {
 
 // ../engine-i18n/src/scanner/discoverLocales.ts
 var import_node_fs3 = require("node:fs");
-var import_node_path3 = require("node:path");
+var import_node_path4 = require("node:path");
 
 // ../engine-i18n/node_modules/js-yaml/dist/js-yaml.mjs
 function getDefaultExportFromCjs(x) {
@@ -34735,7 +34752,7 @@ function discoverLocales(repoDir) {
     }
     names.sort();
     for (const name of names) {
-      const full = (0, import_node_path3.join)(dir, name);
+      const full = (0, import_node_path4.join)(dir, name);
       let st;
       try {
         st = (0, import_node_fs3.statSync)(full);
@@ -34752,7 +34769,7 @@ function discoverLocales(repoDir) {
     }
   };
   const inspectCandidate = (dir) => {
-    const rel = (0, import_node_path3.relative)(repoDir, dir).split("\\").join("/");
+    const rel = (0, import_node_path4.relative)(repoDir, dir).split("\\").join("/");
     let entries;
     try {
       entries = (0, import_node_fs3.readdirSync)(dir);
@@ -34764,7 +34781,7 @@ function discoverLocales(repoDir) {
     const nsFiles = [];
     const nsLocaleDirs = /* @__PURE__ */ new Set();
     for (const e of entries) {
-      const full = (0, import_node_path3.join)(dir, e);
+      const full = (0, import_node_path4.join)(dir, e);
       let st;
       try {
         st = (0, import_node_fs3.statSync)(full);
@@ -34772,8 +34789,8 @@ function discoverLocales(repoDir) {
         continue;
       }
       if (st.isFile()) {
-        const ext = (0, import_node_path3.extname)(e).toLowerCase();
-        if ((ext === ".json" || ext === ".yml" || ext === ".yaml") && isLocaleName((0, import_node_path3.basename)(e, ext))) {
+        const ext = (0, import_node_path4.extname)(e).toLowerCase();
+        if ((ext === ".json" || ext === ".yml" || ext === ".yaml") && isLocaleName((0, import_node_path4.basename)(e, ext))) {
           flatFiles.push(full);
         }
       } else if (st.isDirectory() && isLocaleName(e)) {
@@ -34785,9 +34802,9 @@ function discoverLocales(repoDir) {
         }
         subs.sort();
         for (const s of subs) {
-          const sext = (0, import_node_path3.extname)(s).toLowerCase();
+          const sext = (0, import_node_path4.extname)(s).toLowerCase();
           if (sext === ".json" || sext === ".yml" || sext === ".yaml") {
-            nsFiles.push((0, import_node_path3.join)(full, s));
+            nsFiles.push((0, import_node_path4.join)(full, s));
             nsLocaleDirs.add(e);
           }
         }
@@ -34818,16 +34835,16 @@ function discoverLocales(repoDir) {
   const files = [];
   let totalKeys = 0;
   for (const abs of filesToRead) {
-    const ext = (0, import_node_path3.extname)(abs).toLowerCase();
+    const ext = (0, import_node_path4.extname)(abs).toLowerCase();
     let locale;
     let nsPrefix = "";
     if (chosen.layout === "namespaced") {
-      locale = (0, import_node_path3.basename)(dirnameOf(abs));
-      nsPrefix = (0, import_node_path3.basename)(abs, ext);
+      locale = (0, import_node_path4.basename)(dirnameOf(abs));
+      nsPrefix = (0, import_node_path4.basename)(abs, ext);
     } else {
-      locale = (0, import_node_path3.basename)(abs, ext);
+      locale = (0, import_node_path4.basename)(abs, ext);
     }
-    const relPath = (0, import_node_path3.relative)(repoDir, abs).split("\\").join("/");
+    const relPath = (0, import_node_path4.relative)(repoDir, abs).split("\\").join("/");
     localeFiles[locale] = relPath;
     let st;
     try {
@@ -35901,7 +35918,8 @@ ${inj.url}`, inj);
     let onDemandTree = null;
     try {
       const routePaths = config.pages.map((page) => page.path);
-      const staticDir = config.localBuild !== null && "staticDir" in config.localBuild.serve ? config.localBuild.serve.staticDir : null;
+      const serve = config.localBuild?.serve;
+      const bundleDir2 = config.localBuild?.bundleDir ?? (serve !== void 0 && "staticDir" in serve ? serve.staticDir : null);
       const headTree = strict.workspace ?? null;
       let baseTree = strictMode ? strict.baseTree ?? null : null;
       const wantsRepo = registry.some((e) => e.definition.input === "repository" && preCheck(e.definition, config.engines) === null);
@@ -35911,7 +35929,7 @@ ${inj.url}`, inj);
       }
       const sides = engineSides({
         strictMode,
-        staticDir,
+        bundleDir: bundleDir2,
         headTree,
         baseTree,
         headSha: ctx.headSha,
@@ -36070,7 +36088,7 @@ function enginePartOf(part) {
   return { status: "skipped", headPages: [], headFindings: [], skipReason: part.skipReason, ...part.environment !== null ? { environment: part.environment } : {} };
 }
 function engineSides(o) {
-  const out = (tree) => o.strictMode && o.staticDir !== null && tree !== null ? `${tree}/${o.staticDir}` : null;
+  const out = (tree) => o.strictMode && o.bundleDir !== null && tree !== null ? `${tree}/${o.bundleDir}` : null;
   return {
     head: { side: "head", sha: o.headSha, origin: o.headOrigin, buildOutputDir: out(o.headTree), repoDir: o.headTree },
     base: { side: "base", sha: o.baseSha, origin: o.baseOrigin, buildOutputDir: out(o.baseTree), repoDir: o.baseTree },
@@ -36604,23 +36622,23 @@ async function main() {
   const octokit = github.getOctokit(core2.getInput("github-token"));
   const issueNumber = context2.payload.pull_request?.number ?? 0;
   const { owner, repo } = context2.repo;
-  const workspace = (0, import_node_path5.resolve)(process.env.GITHUB_WORKSPACE ?? process.cwd());
+  const workspace = (0, import_node_path6.resolve)(process.env.GITHUB_WORKSPACE ?? process.cwd());
   const readInWorkspace = async (p) => {
-    const abs = (0, import_node_path5.resolve)(workspace, p);
-    if (abs !== workspace && !abs.startsWith(workspace + import_node_path5.sep)) return null;
+    const abs = (0, import_node_path6.resolve)(workspace, p);
+    if (abs !== workspace && !abs.startsWith(workspace + import_node_path6.sep)) return null;
     try {
-      return await (0, import_promises.readFile)(abs, "utf8");
+      return await (0, import_promises2.readFile)(abs, "utf8");
     } catch {
       return null;
     }
   };
   const writeInWorkspace = async (p, text) => {
-    const abs = (0, import_node_path5.resolve)(workspace, p);
-    if (abs !== workspace && !abs.startsWith(workspace + import_node_path5.sep)) {
+    const abs = (0, import_node_path6.resolve)(workspace, p);
+    if (abs !== workspace && !abs.startsWith(workspace + import_node_path6.sep)) {
       throw new Error("refusing to write outside the workspace");
     }
-    await (0, import_promises.mkdir)((0, import_node_path4.dirname)(abs), { recursive: true });
-    await (0, import_promises.writeFile)(abs, text, "utf8");
+    await (0, import_promises2.mkdir)((0, import_node_path5.dirname)(abs), { recursive: true });
+    await (0, import_promises2.writeFile)(abs, text, "utf8");
   };
   const deps = {
     getInput: (name) => core2.getInput(name),
@@ -36710,7 +36728,7 @@ async function main() {
         return os !== void 0 && ver !== void 0 ? `${os}/${ver}` : null;
       }
     };
-    deps.axePath = (0, import_node_path5.join)(bundleDir(), "axe.min.js");
+    deps.axePath = (0, import_node_path6.join)(bundleDir(), "axe.min.js");
     deps.localBuildDeps = {
       runCommand: runShellCommand,
       addWorktree: async (dir, sha) => {
@@ -36724,7 +36742,7 @@ async function main() {
       removeWorktree: async (dir) => {
         await git(workspace, ["worktree", "remove", "--force", dir]).catch(() => {
         });
-        await (0, import_promises2.rm)(dir, { recursive: true, force: true }).catch(() => {
+        await (0, import_promises3.rm)(dir, { recursive: true, force: true }).catch(() => {
         });
       },
       startStaticServer,
@@ -36761,9 +36779,9 @@ async function fetchText(url) {
   }
 }
 async function runLighthouse(url, formFactor) {
-  const dir = await (0, import_promises2.mkdtemp)((0, import_node_path5.join)((0, import_node_os.tmpdir)(), "perf-diagnosis-"));
-  const outPath = (0, import_node_path5.join)(dir, "report.json");
-  const tracePath = (0, import_node_path5.join)(dir, "report-0.trace.json");
+  const dir = await (0, import_promises3.mkdtemp)((0, import_node_path6.join)((0, import_node_os.tmpdir)(), "perf-diagnosis-"));
+  const outPath = (0, import_node_path6.join)(dir, "report.json");
+  const tracePath = (0, import_node_path6.join)(dir, "report-0.trace.json");
   const args = [
     "--yes",
     "lighthouse@13.6.0",
@@ -36797,16 +36815,16 @@ ${errTail.trim()}`));
         else resolve();
       });
     });
-    const lhr = JSON.parse(await (0, import_promises2.readFile)(outPath, "utf8"));
+    const lhr = JSON.parse(await (0, import_promises3.readFile)(outPath, "utf8"));
     let trace = null;
     try {
-      trace = JSON.parse(await (0, import_promises2.readFile)(tracePath, "utf8"));
+      trace = JSON.parse(await (0, import_promises3.readFile)(tracePath, "utf8"));
     } catch {
       trace = null;
     }
     return { lhr, trace };
   } finally {
-    await (0, import_promises2.rm)(dir, { recursive: true, force: true }).catch(() => {
+    await (0, import_promises3.rm)(dir, { recursive: true, force: true }).catch(() => {
     });
   }
 }
