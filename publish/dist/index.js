@@ -25168,7 +25168,11 @@ function evidenceLine(e) {
   const side = e.side ? ` (${e.side === "base" ? "base" : "this PR"})` : "";
   if (e.kind === "element" && e.selector) return `- **${label}${side}:** ${code(e.selector)}`;
   if ((e.kind === "request" || e.kind === "script") && e.url) return `- **${label}${side}:** ${code(displayUrl(e.url))}`;
-  if (e.kind === "file" && e.path) return `- **${label}${side}:** ${code(e.path + (e.line ? `:${e.line}` : ""))}`;
+  if (e.kind === "file" && e.path) {
+    const path = code(e.path + (e.line ? `:${e.line}` : ""));
+    const isChangedFile = e.label === "Changed in this PR (matched by file path)" && e.url !== void 0 && /^https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/blob\/[0-9a-f]{40}\/[\w.%!~*'()/+-]+$/i.test(e.url);
+    return isChangedFile ? `- **Changed in this PR:** ${link(e.path, e.url)} (matched by file path)` : `- **${label}${side}:** ${path}`;
+  }
   if (e.value !== void 0) {
     const unit = e.unit === "ms" ? " ms" : e.unit === "bytes" ? " B" : e.unit === "percent" ? "%" : "";
     return `- **${label}${side}:** ${code(String(e.value) + unit)}`;
@@ -25274,6 +25278,54 @@ function formatMs(v) {
   const rounded = Math.round(v);
   return rounded.toLocaleString("en-US");
 }
+var SINCE_PUSH_MAX_LINES = 10;
+var CLS_METRICS = /* @__PURE__ */ new Set(["CLS"]);
+function sincePushSubject(e) {
+  const page = e.pagePath !== null ? ` on ${code(e.pagePath, 120)}` : "";
+  const label = e.metric !== null ? `${e.metric} regression${page}` : `${esc(e.title, 120)}${page}`;
+  if (e.status !== "verified-fixed" || e.previousDelta === null) return label;
+  const unit = e.metric !== null && CLS_METRICS.has(e.metric) ? "" : " ms";
+  const v = e.metric !== null && CLS_METRICS.has(e.metric) ? Number(e.previousDelta.toFixed(3)) : formatMs(e.previousDelta);
+  return `${label} (was +${v}${unit})`;
+}
+function sincePushStillPresentSuffix(e) {
+  if (e.currentDelta === null) {
+    return e.previousDelta === null ? "" : ` (was ${deltaText(e, e.previousDelta)})`;
+  }
+  const cur = deltaText(e, e.currentDelta);
+  return e.previousDelta === null ? ` (${cur})` : ` (${cur}; was ${deltaText(e, e.previousDelta)})`;
+}
+function deltaText(e, v) {
+  if (e.metric !== null && CLS_METRICS.has(e.metric)) return `+${Number(v.toFixed(3))}`;
+  return `+${formatMs(v)} ms`;
+}
+var SINCE_PUSH_ORDER = {
+  "still-present": 0,
+  "unable-to-verify": 1,
+  "verified-fixed": 2
+};
+function sinceLastPushSection(delta, reportUrl) {
+  if (delta.entries.length === 0) return "";
+  const sorted = [...delta.entries].sort(
+    (a, b) => SINCE_PUSH_ORDER[a.status] - SINCE_PUSH_ORDER[b.status] || (SEV_RANK[a.severity] ?? 3) - (SEV_RANK[b.severity] ?? 3) || a.title.localeCompare(b.title)
+  );
+  const lines = sorted.map((e) => {
+    if (e.status === "still-present") return `- \u274C **Still present:** ${sincePushSubject(e)}${sincePushStillPresentSuffix(e)}`;
+    if (e.status === "unable-to-verify") return `- \u26AA **Unable to verify:** ${sincePushSubject(e)}${e.reason === null ? "" : `: ${esc(e.reason, 160)}`}`;
+    return `- \u2705 **Verified fixed:** ${sincePushSubject(e)}`;
+  });
+  const shown = lines.slice(0, SINCE_PUSH_MAX_LINES);
+  const more = lines.length - shown.length;
+  const heading = `### Since the last push (${code(delta.previousHeadSha.slice(0, 7), 7)})${delta.previousUnverified ? " (the last push was unverified)" : ""}`;
+  const out = [heading, "", ...shown];
+  if (more > 0) out.push(`- \u2026and ${more} more in the ${link("full report", reportUrl)}`);
+  return out.join("\n");
+}
+function sinceLastPushSummaryLine(delta) {
+  if (delta.entries.length === 0) return null;
+  const n = (s) => delta.entries.filter((e) => e.status === s).length;
+  return `Since the last push: ${n("verified-fixed")} verified fixed, ${n("still-present")} still present, ${n("unable-to-verify")} unable to verify.`;
+}
 function baselineCell(r) {
   const b = r.baseline;
   const sha = b.baseSha ? code(b.baseSha.slice(0, 7)) : "";
@@ -25357,6 +25409,7 @@ function renderComment(results, outcome, ctx) {
   const partialPrefix = incomplete.length > 0 && !ctx.unverified && !outcome.summary.includes("Partial results:") ? `Partial results: ${incomplete.map((r) => ENGINE_LABEL[r.engine].replace(/^\S+\s+/, "")).join(", ")} did not complete. ` : "";
   const summary2 = `${partialPrefix}${outcome.summary}`;
   const head = [MARKER, `## ${headline}`, "", esc(summary2, 500)];
+  const sincePush = ctx.sincePreviousPush !== void 0 && ctx.sincePreviousPush.entries.length > 0 ? sinceLastPushSection(ctx.sincePreviousPush, ctx.reportUrl ?? ctx.runUrl) : "";
   const banners = [];
   if (ctx.unverified) banners.push("> \u26A0\uFE0F This PR changes MergeDelta workflows or config, so these results can't be trusted to pass or block. A maintainer should review the workflow change.");
   if (shown.length && shown.every((r) => r.status === "no-baseline")) banners.push("> \u{1F535} No baseline exists for this PR's merge-base yet. Findings below are what the scan found, not a comparison, and never block merging.");
@@ -25404,6 +25457,7 @@ function renderComment(results, outcome, ctx) {
   const sections = [];
   const rest = [];
   let used = [...head, ...banners, ...table, ...fallbackNotes].join("\n").length + 3e3;
+  if (sincePush !== "") used += sincePush.length + 2;
   let hiddenCriticals = 0;
   const lcpTables = /* @__PURE__ */ new Map();
   for (const r of shown) {
@@ -25486,16 +25540,16 @@ function renderComment(results, outcome, ctx) {
   const reportLink = ctx.reportUrl ? `${link("Dashboard", ctx.reportUrl)} \xB7 ` : "";
   const pageNote = pages.length === 1 ? `Page ${code(displayUrl(pages[0]), 120)} \xB7 ` : "";
   tail.push(`<sub>${pageNote}${reportLink}${link("Full report", ctx.runUrl)} \xB7 MergeDelta \xB7 ${code(ctx.headSha.slice(0, 7))}</sub>`);
-  let bodyBlocks = [head.join("\n"), ...banners, table.join("\n"), ...fallbackNotes, ...sections, ...betaBlocks, ...tail];
+  let bodyBlocks = [head.join("\n"), ...banners, table.join("\n"), ...fallbackNotes, ...sincePush === "" ? [] : [sincePush], ...sections, ...betaBlocks, ...tail];
   let body = bodyBlocks.join("\n\n") + "\n";
   if (body.length > COMMENT_LIMIT && betaBlocks.length > 0) {
     const order = [...betaBlocks.keys()].sort((a, b) => betaBlocks[b].length - betaBlocks[a].length);
     const cut = [...betaBlocks];
     for (const idx of order) {
       cut[idx] = cut[idx].split("\n").slice(0, BETA_LINES_PER_AREA).join("\n");
-      const candidate = [head.join("\n"), ...banners, table.join("\n"), ...fallbackNotes, ...sections, ...cut, ...tail].join("\n\n") + "\n";
+      const candidate = [head.join("\n"), ...banners, table.join("\n"), ...fallbackNotes, ...sincePush === "" ? [] : [sincePush], ...sections, ...cut, ...tail].join("\n\n") + "\n";
       if (candidate.length <= COMMENT_LIMIT) {
-        bodyBlocks = [head.join("\n"), ...banners, table.join("\n"), ...fallbackNotes, ...sections, ...cut, ...tail];
+        bodyBlocks = [head.join("\n"), ...banners, table.join("\n"), ...fallbackNotes, ...sincePush === "" ? [] : [sincePush], ...sections, ...cut, ...tail];
         body = candidate;
         break;
       }
@@ -25504,12 +25558,12 @@ function renderComment(results, outcome, ctx) {
       const remaining = [...betaBlocks];
       while (remaining.length > 0 && body.length > COMMENT_LIMIT) {
         remaining.pop();
-        body = [head.join("\n"), ...banners, table.join("\n"), ...fallbackNotes, ...sections, ...remaining, ...tail].join("\n\n") + "\n";
+        body = [head.join("\n"), ...banners, table.join("\n"), ...fallbackNotes, ...sincePush === "" ? [] : [sincePush], ...sections, ...remaining, ...tail].join("\n\n") + "\n";
       }
     }
   }
-  bodyBlocks = [head.join("\n"), ...banners, table.join("\n"), ...fallbackNotes, ...sections, ...body.includes("\n\n<details>") ? betaBlocks.slice(0, betaBlocks.length) : [], ...tail];
-  body = [head.join("\n"), ...banners, table.join("\n"), ...fallbackNotes, ...sections, ...betaBlocks, ...tail].join("\n\n") + "\n";
+  bodyBlocks = [head.join("\n"), ...banners, table.join("\n"), ...fallbackNotes, ...sincePush === "" ? [] : [sincePush], ...sections, ...body.includes("\n\n<details>") ? betaBlocks.slice(0, betaBlocks.length) : [], ...tail];
+  body = [head.join("\n"), ...banners, table.join("\n"), ...fallbackNotes, ...sincePush === "" ? [] : [sincePush], ...sections, ...betaBlocks, ...tail].join("\n\n") + "\n";
   return body.length <= COMMENT_LIMIT ? body : body.slice(0, body.lastIndexOf("\n", COMMENT_BUDGET)) + `
 
 _Comment shortened to fit GitHub's limit \u2014 ${link("full report", ctx.runUrl)}._
@@ -25518,10 +25572,11 @@ _Comment shortened to fit GitHub's limit \u2014 ${link("full report", ctx.runUrl
 var CHECK_NAME = "MergeDelta";
 var CHECK_TITLE_LIMIT = 255;
 var CHECK_SUMMARY_LIMIT = 65535;
-function checkRunOutput(results, outcome, unverified) {
+function checkRunOutput(results, outcome, unverified, sincePreviousPush) {
   const shown = results.filter((r) => r.status !== "skipped" || r.skipReason === "needs-local-build");
   const title = headlineText(shown, outcome, unverified).replace(/^\S+\s+/, "").slice(0, CHECK_TITLE_LIMIT);
-  const lines = [outcome.summary, ""];
+  const sinceLine = sincePreviousPush !== void 0 ? sinceLastPushSummaryLine(sincePreviousPush) : null;
+  const lines = [outcome.summary, ...sinceLine !== null ? ["", sinceLine] : [], ""];
   for (const e of outcome.engines) {
     if (!shown.some((r) => r.engine === e.engine)) continue;
     const label = ENGINE_LABEL[e.engine].replace(/^\S+\s+/, "");
@@ -25539,6 +25594,130 @@ function decideCommentAction(existing, newBody, botLogins) {
   const mine = existing.find((c) => botLogins.includes(c.author) && isShipGuardBody(c.body));
   if (!mine) return { action: "create" };
   return mine.body === newBody ? { action: "noop", commentId: mine.id } : { action: "edit", commentId: mine.id };
+}
+
+// ../core/src/pushDelta.ts
+var ENGINE_STATE_REASON = {
+  "scan-failed": "the scan did not complete",
+  "no-baseline": "no baseline for this push",
+  "baseline-pending": "the baseline was pending",
+  incompatible: "the baseline was incompatible",
+  inconclusive: "the scan was not conclusive",
+  skipped: "the engine was skipped"
+};
+function pageKeyOf(url) {
+  try {
+    const u = new URL(url);
+    const route = /^#!?\//.test(u.hash) ? u.hash : "";
+    return u.pathname + u.search + route;
+  } catch {
+    return url;
+  }
+}
+function pageScannedThisPush(r, pagePath) {
+  return r.headPages.some((p) => p.success && pageKeyOf(p.url) === pagePath);
+}
+function currentDeltaOf(r, pagePath, metric) {
+  if (r.engine !== "performance" || pagePath === null || metric === null) return null;
+  const m = r.perfMetricDeltas?.[pagePath]?.[metric];
+  if (m === void 0) return null;
+  return m.headMedian - m.baseMedian;
+}
+function entryOf(f, engine, status, reasonKind, reason, currentDelta = null) {
+  return {
+    fingerprint: f.fingerprint,
+    engine,
+    ruleId: f.ruleId,
+    title: f.title,
+    severity: f.severity,
+    pagePath: f.pagePath,
+    metric: f.metric,
+    previousDelta: f.delta,
+    currentDelta,
+    status,
+    reasonKind,
+    reason
+  };
+}
+function pushDelta(previous, current, ctx) {
+  const inconclusive = new Set((ctx.inconclusive ?? []).map((i) => `${i.pagePath}\0${i.metric}`));
+  const entries = [];
+  for (const prevEngine of previous.engines) {
+    for (const f of prevEngine.findings) {
+      if (ctx.unverified) {
+        entries.push(entryOf(f, prevEngine.engine, "unable-to-verify", "unverified-run", "this run is unverified"));
+        continue;
+      }
+      if (previous.fingerprintVersion !== null && previous.fingerprintVersion !== ctx.fingerprintVersion) {
+        entries.push(entryOf(f, prevEngine.engine, "unable-to-verify", "fingerprint-version", "MergeDelta's finding identity changed between versions"));
+        continue;
+      }
+      const r = current.find((x) => x.engine === prevEngine.engine);
+      if (r === void 0) {
+        entries.push(entryOf(f, prevEngine.engine, "unable-to-verify", "engine-state", "the engine was not part of this push"));
+        continue;
+      }
+      if (r.status !== "compared") {
+        entries.push(entryOf(f, prevEngine.engine, "unable-to-verify", "engine-state", ENGINE_STATE_REASON[r.status] ?? `the engine was ${r.status}`));
+        continue;
+      }
+      const sameFingerprint = r.findings.filter((c) => c.finding.fingerprint === f.fingerprint);
+      const again = sameFingerprint.find((c) => c.classification === "new" || c.classification === "worsened");
+      if (again !== void 0) {
+        entries.push(entryOf(f, prevEngine.engine, "still-present", null, null, currentDeltaOf(r, f.pagePath, f.metric)));
+        continue;
+      }
+      const blocked = sameFingerprint.find((c) => c.classification === "false-resolved" || c.classification === "not-comparable" || c.classification === "suppressed");
+      if (blocked !== void 0) {
+        const kind = blocked.classification === "false-resolved" ? "false-resolved" : blocked.classification === "not-comparable" ? "not-comparable" : "suppressed";
+        const reason = blocked.classification === "false-resolved" ? "the page could not be scanned" : blocked.classification === "not-comparable" ? "not comparable" : "dismissed";
+        entries.push(entryOf(f, prevEngine.engine, "unable-to-verify", kind, reason));
+        continue;
+      }
+      if (f.pagePath !== null && !pageScannedThisPush(r, f.pagePath)) {
+        entries.push(entryOf(f, prevEngine.engine, "unable-to-verify", "page-not-scanned", `${f.pagePath} was not scanned on this push`));
+        continue;
+      }
+      if (prevEngine.engine === "performance" && f.metric !== null && f.pagePath !== null && inconclusive.has(`${f.pagePath}\0${f.metric}`)) {
+        entries.push(entryOf(f, prevEngine.engine, "unable-to-verify", "metric-inconclusive", `${f.metric} was inconclusive (too noisy) on this push`));
+        continue;
+      }
+      if (prevEngine.engine === "performance" && f.metric !== null && previous.mergeBaseSha !== null && previous.mergeBaseSha !== ctx.mergeBaseSha) {
+        entries.push(entryOf(f, prevEngine.engine, "unable-to-verify", "merge-base-moved", "main moved, so the comparison base changed"));
+        continue;
+      }
+      if (prevEngine.engine !== "performance" && sameFingerprint.some((c) => c.classification === "unchanged")) {
+        entries.push(entryOf(f, prevEngine.engine, "unable-to-verify", "unchanged-on-base", "now also present on the base branch"));
+        continue;
+      }
+      entries.push(entryOf(f, prevEngine.engine, "verified-fixed", null, null));
+    }
+  }
+  const previousFingerprints = new Set(previous.engines.flatMap((e) => e.findings.map((f) => f.fingerprint)));
+  const newSincePrevious = [];
+  for (const r of current) {
+    for (const c of r.findings) {
+      if (c.classification !== "new" && c.classification !== "worsened") continue;
+      if (c.finding.kind === "cause") continue;
+      if (previousFingerprints.has(c.finding.fingerprint)) continue;
+      newSincePrevious.push({
+        fingerprint: c.finding.fingerprint,
+        engine: r.engine,
+        ruleId: c.finding.ruleId,
+        title: c.finding.title,
+        severity: c.finding.severity,
+        pagePath: c.finding.pageUrl === null ? null : pageKeyOf(c.finding.pageUrl),
+        metric: c.finding.metric
+      });
+    }
+  }
+  return {
+    previousHeadSha: previous.headSha,
+    previousRunId: previous.runId,
+    previousUnverified: previous.unverified,
+    entries,
+    newSincePrevious
+  };
 }
 
 // src/trust.ts
@@ -26016,9 +26195,10 @@ async function runPublish(ev, deps) {
     runId
   });
   if (identityErrs.length > 0) return rejectedRun(ev, deps, claimedPr, `identity mismatch (${identityErrs.map((e) => e.path).join(", ")}): ${identityErrs[0]?.message ?? ""}`);
+  const changedFiles = claimedPr === null ? null : await deps.github.listChangedFiles(claimedPr);
   const gh = {
     pull: claimedPr === null ? null : await deps.github.getPull(claimedPr),
-    changedFiles: claimedPr === null ? null : await deps.github.listChangedFiles(claimedPr),
+    changedFiles: changedFiles?.map((file) => file.filename) ?? null,
     shaOnDefaultBranch: null,
     latestPublishedAttempt: null
     // filled from the backend context below
@@ -26040,7 +26220,8 @@ async function runPublish(ev, deps) {
     engines: engineNames,
     mergeBase: artifact_.run.mergeBaseSha,
     pr: claimedPr,
-    branch: ev.run.head_branch
+    branch: ev.run.head_branch,
+    ...kind === "pr" ? { head: headSha } : {}
   });
   gh.latestPublishedAttempt = context2.latestPublishedAttempt;
   if (kind === "baseline") gh.shaOnDefaultBranch = await deps.github.shaOnDefaultBranch(headSha);
@@ -26123,14 +26304,32 @@ async function runPublish(ev, deps) {
   if (blockingPolicy.note !== null && !unverified) {
     outcome.summary = `${outcome.summary} ${blockingPolicy.note}`;
   }
+  if (kind === "pr" && claimedPr !== null) {
+    linkCausesToChangedFiles(results, changedFiles, ev.repository.full_name, headSha);
+  }
+  let delta = null;
+  const previousPush = context2.previousPush ?? null;
+  if (kind === "pr" && previousPush !== null && previousPush.engines.some((e) => e.findings.length > 0)) {
+    delta = pushDelta(previousPush, results, {
+      mergeBaseSha: trustedMergeBaseSha,
+      fingerprintVersion: artifact_.fingerprintVersion,
+      unverified,
+      // rule 7: the (page, metric) pairs the frozen decideMetric could not decide on this
+      // push's own measurements — computed exactly as perfMetricDeltasOf computes its
+      // medians, by CALLING decideMetric (never re-implementing it)
+      inconclusive: inconclusiveMetricsOf(artifact_.engines.find((e) => e.engine === "performance") ?? null)
+    });
+  }
   const comment = renderComment(results, outcome, {
     headSha,
     runUrl: ev.runUrl,
     lessonBaseUrl: ev.lessonBaseUrl,
-    unverified
+    unverified,
+    ...delta !== null && delta.entries.length > 0 ? { sincePreviousPush: delta } : {}
   });
   let commentAction = "none";
-  const check = checkRunOutput(results, outcome, unverified);
+  const check = checkRunOutput(results, outcome, unverified, delta ?? void 0);
+  const storedDelta = delta === null ? null : boundedPushDelta(delta);
   const runBody = {
     headSha,
     runId,
@@ -26154,6 +26353,9 @@ async function runPublish(ev, deps) {
         state: o.state,
         maturity: o.maturity,
         // batch 2-0 Item 7: the maturity, from ENGINE_MATURITY
+        // task 2-9 item 1: this run's fingerprint version, so the NEXT push's /context can
+        // compare finding identity across versions (rule 2) without a second column
+        fingerprintVersion: artifact_.fingerprintVersion,
         reasons: o.reasons,
         mayBlock: r.mayBlock,
         blockOn: r.blockOn,
@@ -26184,6 +26386,9 @@ async function runPublish(ev, deps) {
         })),
         inconclusive: r.inconclusive,
         budgets: r.budgets,
+        // task 2-9 item 1: the per-page metric medians, so the NEXT push's /context can
+        // report the previous delta (previousPush findings' `delta` is headMedian − baseMedian)
+        ...r.perfMetricDeltas !== void 0 ? { perfMetricDeltas: r.perfMetricDeltas } : {},
         ...r.lcpBreakdown !== void 0 ? { lcpBreakdown: r.lcpBreakdown } : {},
         ...r.previewInjections !== void 0 ? { previewInjections: r.previewInjections } : {},
         ...r.localBuildFallback !== void 0 ? { localBuildFallback: r.localBuildFallback } : {}
@@ -26191,6 +26396,9 @@ async function runPublish(ev, deps) {
     }),
     comment,
     mergeBaseSha: artifact_.run.mergeBaseSha,
+    // task 2-9 item 4: the fix-verification delta, stored for the read API and the next
+    // push's /context lookup (which reads the previous head from the row, not from here)
+    ...storedDelta !== null && storedDelta.entries.length > 0 ? { sincePreviousPush: storedDelta } : {},
     perfMeasurements: artifact_.engines.find((e) => e.engine === "performance")?.perf?.measurements ?? []
   };
   if (poster === "app") {
@@ -26579,6 +26787,66 @@ function lcpBreakdownOf(part) {
     dominantPhase: dominant.change > 0 ? dominant.label : null
   };
 }
+function inconclusiveMetricsOf(part) {
+  if (part === null) return [];
+  const ms = part.perf?.measurements ?? [];
+  const pages = [...new Set(ms.map((m) => pagePathOf(m.url)))];
+  const out = [];
+  for (const page of pages) {
+    const runsOf = (side) => ms.filter((m) => m.side === side && pagePathOf(m.url) === page).map((m) => ({ valid: m.valid, invalidReason: m.invalidReason, metrics: m.metrics }));
+    const base = runsOf("base");
+    const head = runsOf("head");
+    for (const metric of LAB_METRICS) {
+      const d = decideMetric(metric, base, head);
+      if (d.verdict === "inconclusive") out.push({ pagePath: page, metric });
+    }
+  }
+  return out;
+}
+function boundedPushDelta(delta) {
+  const entries = delta.entries.slice(0, 500);
+  const newSincePrevious = delta.newSincePrevious.slice(0, 500);
+  const stored = { ...delta, entries, newSincePrevious };
+  const encoder = new TextEncoder();
+  while (encoder.encode(JSON.stringify(stored)).byteLength > 56 * 1024) {
+    if (newSincePrevious.length > 0) newSincePrevious.pop();
+    else entries.pop();
+  }
+  return stored;
+}
+function changedFileLink(resourceIdentityPath, changedFiles, repoFullName, headSha) {
+  if (changedFiles === null || changedFiles.length === 0 || changedFiles.length >= 3e3) return null;
+  const path = resourceIdentityPath.replace(/^\//, "").split("?")[0].replace(/#.*$/, "");
+  if (path === "") return null;
+  const lastSegment = path.split("/").pop() ?? "";
+  if (/[-.][0-9a-f]{8,}(?=[.-]|$)/i.test(lastSegment)) return null;
+  const statuses = /* @__PURE__ */ new Set(["added", "modified", "renamed"]);
+  const candidates = changedFiles.filter((f) => statuses.has(f.status) && (f.filename === path || f.filename.endsWith(`/${path}`)));
+  if (candidates.length !== 1) return null;
+  const filename = candidates[0].filename;
+  return {
+    label: "Changed in this PR (matched by file path)",
+    kind: "file",
+    path: filename,
+    url: `https://github.com/${repoFullName}/blob/${headSha}/${filename.split("/").map(encodeURIComponent).join("/")}`
+  };
+}
+var FILE_LINK_RULES = /* @__PURE__ */ new Set(["render-blocking-script-added", "lcp-resource-heavier", "long-task-added"]);
+function linkCausesToChangedFiles(results, changedFiles, repoFullName, headSha) {
+  if (changedFiles === null) return;
+  for (const r of results) {
+    if (r.engine !== "performance") continue;
+    for (const c of r.findings) {
+      const f = c.finding;
+      if (f.kind !== "cause" || !FILE_LINK_RULES.has(f.ruleId)) continue;
+      const identity = f.id.slice(f.ruleId.length + 1);
+      if (!/^\//.test(identity)) continue;
+      const link2 = changedFileLink(identity, changedFiles, repoFullName, headSha);
+      if (link2 === null) continue;
+      f.evidence = [...f.evidence, { kind: "file", label: link2.label, path: link2.path, url: link2.url }];
+    }
+  }
+}
 function pageUrlOf(part) {
   return part.headPages[0]?.url ?? "";
 }
@@ -26624,7 +26892,7 @@ async function main() {
             pull_number: n,
             per_page: 100
           });
-          return files.map((f) => f.filename);
+          return files.map((f) => ({ filename: f.filename, status: f.status ?? "modified" }));
         } catch {
           return null;
         }
@@ -26716,6 +26984,7 @@ ${runUrl}`.slice(0, 65536) }
         if (args.mergeBase !== null) q.set("mergeBase", args.mergeBase);
         if (args.pr !== null) q.set("pr", String(args.pr));
         if (args.branch !== null) q.set("branch", args.branch);
+        if (args.head !== void 0) q.set("head", args.head);
         const res = await fetch(`${API_BASE}/publish-api/context?${q.toString()}`, {
           headers: { Authorization: `Bearer ${args.token}` },
           signal: AbortSignal.timeout(15e3)
